@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Manager;
+use App\Setting;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,15 +16,20 @@ class AuthController extends Controller
         {
             return redirect('/dashboard');
         }
-        return view('Admin.Auth.Login');
+        else
+        {
+            $settings=Setting::first();
+            return view('Admin.Auth.Login',compact('settings'));
+        }
     }
+
     public function login(Request $req)
     {
         $req->validate([
             'email' => 'required',
             'password' => 'required'
         ]);
-        $manager = Manager::where('email', '=', $req->email)
+        $manager = User::where('email', '=', $req->email)
             ->first();
         if ($manager) {
             if (Hash::check($req->password, $manager->password)) {
