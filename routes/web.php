@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,9 +30,9 @@ Route::post('/project/settings',[SettingsController::class,'add'])->name('add')-
 Route::get('/dashboard',[DashboardController::class,'view'])->name('view')->middleware('ValidateUsers');
 
 // MANAGER CRUD
-Route::get('/managers',[ManagerController::class,'list'])->name('list')->middleware('ValidateUsers');
-Route::get('/managers/add',[ManagerController::class,'addView'])->name('addView')->middleware('ValidateUsers');
-Route::post('/managers/add',[ManagerController::class,'add'])->name('add')->middleware('ValidateUsers');
-Route::get('/managers/edit',[ManagerController::class,'addView'])->name('addView')->middleware('ValidateUsers');
-Route::post('/managers/edit',[ManagerController::class,'edit'])->name('edit')->middleware('ValidateUsers');
-Route::post('/managers/delete',[ManagerController::class,'delete'])->name('delete')->middleware('ValidateUsers');
+Route::get('/managers',[UserController::class,'list'])->name('list')->middleware('ValidateUsers');
+Route::get('/managers/add',[UserController::class,'addView'])->name('addView')->middleware('ValidateUsers');
+Route::post('/managers/add',[UserController::class,'add'])->name('add')->middleware('ValidateUsers');
+Route::get('/managers/edit',[UserController::class,'addView'])->name('addView')->middleware('ValidateUsers');
+Route::post('/managers/edit',[UserController::class,'edit'])->name('edit')->middleware('ValidateUsers');
+Route::post('/managers/delete',[UserController::class,'delete'])->name('delete')->middleware('ValidateUsers');

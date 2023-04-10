@@ -4,43 +4,44 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'Admin Lte' }} | Login</title>
+    <title>{{ $settings->project_name ?? 'Admin Lte' }} | Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
 </head>
 
-<body style="background: rgb(229, 229, 229)">
-
-    <div class="container mt-5" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%, -50%)">
+<body style="background: rgb(10,113,171);">
+    <div class="container mt-5" style="position: absolute;top: 30%;left: 50%;transform: translate(-50%, -30%)">
         <div class="row justify-content-center">
             <div class="col-lg-5 col-md-6 col-sm-8">
+                <h2 class="text-center mb-4" style="color: white">{{$settings->project_name??'AdminLTe'}}</h2>
                 <div class="card shadow-lg">
                     <div class="card-body">
-                        <h2 class="text-center mb-4">{{ $title ?? 'Login' }}</h2>
+                        <h2 class="text-center mb-4">Sign In</h2>
                         <form action="{{ url('/login') }}" method="POST">
                             @csrf
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email address</label>
-                                <input type="email" name="email" id="form2Example1" placeholder="john@gmail.com"
+                                {{-- <label for="email" class="form-label">Email address</label> --}}
+                                <input type="email" name="email" id="form2Example1" placeholder="Enter your email address"
                                     class="form-control" value="{{ old('email') }}" />
                                 @if (session()->has('msg-error-username'))
                                     <span class="text-danger">{{ session('msg-error-username') }}</span>
                                 @endif
 
                             </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Password</label>
-                                <input type="password" id="form2Example2" name="password" class="form-control" />
+                            <div class="mb-1">
+                                {{-- <label for="password" class="form-label">Password</label> --}}
+                                <input type="password" id="form2Example2" name="password" class="form-control" placeholder="Password" />
                                 @error('password')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                                 @if (session()->has('msg-error-password'))
                                     <span class="text-danger">{{ session('msg-error-password') }}</span>
                                 @endif
-
                             </div>
-                            <div class="">
-                                <button type="submit" class="btn btn-primary">Login</button>
+                            <span class="mb-3"> <a href="#" style="text-decoration: none">Forgot Password?</a></span>
+
+                            <div class="mt-3 float-right">
+                                <button type="submit" class="btn btn-primary " style="float:right">Login</button>
                             </div>
                         </form>
                     </div>
