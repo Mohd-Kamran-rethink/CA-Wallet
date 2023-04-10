@@ -1,0 +1,25 @@
+.salesmanarrow,
+.salesTaxarrow,
+.ratearrow,
+.purchaseArrow,
+.customerarrow,
+.salesarrow,
+.productsArrow,
+.RepairArrow,
+.OrdersArrow,
+.productCatArrow,
+.dealersArrow,
+.CaratArrow,
+.companyArrow,
+.AdminArrow {
+  float: right;
+  cursor: pointer;
+}
+
+.select2-container--default
+  .select2-selection--single
+  .select2-selection__rendered {
+  padding-left: 0;
+  height: 20px;
+  margin-top: -9px;
+}
