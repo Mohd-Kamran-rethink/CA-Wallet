@@ -64,10 +64,11 @@
     <script src="{{ asset('AdminTheme/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <!-- ChartJS -->
     <script src="{{ asset('AdminTheme/plugins/chart.js/Chart.min.js') }}"></script>
-    <!-- jQuery Knob Chart -->
+   <!-- jQuery Knob Chart -->
     <script src="{{ asset('AdminTheme/plugins/jquery-knob/jquery.knob.min.js') }}"></script>
     <!-- daterangepicker -->
     <script src="{{ asset('AdminTheme/plugins/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('AdminTheme/plugins/daterangepicker/daterangepicker.js') }}"></script>
     <!-- Tempusdominus Bootstrap 4 -->
     <script src="{{ asset('AdminTheme/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
     <!-- Summernote -->
