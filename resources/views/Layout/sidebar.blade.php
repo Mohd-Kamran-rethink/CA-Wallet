@@ -6,7 +6,7 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <div class="sidebar">
         <a href="index3.html" class="brand-link">
-            <img @if (isset($settings)) src="{{ asset('Data/Project/'.$settings->project_logo) }}"
+            <img @if (isset($settings)) src="{{ asset('Data/Project/' . $settings->project_logo) }}"
                 @else
                 src="https://imgs.search.brave.com/jjizMxNTRgX8Jd1PNu7XXsh0-_jVVpSJF-bVeHWJZ_c/rs:fit:860:900:1/g:ce/aHR0cHM6Ly93d3cu/a2luZHBuZy5jb20v/cGljYy9tLzc4LTc4/NjIwN191c2VyLWF2/YXRhci1wbmctdXNl/ci1hdmF0YXItaWNv/bi1wbmctdHJhbnNw/YXJlbnQucG5n" @endif
                 alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
@@ -38,7 +38,27 @@
                         class="nav-link {{ Request::is('agents') || Request::is('agents/add') || Request::is('agents/edit') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-users"></i>
                         <p>
-                           Agents
+                            Agents
+
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="{{ url('/leads') }}"
+                        class="nav-link {{ Request::is('leads') || Request::is('leads/add') || Request::is('leads/edit') ? 'active' : '' }}">
+                        <i class="nav-icon fa fa-tasks"></i>
+                        <p>
+                            Leads
+
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="{{ url('/sources') }}"
+                        class="nav-link {{ Request::is('sources') || Request::is('sources/add') || Request::is('sources/edit') ? 'active' : '' }}">
+                        <i class="nav-icon fa fa-th-list"></i>
+                        <p>
+                            Sources
 
                         </p>
                     </a>

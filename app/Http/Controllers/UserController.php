@@ -102,7 +102,7 @@ class UserController extends Controller
             if ($req->role === 'manager') {
                 return redirect('/managers')->with(['msg-error' => 'Something went wrong could not add manager.']);
             } else {
-                return redirect('/agents')->with(['msg-success'=>'Agent has been added.']);   
+                return redirect('/agents')->with(['msg-error'=>'Something went wrong could not add manager.']);   
             }
         }
     }
@@ -140,7 +140,7 @@ class UserController extends Controller
             if ($req->role === 'manager') {
                 return redirect('/managers')->with(['msg-error' => 'Something went wrong could not update manager.']);
             } else {
-                return redirect('/agents')->with(['msg-success'=>'Agent has been added.']);   
+                return redirect('/agents')->with(['msg-error'=>'Something went wrong could not update manager.']);   
             }
         }
     }
@@ -159,7 +159,7 @@ class UserController extends Controller
             if ($req->role === 'manager') {
                 return redirect('/managers')->with(['msg-error' => 'Something went wrong could not delete manager.']);
             } else {
-                return redirect('/agents')->with(['msg-success'=>'Agent has been deleted.']);   
+                return redirect('/agents')->with(['msg-error'=>'Something went wrong could not delete manager.']);   
             }
         }
     }

@@ -10,8 +10,8 @@
     <title>{{ $settings->project_name ?? 'AdminLTE' }}</title>
 
 
-
-
+    
+    
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -20,19 +20,20 @@
     <!-- Ionicons -->
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <!-- Tempusdominus Bootstrap 4 -->
-    <link rel="stylesheet"
-        href="{{ asset('AdminTheme/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('AdminTheme/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('AdminTheme/plugins/daterangepicker/daterangepicker.css') }}">
     <!-- iCheck -->
     <link rel="stylesheet" href="{{ asset('AdminTheme/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
-  
+    
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('AdminTheme/dist/css/adminlte.min.css') }}">
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="{{ asset('AdminTheme/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
-   
+    
     <!-- summernote -->
     <link rel="stylesheet" href="{{ asset('AdminTheme/plugins/summernote/summernote-bs4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('AdminTheme/mainCSS/style.css') }}">
+    
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
@@ -54,6 +55,7 @@
    
     <!-- jQuery -->
     <script src="{{ asset('AdminTheme/plugins/jquery/jquery.min.js') }}"></script>
+   
     <!-- jQuery UI 1.11.4 -->
     <script src="{{ asset('AdminTheme/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
     <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
@@ -62,13 +64,14 @@
     </script>
     <!-- Bootstrap 4 -->
     <script src="{{ asset('AdminTheme/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    
+    <!-- daterangepicker -->
+    <script src="{{ asset('AdminTheme/plugins/moment/moment.min.js') }}"></script>
+    <script src="{{ asset('AdminTheme/plugins/daterangepicker/daterangepicker.js') }}"></script>
     <!-- ChartJS -->
     <script src="{{ asset('AdminTheme/plugins/chart.js/Chart.min.js') }}"></script>
    <!-- jQuery Knob Chart -->
     <script src="{{ asset('AdminTheme/plugins/jquery-knob/jquery.knob.min.js') }}"></script>
-    <!-- daterangepicker -->
-    <script src="{{ asset('AdminTheme/plugins/moment/moment.min.js') }}"></script>
-    <script src="{{ asset('AdminTheme/plugins/daterangepicker/daterangepicker.js') }}"></script>
     <!-- Tempusdominus Bootstrap 4 -->
     <script src="{{ asset('AdminTheme/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
     <!-- Summernote -->
