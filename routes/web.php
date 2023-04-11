@@ -30,9 +30,18 @@ Route::post('/project/settings',[SettingsController::class,'add'])->name('add')-
 Route::get('/dashboard',[DashboardController::class,'view'])->name('view')->middleware('ValidateUsers');
 
 // MANAGER CRUD
-Route::get('/managers',[UserController::class,'list'])->name('list')->middleware('ValidateUsers');
-Route::get('/managers/add',[UserController::class,'addView'])->name('addView')->middleware('ValidateUsers');
+Route::get('/managers',[UserController::class,'listManager'])->name('listManager')->middleware('ValidateUsers');
+Route::get('/managers/add',[UserController::class,'ManagerView'])->name('ManagerView')->middleware('ValidateUsers');
 Route::post('/managers/add',[UserController::class,'add'])->name('add')->middleware('ValidateUsers');
-Route::get('/managers/edit',[UserController::class,'addView'])->name('addView')->middleware('ValidateUsers');
+Route::get('/managers/edit',[UserController::class,'ManagerView'])->name('ManagerView')->middleware('ValidateUsers');
 Route::post('/managers/edit',[UserController::class,'edit'])->name('edit')->middleware('ValidateUsers');
 Route::post('/managers/delete',[UserController::class,'delete'])->name('delete')->middleware('ValidateUsers');
+Route::get('/profile/edit',[UserController::class,'ManagerView'])->name('ManagerView')->middleware('ValidateUsers');
+
+// AGENT CRUD
+Route::get('/agents',[UserController::class,'listAgents'])->name('listAgents')->middleware('ValidateUsers');
+Route::get('/agents/add',[UserController::class,'AgentView'])->name('AgentView')->middleware('ValidateUsers');
+Route::post('/agents/add',[UserController::class,'add'])->name('add')->middleware('ValidateUsers');
+Route::get('/agents/edit',[UserController::class,'AgentView'])->name('AgentView')->middleware('ValidateUsers');
+Route::post('/agents/edit',[UserController::class,'edit'])->name('edit')->middleware('ValidateUsers');
+Route::post('/agents/delete',[UserController::class,'delete'])->name('delete')->middleware('ValidateUsers');

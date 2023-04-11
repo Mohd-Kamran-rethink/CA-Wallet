@@ -4,7 +4,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Managers</h1>
+                    <h1>Agents</h1>
                 </div>
             </div>
             @if (session()->has('msg-success'))
@@ -37,7 +37,7 @@
                         </div>
                     </form>
                     <div>
-                        <a href="{{ url('managers/add') }}" class="btn btn-primary">Add New Manager</a>
+                        <a href="{{ url('agents/add') }}" class="btn btn-primary">Add New Agent</a>
                     </div>
                 </div>
                 <div class="row">
@@ -55,22 +55,22 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($managers as $item)
+                                        @foreach ($agents as $item)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->name }}</td>
                                                 <td>{{ $item->email }}</td>
                                                 <td>{{ $item->phone }}</td>
                                                 <td>
-                                                    @if (session('Manager')->phone !== $item->phone)
-                                                        <a href="{{ url('managers/edit/?id=' . $item->id) }}"
-                                                            title="Edit this manager" class="btn btn-primary"><i
-                                                                class="fa fa-pen"></i></a>
-                                                        <button title="Delte this manager"
-                                                            onclick="manageModal({{ $item->id }})"
-                                                            class="btn btn-danger"><i class="fa fa-trash"></i></button>
-                                                    @endif
+                                                    <a href="{{ url('agents/edit/?id=' . $item->id) }}"
+                                                        title="Edit this agent" class="btn btn-primary"><i
+                                                            class="fa fa-pen"></i></a>
+                                                    <button title="Delte this agent"
+                                                        onclick="manageModal({{ $item->id }})"
+                                                        class="btn btn-danger"><i class="fa fa-trash"></i></button>
                                                 </td>
+
+
                                             </tr>
                                         @endforeach
 
@@ -78,7 +78,7 @@
                                 </table>
                             </div>
                             <div class="card-footer clearfix">
-                                {{ $managers->links('pagination::bootstrap-4') }}
+                                {{ $agents->links('pagination::bootstrap-4') }}
                             </div>
                         </div>
                     </div>
@@ -95,12 +95,12 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <form action="{{ url('/managers/delete') }}" method="POST">
+                <form action="{{ url('/agents/delete') }}" method="POST">
                     @csrf
                     <input type="hidden" name="deleteId" id="deleteInput">
-                    <input type="hidden" name="role" id="deleteInput" value="manager">
+                    <input type="hidden" name="role" id="deleteInput" value="agent">
                     <div class="modal-body">
-                        <h4>Are you sure you want to delete this manager?</h4>
+                        <h4>Are you sure you want to delete this agent?</h4>
                     </div>
                     <div class="modal-footer ">
                         <button type="submit" class="btn btn-danger">Delete</button>
@@ -111,7 +111,7 @@
         </div>
     </div>
     <script>
-        const searchData =()=>{
+        const searchData = () => {
             event.preventDefault();
             const url = new URL(window.location.href);
 
