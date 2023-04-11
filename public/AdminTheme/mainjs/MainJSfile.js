@@ -1,5 +1,5 @@
-const managerModal=(id)=>{
+const manageModal=(id)=>{
     $('#deleteInput').val(id)
     $(`#modal-default`).modal('show');
-    alert(id)
 }
+    

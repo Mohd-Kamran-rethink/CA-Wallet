@@ -4,7 +4,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>{{isset($manager)?"Edit Manager":"Add Manager"}}</h1>
+                <h1>{{isset($agent)?"Edit Agent":"Add Agent"}}</h1>
                 <h6 class="text-danger">* Items marked with an asterisk are required fields and must be completed</h6>
             </div>
         </div>
@@ -14,16 +14,16 @@
         <div class="card">
 
             <div class="card-body">
-                <form action="{{isset($manager)?url('managers/edit'):url('managers/add')}}" method="POST" enctype="multipart/form-data">
+                <form action="{{isset($agent)?url('agents/edit'):url('agents/add')}}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
-                        <input type="hidden" name="userId" value="{{isset($manager)?$manager->id:''}}">
-                        <input type="hidden" name="role" value="manager">
+                        <input type="hidden" name="userId" value="{{isset($agent)?$agent->id:''}}">
+                        <input type="hidden" name="role" value="agent">
                         <div class="col-xs-12 col-md-4">
                             <div class="form-group">
-                                <label>Manager Name <span style="color:red">*</span></label>
+                                <label>Agent Name <span style="color:red">*</span></label>
                                 <input  type="text" name="name" placeholder="John"
-                                    class="form-control" data-validation="required" value="{{isset($manager)?$manager->name:old('name')}}">
+                                    class="form-control" data-validation="required" value="{{isset($agent)?$agent->name:old('name')}}">
                                     @error('name')
                                     <span class="text-danger">
                                         {{$message}}
@@ -34,7 +34,7 @@
                         <div class="col-xs-12 col-md-4">
                             <div class="form-group">
                                 <label>Phone <span style="color:red">*</span></label>
-                                <input type="number" name="phone" value="{{isset($manager)?$manager->phone:old('phone')}}" id="phone" placeholder="972873818"
+                                <input type="number" name="phone" value="{{isset($agent)?$agent->phone:old('phone')}}" id="phone" placeholder="972873818"
                                     data-errortext="This is dealer's username!" class="form-control"
                                     data-validation="required">
                                     @error('phone')
@@ -48,7 +48,7 @@
                         <div class="col-xs-12 col-md-4">
                             <div class="form-group">
                                 <label>Email <span style="color:red">*</span></label>
-                                <input type="email" name="email" value="{{isset($manager)?$manager->email:old('email')}}" id="username"
+                                <input type="email" name="email" value="{{isset($agent)?$agent->email:old('email')}}" id="username"
                                     placeholder="johs@gmail.com" class="form-control">
                                     @error('email')
                                     <span class="text-danger">
@@ -89,7 +89,7 @@
                     <div class="row mt-2">
                         <div class="col-12">
                             <button type="submit" class="btn btn-info">Save</button>
-                            <a href="{{url('/managers')}}" type="button" class="btn btn-default">Cancel</a>
+                            <a href="{{url('/agents')}}" type="button" class="btn btn-default">Cancel</a>
                         </div>
                     </div>
                 </form>

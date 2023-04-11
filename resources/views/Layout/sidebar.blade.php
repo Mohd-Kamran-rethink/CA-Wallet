@@ -32,9 +32,19 @@
 
                         </p>
                     </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="{{ url('/agents') }}"
+                        class="nav-link {{ Request::is('agents') || Request::is('agents/add') || Request::is('agents/edit') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>
+                           Agents
 
+                        </p>
+                    </a>
                 </li>
             </ul>
+
 
         </nav>
     </div>

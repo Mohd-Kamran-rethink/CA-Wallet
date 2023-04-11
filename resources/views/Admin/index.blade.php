@@ -24,14 +24,12 @@
         href="{{ asset('AdminTheme/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') }}">
     <!-- iCheck -->
     <link rel="stylesheet" href="{{ asset('AdminTheme/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
-    <!-- JQVMap -->
-    <link rel="stylesheet" href="{{ asset('AdminTheme/plugins/jqvmap/jqvmap.min.css') }}">
+  
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('AdminTheme/dist/css/adminlte.min.css') }}">
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="{{ asset('AdminTheme/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
-    <!-- Daterange picker -->
-    <link rel="stylesheet" href="{{ asset('AdminTheme/plugins/daterangepicker/daterangepicker.css') }}">
+   
     <!-- summernote -->
     <link rel="stylesheet" href="{{ asset('AdminTheme/plugins/summernote/summernote-bs4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('AdminTheme/mainCSS/style.css') }}">
@@ -53,7 +51,7 @@
 
 
     {{-- SCRIPTS --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.js"></script>
+   
     <!-- jQuery -->
     <script src="{{ asset('AdminTheme/plugins/jquery/jquery.min.js') }}"></script>
     <!-- jQuery UI 1.11.4 -->
@@ -66,16 +64,10 @@
     <script src="{{ asset('AdminTheme/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <!-- ChartJS -->
     <script src="{{ asset('AdminTheme/plugins/chart.js/Chart.min.js') }}"></script>
-    <!-- Sparkline -->
-    <script src="{{ asset('AdminTheme/plugins/sparklines/sparkline.js') }}"></script>
-    <!-- JQVMap -->
-    <script src="{{ asset('AdminTheme/plugins/jqvmap/jquery.vmap.min.js') }}"></script>
-    <script src="{{ asset('AdminTheme/plugins/jqvmap/maps/jquery.vmap.usa.js') }}"></script>
     <!-- jQuery Knob Chart -->
     <script src="{{ asset('AdminTheme/plugins/jquery-knob/jquery.knob.min.js') }}"></script>
     <!-- daterangepicker -->
     <script src="{{ asset('AdminTheme/plugins/moment/moment.min.js') }}"></script>
-    <script src="{{ 'AdminTheme/plugins/daterangepicker/daterangepicker.js' }}"></script>
     <!-- Tempusdominus Bootstrap 4 -->
     <script src="{{ asset('AdminTheme/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script>
     <!-- Summernote -->
