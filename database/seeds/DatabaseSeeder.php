@@ -11,6 +11,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([DefaultManager::class]);
+        $this->call([
+            DefaultManager::class,
+            SourcesSeeder::class,
+            LeadStatusOptionSeeder::class,
+                    ]);
     }
 }

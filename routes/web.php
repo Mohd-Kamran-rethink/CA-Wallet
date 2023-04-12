@@ -65,9 +65,6 @@ Route::middleware('ValidateUsers')->prefix('/leads')->group(function () {
     Route::get('',[LeadsController::class,'list'])->name('list');
     Route::get('/import',[LeadsController::class,'importView'])->name('importView');
     Route::post('/import',[LeadsController::class,'import'])->name('import');
-    Route::get('/add',[LeadsController::class,'addView'])->name('addView');
-    Route::post('/add',[LeadsController::class,'add'])->name('add');
-    Route::get('/edit',[LeadsController::class,'addView'])->name('addView');
-    Route::post('/edit',[LeadsController::class,'edit'])->name('edit');
-    Route::post('/delete',[LeadsController::class,'delete'])->name('delete');
+    Route::get('/status/submit',[LeadsController::class,'submitStatus'])->name('submitStatus');
+   
 });

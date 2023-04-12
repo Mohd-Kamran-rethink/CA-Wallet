@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class Leads extends Migration
+class LeadStatus extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,12 @@ class Leads extends Migration
      */
     public function up()
     {
-        Schema::create('leads', function (Blueprint $table) {
+        Schema::create('lead_statuses', function (Blueprint $table) {
             $table->id();
-            $table->string('source_id');
             $table->string('name');
-            $table->string('number');
-            $table->string('agent_id');
-            $table->string('manager_id');
-            $table->string('lead_status_id')->nullable();
-            $table->string('date')->nullable();
-            $table->string('language')->nullable();
-            $table->string('idName')->nullable();
+            $table->string('remark');
+            $table->string('followup_date');
+            $table->string('lead_id');
             $table->timestamps();
         });
     }
