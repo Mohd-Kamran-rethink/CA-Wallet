@@ -44,9 +44,11 @@
                             <button class="btn btn-success" onclick="searchData()">Filter</button>
                         </div>
                     </form>
-                    <div>
-                        <a href="{{ url('leads/import') }}" class="btn btn-primary">Import Leads</a>
-                    </div>
+                    @if (session('user')->role === 'manager')
+                        <div>
+                            <a href="{{ url('leads/import') }}" class="btn btn-primary">Import Leads</a>
+                        </div>
+                    @endif
                 </div>
                 <div class="row">
                     <div class="col-12">
@@ -78,7 +80,7 @@
                                                 <td>{{ $item->language }}</td>
                                                 <td>{{ $item->idName }}</td>
                                                 <td> {{ $item->agent_name }}</td>
-                                                <td> {{ $item->status_name??"--" }}</td>
+                                                <td> {{ $item->status_name ?? '--' }}</td>
                                                 <td>
                                                     <button onclick="openLeadModal({{ $item->id }})"
                                                         title="Chnage status" class="btn btn-secondary">Change
@@ -187,8 +189,7 @@
                         '',
                     success: function(data) {
                         {
-                            if(data)
-                            {
+                            if (data) {
                                 window.location.reload();
                             }
                             // $(`.error-date`).html(data?.dateError)

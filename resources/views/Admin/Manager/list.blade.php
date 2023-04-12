@@ -62,7 +62,7 @@
                                                 <td>{{ $item->email }}</td>
                                                 <td>{{ $item->phone }}</td>
                                                 <td>
-                                                    @if (session('Manager')->phone !== $item->phone)
+                                                    @if (session('user')->phone !== $item->phone)
                                                         <a href="{{ url('managers/edit/?id=' . $item->id) }}"
                                                             title="Edit this manager" class="btn btn-primary"><i
                                                                 class="fa fa-pen"></i></a>

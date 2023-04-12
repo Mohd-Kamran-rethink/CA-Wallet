@@ -19,11 +19,11 @@ class LeadsController extends Controller
     public function list(Request $req)
     {
         $statuses = LeadStatusOption::get();
-        $agent = '';
-        if (session('Agent')) {
-            $agent = User::find(session('Agent')->id);
+        $agent=null;
+        if (session('user')->role=="agent") {
+            $agent = User::find(session('user')->id);
         }
-
+            
         $searchTerm = $req->query('table_search');
         $Filterstatus = $req->query('status');
 
@@ -31,7 +31,7 @@ class LeadsController extends Controller
             ->join('sources', 'leads.source_id', '=', 'sources.id')
             ->join('users', 'leads.agent_id', '=', 'users.id')
             ->leftjoin('lead_statuses', 'leads.lead_status_id', '=', 'lead_statuses.id')
-            ->when($agent != '', function ($query, $agent) {
+            ->when($agent, function ($query, $agent) {
                 $query->where(function ($query) use ($agent) {
                     $query->where('leads.agent_id', '=', $agent->id);
                 });
@@ -69,7 +69,7 @@ class LeadsController extends Controller
         array_shift($data[0]);
         $sources = Source::pluck('id', 'name');
         $agents = User::where('role', '=', 'agent')->pluck('id', 'name');
-        $manager = User::where('role', '=', 'manager')->where('email', '=', session('Manager')->email)->first();
+        $manager = User::where('role', '=', 'manager')->where('email', '=', session('user')->email)->first();
         $insertData = [];
         foreach ($data[0] as $row) {
             $sourceId = $sources->get($row[array_search('sources', $columns)]);

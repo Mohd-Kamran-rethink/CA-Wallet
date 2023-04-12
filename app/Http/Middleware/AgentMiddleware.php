@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 
-class ValidateUsers
+class AgentMiddleware
 {
     /**
      * Handle an incoming request.
@@ -15,7 +15,7 @@ class ValidateUsers
      */
     public function handle($request, Closure $next)
     {
-        if (session()->has('user')) {
+        if (session()->has('user')&& session('user')->role=="agent") {
             return $next($request);
         }
         else
