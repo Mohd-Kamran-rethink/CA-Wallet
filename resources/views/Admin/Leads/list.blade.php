@@ -16,6 +16,87 @@
                     {{ session('msg-success') }}
                 </div>
             @endif
+            @if (session()->has('errors') || session()->has('skipped'))
+                <div class="card">
+                    <div class="card-body">
+                        @if (count(session('skipped')) > 0)
+                            <div class="alert alert-warning" role="alert"><span class="font-weight-bold"
+                                    style="color: white">Skipped Entries</span> </div>
+                            <div class="card-body table-responsive p-0">
+                                <table class="table table-hover text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No.</th>
+                                            <th>Source</th>
+                                            <th>Date</th>
+                                            <th>Name</th>
+                                            <th>Number</th>
+                                            <th>Language</th>
+                                            <th>ID Name</th>
+                                            <th>Agent</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (session('skipped') as $item)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $item['Sources'] }}</td>
+                                                <td>{{ date('d-m-Y', strtotime($item['Date'])) }}</td>
+                                                <td>{{ $item['Name'] }}</td>
+                                                <td>{{ $item['Number'] }}</td>
+                                                <td>{{ $item['Language'] }}</td>
+                                                <td>{{ $item['ID NAME'] }}</td>
+                                                <td> {{ $item['Agent'] }}</td>
+                                            </tr>
+                                        @endforeach
+
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+                        @if (count(session('errors')) > 0)
+                            <div class="alert alert-danger" role="alert"><span class="font-weight-bold"
+                                    style="color: white">Errors Entries</span> </div>
+                            <div class="card-body table-responsive p-0">
+                                <table class="table table-hover text-nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No.</th>
+                                            <th>Source</th>
+                                            <th>Date</th>
+                                            <th>Name</th>
+                                            <th>Number</th>
+                                            <th>Language</th>
+                                            <th>ID Name</th>
+                                            <th>Agent</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (session('errors') as $item)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $item['Sources'] }}</td>
+                                                <td>{{ date('d-m-Y', strtotime($item['Date'])) }}</td>
+                                                <td>{{ $item['Name'] }}</td>
+                                                <td>{{ $item['Number'] }}</td>
+                                                <td>{{ $item['Language'] }}</td>
+                                                <td>{{ $item['ID NAME'] }}</td>
+                                                <td> {{ $item['Agent'] }}</td>
+                                            </tr>
+                                        @endforeach
+
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        @endif
+
+                    </div>
+                </div>
+            @endif
         </div>
     </section>
 
@@ -141,9 +222,10 @@
                     </form>
                 </div>
                 <div class="modal-footer ">
-                    <button onclick="submitStatusChange()" type="submit" class="btn btn-success " id="status-submit-button"
-                        disabled>Change</button>
-                    <button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-default">Cancel</button>
+                    <button onclick="submitStatusChange()" type="submit" class="btn btn-success "
+                        id="status-submit-button" disabled>Change</button>
+                    <button type="button" data-dismiss="modal" aria-label="Close"
+                        class="btn btn-default">Cancel</button>
 
                 </div>
             </div>

@@ -16,8 +16,8 @@ class LeadStatus extends Migration
         Schema::create('lead_statuses', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('remark');
-            $table->string('followup_date');
+            $table->string('remark')->nullable();
+            $table->string('followup_date')->nullable();
             $table->string('lead_id');
             $table->timestamps();
         });

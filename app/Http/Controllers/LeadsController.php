@@ -11,6 +11,7 @@ use App\User;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
@@ -32,7 +33,6 @@ class LeadsController extends Controller
         $leads = DB::table('leads')
             ->join('sources', 'leads.source_id', '=', 'sources.id')
             ->join('users', 'leads.agent_id', '=', 'users.id')
-            ->leftjoin('lead_statuses', 'leads.lead_status_id', '=', 'lead_statuses.id')
             ->when($agent, function ($query, $agent) {
                 $query->where(function ($query) use ($agent) {
                     $query->where('leads.agent_id', '=', $agent->id);
@@ -40,7 +40,7 @@ class LeadsController extends Controller
             })
             ->when($Filterstatus, function ($query, $Filterstatus) {
                 $query->where(function ($query) use ($Filterstatus) {
-                    $query->where('lead_statuses.name', '=', $Filterstatus);
+                    $query->where('leads.status_name', '=', $Filterstatus);
                 });
             })
             ->when($searchTerm, function ($query, $searchTerm) {
@@ -50,7 +50,7 @@ class LeadsController extends Controller
                         ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
                 });
             })
-            ->select('leads.*','lead_statuses.name as status_name','sources.name as source_name', 'users.name as agent_name')
+            ->select('leads.*','sources.name as source_name', 'users.name as agent_name')
             ->paginate(10);
         return view('Admin.Leads.list', compact('leads', 'searchTerm', 'Filterstatus', 'statuses'));
     }
@@ -74,6 +74,7 @@ class LeadsController extends Controller
         $entries = [];
         $existingEntries = [];
         $errors = [];
+        $skipped = [];
         $addedCount = 0;
         $skippedCount = 0;
         $errorCount = 0;
@@ -103,25 +104,26 @@ class LeadsController extends Controller
             // If validation fails, add entry to errors array
             if ($validator->fails()) {
                 $errors[] = $data;
-                // $errors[] = $validator->errors()->all();
                 $errorCount++;
                 continue;
             }
-           
-
+            
+            
             $entryKey = $data['Date'] . $data['Name'] . $data['Number'] . $data['Agent'];
-    
+            
             // If entry already exists, skip it
             if (isset($existingEntries[$entryKey])) {
+                $skipped[] = $data;
                 $skippedCount++;
                 continue;
             }
+                
             // Search for the agent name in the $agents array
             $agentId = array_search($data['Agent'], $agents);
             $sourceId = array_search($data['Sources'], $sources);
             // If agent is not found in the $agents array, skip the entry
             if (!$agentId|| !$sourceId) {
-                $errors[] = $data;
+                $skipped[] = $data;
                 $skippedCount++;
                 continue;
             }
@@ -129,7 +131,7 @@ class LeadsController extends Controller
             // Add entry to results
             $entry = [
                 'source_id' => $sourceId,
-                'name' => $data['Date'],
+                'name' =>date('d-m-Y', strtotime($data['Date'])),
                 'date' => $data['Name'],
                 'number' => $data['Number'],
                 'language' => $data['Language'],
@@ -149,7 +151,8 @@ class LeadsController extends Controller
         return  redirect('/leads')->with([
             'msg-success'=>"Imported Successfully",
             'added' => $addedCount,
-            'skipped' => $skippedCount,
+            'skippedCount' => $skippedCount,
+            'skipped' => $skipped,
             'errors' => $errors,
             'error_count' => $errorCount,
         ]);
@@ -167,14 +170,18 @@ class LeadsController extends Controller
             else
             {
                 $lead=Lead::find($lead_id);
+                $lead->remark = $remark;
+                $lead->status_name = $statusValue;
+                $lead->followup_date = $date??null;
+                $lead->updated_at = $date??null;
+                $lead->update();
+             
                 $lead_status =new  LeadStatus();
                 $lead_status->lead_id=$lead_id; 
                 $lead_status->name=$statusValue; 
                 $lead_status->remark=$remark; 
                 $lead_status->followup_date=$date??null;
-                $lead_status->save();
-                $lead->lead_status_id=$lead_status->id;
-                $result =$lead->update();
+                $result=$lead_status->save();
                 if($result)
                 {
                     return redirect()->back()->with(['msg-success' => "Status has been changed"]);
