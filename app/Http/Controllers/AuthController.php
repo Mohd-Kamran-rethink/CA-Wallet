@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
     public function loginView()
     {
-        if(session()->has('Manager'))
+        if(session()->has('user'))
         {
             return redirect('/dashboard');
         }
@@ -29,11 +29,10 @@ class AuthController extends Controller
             'email' => 'required',
             'password' => 'required'
         ]);
-        $manager = User::where('email', '=', $req->email)
-            ->first();
-        if ($manager) {
-            if (Hash::check($req->password, $manager->password)) {
-                session()->put('Manager', $manager);
+        $user = User::where('email', '=', $req->email)->first();
+        if ($user) {
+            if (Hash::check($req->password, $user->password)) {
+                session()->put('user', $user);
                 return redirect('/dashboard');
             } else {
                 return redirect('/')->with(['msg-error-password' => 'Invalid password']);
@@ -46,9 +45,9 @@ class AuthController extends Controller
     }
     public function logout()
     {
-        if(session()->has('Manager'))
+        if(session()->has('user'))
         {
-            session()->remove('Manager');
+            session()->remove('user');
         }
         return redirect('/');
     }

@@ -4,7 +4,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Managers</h1>
+                    <h1>Sources</h1>
                 </div>
             </div>
             @if (session()->has('msg-success'))
@@ -25,7 +25,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="mb-3 d-flex justify-content-between align-items-centers">
-                    <form action="{{ url('managers') }}" method="GET" id="search-form">
+                    <form action="{{ url('sources') }}" method="GET" id="search-form">
                         <div class="input-group input-group-sm" style="width: 150px;">
                             <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
                                 class="form-control float-right" placeholder="Search" id="searchInput">
@@ -37,7 +37,7 @@
                         </div>
                     </form>
                     <div>
-                        <a href="{{ url('managers/add') }}" class="btn btn-primary">Add New Manager</a>
+                        <a href="{{ url('sources/add') }}" class="btn btn-primary">Add New Source</a>
                     </div>
                 </div>
                 <div class="row">
@@ -49,28 +49,24 @@
                                         <tr>
                                             <th>S.No.</th>
                                             <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Phone</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($managers as $item)
+                                        @foreach ($sources as $item)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->name }}</td>
-                                                <td>{{ $item->email }}</td>
-                                                <td>{{ $item->phone }}</td>
                                                 <td>
-                                                    @if (session('user')->phone !== $item->phone)
-                                                        <a href="{{ url('managers/edit/?id=' . $item->id) }}"
-                                                            title="Edit this manager" class="btn btn-primary"><i
-                                                                class="fa fa-pen"></i></a>
-                                                        <button title="Delte this manager"
-                                                            onclick="manageModal({{ $item->id }})"
-                                                            class="btn btn-danger"><i class="fa fa-trash"></i></button>
-                                                    @endif
+                                                    <a href="{{ url('sources/edit/?id=' . $item->id) }}"
+                                                        title="Edit this source" class="btn btn-primary"><i
+                                                            class="fa fa-pen"></i></a>
+                                                    <button title="Delte this source"
+                                                        onclick="manageModal({{ $item->id }})"
+                                                        class="btn btn-danger"><i class="fa fa-trash"></i></button>
                                                 </td>
+
+
                                             </tr>
                                         @endforeach
 
@@ -78,7 +74,7 @@
                                 </table>
                             </div>
                             <div class="card-footer clearfix">
-                                {{ $managers->links('pagination::bootstrap-4') }}
+                                {{ $sources->links('pagination::bootstrap-4') }}
                             </div>
                         </div>
                     </div>
@@ -95,12 +91,12 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <form action="{{ url('/managers/delete') }}" method="POST">
+                <form action="{{ url('/sources/delete') }}" method="POST">
                     @csrf
                     <input type="hidden" name="deleteId" id="deleteInput">
-                    <input type="hidden" name="role" id="deleteInput" value="manager">
+                    <input type="hidden" name="role" id="deleteInput" value="agent">
                     <div class="modal-body">
-                        <h4>Are you sure you want to delete this manager?</h4>
+                        <h4>Are you sure you want to delete this source?</h4>
                     </div>
                     <div class="modal-footer ">
                         <button type="submit" class="btn btn-danger">Delete</button>
@@ -111,7 +107,7 @@
         </div>
     </div>
     <script>
-        const searchData =()=>{
+        const searchData = () => {
             event.preventDefault();
             const url = new URL(window.location.href);
 
