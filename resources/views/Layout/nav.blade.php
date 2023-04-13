@@ -30,9 +30,11 @@
              <i class="fas fa-cog mr-2"></i> Setting
              </a> --}}
                 <div class="dropdown-divider"></div>
-                <a href="{{ url('/profile/edit?id=' . session('user')->id) }}" class="dropdown-item">
-                    <i class="fas  fa-cog mr-2"></i>Profile
-                </a>
+                @if (session('user')->role === 'manager')
+                    <a href="{{ url('/profile/edit?id=' . session('user')->id) }}" class="dropdown-item">
+                        <i class="fas  fa-cog mr-2"></i>Profile
+                    </a>
+                @endif
                 <a href="{{ url('/logout') }}" class="dropdown-item">
                     <i class="fas fa-power-off mr-2"></i>Logout
                 </a>

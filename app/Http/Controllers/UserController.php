@@ -24,22 +24,16 @@ class UserController extends Controller
     public function listManager(Request $req)
     {
         $searchTerm = $req->query('table_search');
-
-        if ($searchTerm) {
-            $managers = User::where('role', 'manager')
-                ->when($searchTerm, function ($query, $searchTerm) {
-                    $query->where(function ($query) use ($searchTerm) {
-                        $query->where('name', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('email', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('phone', 'like', '%' . $searchTerm . '%');
-                    });
-                })
-                ->orderBy('id', 'desc')
-                ->paginate(10);
-        } else {
-            $managers = User::where("role", '=', 'manager')->orderBy('id', "desc")->paginate(10);
-        }
-
+        $managers = User::where('role', 'manager')
+            ->when($searchTerm, function ($query, $searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('email', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('phone', 'like', '%' . $searchTerm . '%');
+                });
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10);
         return view('Admin.Manager.list', compact('managers','searchTerm'));
     }
     public function AgentView(Request $req)
@@ -52,25 +46,23 @@ class UserController extends Controller
             return view('Admin.Agents.add');
         }
     }
+
+        
+        
+
     public function listAgents(Request $req)
     {
         $searchTerm = $req->query('table_search');
-
-        if ($searchTerm) {
-            $agents = User::where('role', 'agent')
-                ->when($searchTerm, function ($query, $searchTerm) {
-                    $query->where(function ($query) use ($searchTerm) {
-                        $query->where('name', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('email', 'like', '%' . $searchTerm . '%')
-                            ->orWhere('phone', 'like', '%' . $searchTerm . '%');
-                    });
-                })
-                ->orderBy('id', 'desc')
-                ->paginate(10);
-        } else {
-            $agents = User::where("role", '=', 'agent')->orderBy('id', "desc")->paginate(10);
-        }
-
+        $agents = User::where('role', 'agent')
+            ->when($searchTerm, function ($query, $searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('email', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('phone', 'like', '%' . $searchTerm . '%');
+                });
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10);
         return view('Admin.Agents.list', compact('agents','searchTerm'));
     }
     // common functions for manager and agents
@@ -163,6 +155,10 @@ class UserController extends Controller
             }
         }
     }
-    
 }
+
+        
+        
+
+    
     

@@ -10,22 +10,14 @@ class SourceController extends Controller
     public function list(Request $req)
     {
         $searchTerm = $req->query('table_search');
-
-        if ($searchTerm) {
-            $sources = Source::when($searchTerm, function ($query, $searchTerm) {
-                    $query->where(function ($query) use ($searchTerm) {
-                        $query->where('name', 'like', '%' . $searchTerm . '%');
-                    });
-                })
-                ->orderBy('id', 'desc')
-                ->paginate(10);
-        }
-        else
-        {
-            $sources=Source::paginate(10);
-        }
+        $sources = Source::when($searchTerm, function ($query, $searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('name', 'like', '%' . $searchTerm . '%');
+                });
+            })
+            ->orderBy('id', 'desc')
+            ->paginate(10);
         return view('Admin.Sources.list',compact('sources','searchTerm'));
-
     }
     public function addView(Request $req)
     {
@@ -47,7 +39,6 @@ class SourceController extends Controller
         } else {
             return redirect('/sources')->with(['msg-error' => 'Something went wrong could not add source.']);
         }
-            
     }
     public function delete(Request $req)
     {
@@ -71,6 +62,11 @@ class SourceController extends Controller
             return redirect('/sources')->with(['msg-error' => 'Something went wrong could not update source.']);
         }
     }
+
+       
+       
+
+            
         
 }
             
