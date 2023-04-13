@@ -113,31 +113,35 @@
                     </button>
                 </div>
 
-                <input type="hidden" name="deleteId" id="deleteInput">
-                <input type="hidden" name="role" id="deleteInput" value="agent">
+                {{-- <input type="hidden" name="deleteId" id="deleteInput">
+                <input type="hidden" name="role" id="deleteInput" value="agent"> --}}
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="">Status <span class="text-danger">*</span></label>
-                        <select onchange="handleStatusValues(this.value)" name="" class="form-control"
-                            id="">
-                            <option value="0">--Choose--</option>
-                            @foreach ($statuses as $item)
-                                <option value="{{ $item->name }}">{{ $item->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group  conditional-input" style="display: none">
-                        <label for="">Date <span class="text-danger">*</span></label>
-                        <input name="datePicker" type="date" class="form-control" id="datePicker">
-                        <span class="text-danger error-date"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="">Remark</label>
-                        <textarea rows="3" type="text" class="form-control" id="remark"></textarea>
-                    </div>
+                    <form action="{{ url('/leads/status/submit') }}" method="post" id="status-form">
+                        @csrf
+                        <input type="hidden" name="leadId" id="lead_id">
+                        <div class="form-group">
+                            <label for="">Status <span class="text-danger">*</span></label>
+                            <select onchange="handleStatusValues(this.value)" name="status" class="form-control"
+                                id="">
+                                <option value="0">--Choose--</option>
+                                @foreach ($statuses as $item)
+                                    <option value="{{ $item->name }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group  conditional-input" style="display: none">
+                            <label for="">Date <span class="text-danger">*</span></label>
+                            <input name="date" type="date" class="form-control" id="datePicker">
+                            <span class="text-danger error-date"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="">Remark</label>
+                            <textarea rows="3" type="text" class="form-control" name="remark" id="remark"></textarea>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer ">
-                    <button onclick="submitStatusChange()" class="btn btn-success " id="status-submit-button"
+                    <button onclick="submitStatusChange()" type="submit" class="btn btn-success " id="status-submit-button"
                         disabled>Change</button>
                     <button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-default">Cancel</button>
 
@@ -157,8 +161,9 @@
                 $('#search-form').attr('action', url.toString()).submit();
             }
             const openLeadModal = (leadId) => {
-                lead_id = leadId
+
                 $(`#modal-default`).modal("show");
+                $(`#lead_id`).val(leadId);
             }
             const handleStatusValues = (value) => {
                 status = value;
@@ -178,24 +183,15 @@
                 }
             }
             const submitStatusChange = () => {
-                let conditionalInput = $('.conditional-input');
+                let submitButton = $('#status-submit-button')
+                event.preventDefault();
                 let datePicker = $('#datePicker').val()
+                if ((status == "Follow Up" || status == "Busy") && !datePicker) {
+                    $('.error-date').html('Please enter valid date')
 
-                let remark = $('#remark').val()
-                $.ajax({
-                    url: BASE_URL +
-                        "/leads/status/submit?leadId=" + lead_id + "&status=" + status + "&remark=" + remark +
-                        "&date=" + datePicker ??
-                        '',
-                    success: function(data) {
-                        {
-                            if (data) {
-                                window.location.reload();
-                            }
-                            // $(`.error-date`).html(data?.dateError)
-                        }
-                    },
-                });
+                } else {
+                    $('#status-form').submit();
+                }
             }
         </script>
     @endsection

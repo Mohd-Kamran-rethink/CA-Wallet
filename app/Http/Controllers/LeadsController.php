@@ -97,7 +97,7 @@ class LeadsController extends Controller
     }
     public function submitStatus(Request $req)
     {
-        if ($req->ajax()) {
+        
             $lead_id = $req->leadId;
             $statusValue = $req->status;
             $date = $req->date;
@@ -118,16 +118,16 @@ class LeadsController extends Controller
                 $result =$lead->update();
                 if($result)
                 {
-                    return ['msg-success' => "Status has been changed"];
+                    return redirect()->back()->with(['msg-success' => "Status has been changed"]);
                 }
                 else
                 {
-                    return ['msg-error' => "Somthing went wrong"];
+                    return redirect()->back()->with(['msg-error' => "Somthing went wrong"]);
 
                 }
 
             }
 
-        }
+        
     }
 }
