@@ -66,5 +66,6 @@ Route::middleware('ValidateUsers')->prefix('/leads')->group(function () {
     Route::get('/import',[LeadsController::class,'importView'])->name('importView');
     Route::post('/import',[LeadsController::class,'import'])->name('import');
     Route::post('/status/submit',[LeadsController::class,'submitStatus'])->name('submitStatus');
+    Route::get('/download-sample-file',[LeadsController::class,'downloadfile'])->name('downloadfile');
 });
    

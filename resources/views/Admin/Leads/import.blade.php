@@ -25,6 +25,7 @@
                         </ul>
 
                     </div>
+                    <a href="{{url("leads/download-sample-file")}}" style="color: rgb(0, 0, 162);cursor: pointer;">Click here to download samle excel.</a>
                 </div>
             </div>
         </div>

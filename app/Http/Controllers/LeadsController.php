@@ -102,7 +102,14 @@ class LeadsController extends Controller
            
             $data = array_combine($columnHeaders, $row);
             $validator = Validator::make($data, $validationRules);
-    
+        
+            // date manipulation
+            
+            $DateserialNumber = $data['Date']; // This is the serial number for the date "01/01/2021"
+            $unixTimestamp = ($DateserialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
+            $date = \Carbon\Carbon::createFromTimestamp($unixTimestamp);
+            $formattedDate = $date->format('d-m-Y'); // format the date in the desired format
+           
             // If validation fails, add entry to errors array
             if ($validator->fails()) {
                 $errors[] = $data;
@@ -110,7 +117,7 @@ class LeadsController extends Controller
                 continue;
             }
             
-            
+
             $entryKey = $data['Date'] . $data['Name'] . $data['Number'] . $data['Agent'];
             
             // If entry already exists, skip it
@@ -120,21 +127,18 @@ class LeadsController extends Controller
                 continue;
             }
                 
-            // Search for the agent name in the $agents array
+            // Search for the agent name in the $agents array and sources
             $agentId = array_search($data['Agent'], $agents);
             $sourceId = array_search($data['Sources'], $sources);
-            // If agent is not found in the $agents array, skip the entry
+
+            // If agent or source id is not found skip the entry
             if (!$agentId|| !$sourceId) {
                 $skipped[] = $data;
                 $skippedCount++;
                 continue;
             }
          
-            $DateserialNumber = $data['Date']; // This is the serial number for the date "01/01/2021"
-            $unixTimestamp = ($DateserialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
-            $date = \Carbon\Carbon::createFromTimestamp($unixTimestamp);
-            $formattedDate = $date->format('d-m-Y'); // format the date in the desired format
-            // Add entry to results
+           // Add entry to results
             $entry = [
                 'source_id' => $sourceId,
                 'name' =>$data['Name'],
@@ -151,8 +155,6 @@ class LeadsController extends Controller
             $existingEntries[$entryKey] = true;
             $addedCount++;
         }
-    
-        // TODO: Save $entries to database or perform any other desired action
     
         return  redirect('/leads')->with([
             'msg-success'=>"Imported Successfully",
@@ -201,5 +203,13 @@ class LeadsController extends Controller
             }
 
         
+    }
+    public function downloadfile()
+    {
+        $file = public_path('assets/Sample.xlsx');
+        $headers = [
+        'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ];
+        return response()->download($file, 'Sample.xlsx', $headers);
     }
 }
