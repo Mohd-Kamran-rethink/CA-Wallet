@@ -8,9 +8,11 @@ use App\LeadStatus;
 use App\LeadStatusOption;
 use App\Source;
 use App\User;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 
 class LeadsController extends Controller
@@ -59,41 +61,98 @@ class LeadsController extends Controller
     }
     public function import(Request $req)
     {
-        $req->validate([
-            'excel_file' => 'required|mimes:xlsx,xls,csv',
+        $validatedData = $req->validate([
+            'excel_file' => 'required|mimes:xlsx,xls',
         ]);
-        $import = new LeadsImport;
-        $data = Excel::toArray($import, $req->excel_file);
-
-        $columns = array_map('strtolower', $data[0][0]);
-        array_shift($data[0]);
-        $sources = Source::pluck('id', 'name');
-        $agents = User::where('role', '=', 'agent')->pluck('id', 'name');
+    
+        $file = $req->file('excel_file');
+        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($file->path());
+        $reader->setReadDataOnly(true);
+        $spreadsheet = $reader->load($file->path());
+        $worksheet = $spreadsheet->getActiveSheet();
+        $rows = $worksheet->toArray();
+        $entries = [];
+        $existingEntries = [];
+        $errors = [];
+        $addedCount = 0;
+        $skippedCount = 0;
+        $errorCount = 0;
+    
+        // Define validation rules for each column
+        $validationRules = [
+            'Sources' => ['required'],
+            'Date' => ['required'],
+            'Name' => ['required'],
+            'Number' => ['required'],
+            'Language' => [],
+            'ID NAME' => [],
+            'Agent' => ['required'],
+        ];
+    
+        $columnHeaders = array_shift($rows);
+        $sources = Source::pluck('name','id')->toArray();
+        $agents = User::where('role', '=', 'agent')->pluck('name', 'id')->toArray(); // flip the keys and values
+        
         $manager = User::where('role', '=', 'manager')->where('email', '=', session('user')->email)->first();
-        $insertData = [];
-        foreach ($data[0] as $row) {
-            $sourceId = $sources->get($row[array_search('sources', $columns)]);
-            $agentId = $agents->get($row[array_search('agent', $columns)]);
-            $insertData[] = [
-                'name' => $row[array_search('name', $columns)],
-                'number' => $row[array_search('number', $columns)],
-                'language' => $row[array_search('language', $columns)],
-                'date' => date('d-m-Y', strtotime($row[array_search('date', $columns)])),
-                'idName' => $row[array_search('id name', $columns)],
-                'source_id' => $sourceId,
-                'agent_id' => $agentId,
-                'manager_id' => $manager->id,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
 
-        $result = DB::table('leads')->insert($insertData);
-        if ($result) {
-            return redirect('/leads')->with(['msg-success' => 'Excel file imported successfully.']);
-        } else {
-            return redirect('/leads')->with(['msg-error' => 'Something went wrong.']);
+        foreach ($rows as $row) {
+           
+            $data = array_combine($columnHeaders, $row);
+            $validator = Validator::make($data, $validationRules);
+    
+            // If validation fails, add entry to errors array
+            if ($validator->fails()) {
+                $errors[] = $data;
+                // $errors[] = $validator->errors()->all();
+                $errorCount++;
+                continue;
+            }
+           
+
+            $entryKey = $data['Date'] . $data['Name'] . $data['Number'] . $data['Agent'];
+    
+            // If entry already exists, skip it
+            if (isset($existingEntries[$entryKey])) {
+                $skippedCount++;
+                continue;
+            }
+            // Search for the agent name in the $agents array
+            $agentId = array_search($data['Agent'], $agents);
+            $sourceId = array_search($data['Sources'], $sources);
+            // If agent is not found in the $agents array, skip the entry
+            if (!$agentId|| !$sourceId) {
+                $errors[] = $data;
+                $skippedCount++;
+                continue;
+            }
+            
+            // Add entry to results
+            $entry = [
+                'source_id' => $sourceId,
+                'name' => $data['Date'],
+                'date' => $data['Name'],
+                'number' => $data['Number'],
+                'language' => $data['Language'],
+                'idName' => $data['ID NAME'],
+                'agent_id' => $agentId,
+                'manager_id'=>$manager->id,
+            ];
+            Lead::create($entry);
+
+            $entries[] = $entry;
+            $existingEntries[$entryKey] = true;
+            $addedCount++;
         }
+    
+        // TODO: Save $entries to database or perform any other desired action
+    
+        return  redirect('/leads')->with([
+            'msg-success'=>"Imported Successfully",
+            'added' => $addedCount,
+            'skipped' => $skippedCount,
+            'errors' => $errors,
+            'error_count' => $errorCount,
+        ]);
     }
     public function submitStatus(Request $req)
     {
