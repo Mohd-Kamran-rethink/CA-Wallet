@@ -7,6 +7,7 @@ use App\Lead;
 use App\LeadStatus;
 use App\LeadStatusOption;
 use App\Source;
+use Carbon\Carbon;
 use App\User;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -78,13 +79,14 @@ class LeadsController extends Controller
         $addedCount = 0;
         $skippedCount = 0;
         $errorCount = 0;
-    
+        
+
         // Define validation rules for each column
         $validationRules = [
             'Sources' => ['required'],
             'Date' => ['required'],
             'Name' => ['required'],
-            'Number' => ['required'],
+            'Number' => ['required','numeric'],
             'Language' => [],
             'ID NAME' => [],
             'Agent' => ['required'],
@@ -127,12 +129,16 @@ class LeadsController extends Controller
                 $skippedCount++;
                 continue;
             }
-            
+         
+            $DateserialNumber = $data['Date']; // This is the serial number for the date "01/01/2021"
+            $unixTimestamp = ($DateserialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
+            $date = \Carbon\Carbon::createFromTimestamp($unixTimestamp);
+            $formattedDate = $date->format('d-m-Y'); // format the date in the desired format
             // Add entry to results
             $entry = [
                 'source_id' => $sourceId,
-                'name' =>date('d-m-Y', strtotime($data['Date'])),
-                'date' => $data['Name'],
+                'name' =>$data['Name'],
+                'date' => $formattedDate,
                 'number' => $data['Number'],
                 'language' => $data['Language'],
                 'idName' => $data['ID NAME'],

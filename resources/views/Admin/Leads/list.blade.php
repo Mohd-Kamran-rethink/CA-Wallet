@@ -1,5 +1,13 @@
 @extends('Admin.index')
 @section('content')
+@php
+function serialToDate($serialNumber) {
+    $unixTimestamp = ($serialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
+    $date = \Carbon\Carbon::createFromTimestamp($unixTimestamp);
+    return $date->format('d-m-Y');
+}
+@endphp
+
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -16,7 +24,7 @@
                     {{ session('msg-success') }}
                 </div>
             @endif
-            @if (session()->has('errors') || session()->has('skipped'))
+            @if ((session()->has('errors') && count(session('errors')) > 0) || (session()->has('skipped')&&count(session('skipped')) > 0))
                 <div class="card">
                     <div class="card-body">
                         @if (count(session('skipped')) > 0)
@@ -41,7 +49,7 @@
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item['Sources'] }}</td>
-                                                <td>{{ date('d-m-Y', strtotime($item['Date'])) }}</td>
+                                                <td>{{ serialToDate($item['Date']) }}</td>
                                                 <td>{{ $item['Name'] }}</td>
                                                 <td>{{ $item['Number'] }}</td>
                                                 <td>{{ $item['Language'] }}</td>
@@ -78,7 +86,7 @@
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item['Sources'] }}</td>
-                                                <td>{{ date('d-m-Y', strtotime($item['Date'])) }}</td>
+                                                <td>{{ serialToDate($item['Date']) }}</td>
                                                 <td>{{ $item['Name'] }}</td>
                                                 <td>{{ $item['Number'] }}</td>
                                                 <td>{{ $item['Language'] }}</td>
