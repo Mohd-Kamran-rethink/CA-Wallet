@@ -6,9 +6,10 @@
         BASE_URL = "<?php echo url(''); ?>";
     </script>
     <meta charset="utf-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $settings->project_name ?? 'AdminLTE' }}</title>
-
+    <link rel="icon" type="image/png" sizes="32x32" src="/favicon.png">
 
     
     
