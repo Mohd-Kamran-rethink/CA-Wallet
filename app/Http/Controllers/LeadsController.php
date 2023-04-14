@@ -22,6 +22,7 @@ class LeadsController extends Controller
 
     public function list(Request $req)
     {
+        $leads_status_history=LeadStatus::get();
         $statuses = LeadStatusOption::get();
         $agent=null;
         if (session('user')->role=="agent") {
@@ -53,7 +54,7 @@ class LeadsController extends Controller
             })
             ->select('leads.*','sources.name as source_name', 'users.name as agent_name')
             ->paginate(10);
-        return view('Admin.Leads.list', compact('leads', 'searchTerm', 'Filterstatus', 'statuses'));
+        return view('Admin.Leads.list', compact('leads', 'searchTerm', 'Filterstatus', 'statuses','leads_status_history'));
     }
 
     public function importView()
@@ -212,4 +213,5 @@ class LeadsController extends Controller
         ];
         return response()->download($file, 'Sample.xlsx', $headers);
     }
+    
 }

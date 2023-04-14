@@ -53,7 +53,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($sources as $item)
+                                        @forelse ($sources as $item)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->name }}</td>
@@ -68,7 +68,11 @@
 
 
                                             </tr>
-                                        @endforeach
+                                            @empty
+                                            <tr>
+                                                <td colspan="10" class="text-center">No data</td>
+                                            </tr>
+                                        @endforelse
 
                                     </tbody>
                                 </table>
