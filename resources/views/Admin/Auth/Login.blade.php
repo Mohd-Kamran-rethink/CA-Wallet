@@ -7,6 +7,9 @@
     <title>{{ $settings->project_name ?? 'Admin Lte' }} | Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+        
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 </head>
 
 <body style="background: rgb(10,113,171);">

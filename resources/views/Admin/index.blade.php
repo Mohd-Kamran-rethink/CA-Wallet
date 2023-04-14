@@ -9,8 +9,9 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $settings->project_name ?? 'AdminLTE' }}</title>
-    <link rel="icon" type="image/png" sizes="32x32" src="/favicon.png">
-
+    
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     
     
     <!-- Google Font: Source Sans Pro -->
