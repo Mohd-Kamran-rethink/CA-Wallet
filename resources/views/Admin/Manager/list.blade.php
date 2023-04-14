@@ -55,7 +55,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($managers as $item)
+                                        @forelse($managers as $item)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->name }}</td>
@@ -72,7 +72,11 @@
                                                     @endif
                                                 </td>
                                             </tr>
-                                        @endforeach
+                                            @empty
+                                            <tr>
+                                                <td colspan="10" class="text-center">No data</td>
+                                            </tr>
+                                        @endforelse
 
                                     </tbody>
                                 </table>
