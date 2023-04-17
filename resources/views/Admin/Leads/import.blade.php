@@ -39,12 +39,11 @@
                     <div class="row">
                         <div class="col-xs-12 col-md-4">
                             <div class="form-group">
-                                <label for="exampleInputFile">Import</label>
-                                <div class="input-group">
-                                    <div class="custom-file">
-                                        <input type="file" class="custom-file-input" id="exampleInputFile"
+                                <label for="exampleInputFile">Import <span class="font-weight-light">(Choose .xls file)</span></label>
+                                <div class="">
+                                    <div class="">
+                                        <input type="file" id="exampleInputFile"
                                             name="excel_file">
-                                        <label class="custom-file-label" for="exampleInputFile">Choose .xls file</label>
                                     </div>
                                 </div>
                                 @error('excel_file')

@@ -94,10 +94,11 @@ class LeadsController extends Controller
         ];
     
         $columnHeaders = array_shift($rows);
-        $sources = Source::pluck('name','id')->toArray();
-        $agents = User::where('role', '=', 'agent')->pluck('name', 'id')->toArray(); // flip the keys and values
-        
+        $sources = Source::pluck('name', 'id')->map(fn($name) => trim($name))->toArray();
+        $agents = User::where('role', '=', 'agent')->pluck('name', 'id')->map(fn($name) => trim($name))->toArray();
         $manager = User::where('role', '=', 'manager')->where('email', '=', session('user')->email)->first();
+
+        
 
         foreach ($rows as $row) {
            
@@ -129,8 +130,10 @@ class LeadsController extends Controller
             }
                 
             // Search for the agent name in the $agents array and sources
-            $agentId = array_search($data['Agent'], $agents);
-            $sourceId = array_search($data['Sources'], $sources);
+            // $agentId = array_search(trim($data['Agent']), $agents);
+            // $sourceId = array_search(trim($data['Sources']), $sources);
+            $agentId = array_search(strtolower(trim($data['Agent'])), array_map('strtolower', $agents));
+            $sourceId = array_search(strtolower(trim($data['Sources'])), array_map('strtolower', $sources));
 
             // If agent or source id is not found skip the entry
             if (!$agentId|| !$sourceId) {
