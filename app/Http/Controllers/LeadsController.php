@@ -94,8 +94,13 @@ class LeadsController extends Controller
         ];
     
         $columnHeaders = array_shift($rows);
-        $sources = Source::pluck('name', 'id')->map(fn($name) => trim($name))->toArray();
-        $agents = User::where('role', '=', 'agent')->pluck('name', 'id')->map(fn($name) => trim($name))->toArray();
+        $sources = Source::pluck('name', 'id')->map(function($name) {
+            return trim($name);
+          })->toArray();
+          
+          $agents = User::where('role', '=', 'agent')->pluck('name', 'id')->map(function($name) {
+            return trim($name);
+          })->toArray();
         $manager = User::where('role', '=', 'manager')->where('email', '=', session('user')->email)->first();
 
         
