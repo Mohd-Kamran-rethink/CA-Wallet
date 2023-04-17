@@ -194,17 +194,23 @@
                                                     <button onclick="openLeadModal({{ $item->id }})"
                                                         title="Chnage status" class="btn btn-secondary">Change
                                                         status</button>
-                                                    <button onclick="openHistoryModal({{ $item->id }})"
-                                                        title="Chnage status" class="btn btn-success">History</button>
-                                                </td>
-                                            </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="10" class="text-center">No data</td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
+                                                    @foreach ($leads_status_history as $history)
+                                                        @if ($history->lead_id == $item->id)
+                                                            <button onclick="openHistoryModal({{ $item->id }})"
+                                                                title="Chnage status"
+                                                                class="btn btn-success">History</button>
+                                                        @break
+                                                    @endif
+                                                @endforeach
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="10" class="text-center">No data</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
 
 
 
@@ -213,173 +219,173 @@
 
 
 
-                                </div>
-                                <div class="card-footer clearfix">
-                                    {{ $leads->links('pagination::bootstrap-4') }}
-                                </div>
-                            </div>
+                        </div>
+                        <div class="card-footer clearfix">
+                            {{ $leads->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
-        {{-- status change modal --}}
-        <div class="modal fade show" id="modal-default" style=" padding-right: 17px;" aria-modal="true" role="dialog">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Change Status</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
+        </div>
+    </div>
+</section>
+{{-- status change modal --}}
+<div class="modal fade show" id="modal-default" style=" padding-right: 17px;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Change Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
 
-                    {{-- <input type="hidden" name="deleteId" id="deleteInput">
+            {{-- <input type="hidden" name="deleteId" id="deleteInput">
                 <input type="hidden" name="role" id="deleteInput" value="agent"> --}}
-                    <div class="modal-body">
-                        <form action="{{ url('/leads/status/submit') }}" method="post" id="status-form">
-                            @csrf
-                            <input type="hidden" name="leadId" id="lead_id">
-                            <div class="form-group">
-                                <label for="">Status <span class="text-danger">*</span></label>
-                                <select onchange="handleStatusValues(this.value)" name="status" class="form-control"
-                                    id="">
-                                    <option value="0">--Choose--</option>
-                                    @foreach ($statuses as $item)
-                                        <option value="{{ $item->name }}">{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group  conditional-input" style="display: none">
-                                <label for="">Date <span class="text-danger">*</span></label>
-                                <input name="date" type="date" class="form-control" id="datePicker">
-                                <span class="text-danger error-date"></span>
-                            </div>
-                            <div class="form-group">
-                                <label for="">Remark</label>
-                                <textarea rows="3" type="text" class="form-control" name="remark" id="remark"></textarea>
-                            </div>
-                        </form>
+            <div class="modal-body">
+                <form action="{{ url('/leads/status/submit') }}" method="post" id="status-form">
+                    @csrf
+                    <input type="hidden" name="leadId" id="lead_id">
+                    <div class="form-group">
+                        <label for="">Status <span class="text-danger">*</span></label>
+                        <select onchange="handleStatusValues(this.value)" name="status" class="form-control"
+                            id="">
+                            <option value="0">--Choose--</option>
+                            @foreach ($statuses as $item)
+                                <option value="{{ $item->name }}">{{ $item->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="modal-footer ">
-                        <button onclick="submitStatusChange()" type="submit" class="btn btn-success "
-                            id="status-submit-button" disabled>Change</button>
-                        <button type="button" data-dismiss="modal" aria-label="Close"
-                            class="btn btn-default">Cancel</button>
+                    <div class="form-group  conditional-input" style="display: none">
+                        <label for="">Date <span class="text-danger">*</span></label>
+                        <input name="date" type="date" class="form-control" id="datePicker">
+                        <span class="text-danger error-date"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Remark</label>
+                        <textarea rows="3" type="text" class="form-control" name="remark" id="remark"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer ">
+                <button onclick="submitStatusChange()" type="submit" class="btn btn-success "
+                    id="status-submit-button" disabled>Change</button>
+                <button type="button" data-dismiss="modal" aria-label="Close"
+                    class="btn btn-default">Cancel</button>
 
-                    </div>
-                </div>
             </div>
         </div>
-        {{-- hsitory modal --}}
-        <div class="modal fade show" id="modal-history" style=" padding-right: 17px;" aria-modal="true" role="dialog">
-            <div class="modal-dialog modal-dialog-centered custom-modal" style="">
-                <div class="modal-content" style="height: 100%;">
-                    <div class="modal-header">
-                        <h4 class="modal-title">Status History</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                    </div>
-                    <div class="modal-body  p-0" id="historytable" style="width: auto">
-                    </div>
-                    <div class="modal-footer ">
-                        <button type="button" data-dismiss="modal" aria-label="Close"
-                            class="btn btn-default">Cancel</button>
-                    </div>
-                </div>
+    </div>
+</div>
+{{-- hsitory modal --}}
+<div class="modal fade show" id="modal-history" style=" padding-right: 17px;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered custom-modal" style="">
+        <div class="modal-content" style="height: 100%;">
+            <div class="modal-header">
+                <h4 class="modal-title">Status History</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body  p-0" id="historytable" style="width: auto">
+            </div>
+            <div class="modal-footer ">
+                <button type="button" data-dismiss="modal" aria-label="Close"
+                    class="btn btn-default">Cancel</button>
             </div>
         </div>
+    </div>
+</div>
 
 
 
 
 
 
-        <script>
-            let lead_id;
-            let status;
-            const searchData = () => {
-                event.preventDefault();
-                const url = new URL(window.location.href);
-                const searchValue = $('#searchInput').val().trim();
-                const status_id = $('#status_id').val();
-                url.searchParams.set('search', searchValue);
-                url.searchParams.set('status', status_id ?? '');
-                $('#search-form').attr('action', url.toString()).submit();
-            }
-            const openLeadModal = (leadId) => {
+<script>
+    let lead_id;
+    let status;
+    const searchData = () => {
+        event.preventDefault();
+        const url = new URL(window.location.href);
+        const searchValue = $('#searchInput').val().trim();
+        const status_id = $('#status_id').val();
+        url.searchParams.set('search', searchValue);
+        url.searchParams.set('status', status_id ?? '');
+        $('#search-form').attr('action', url.toString()).submit();
+    }
+    const openLeadModal = (leadId) => {
 
-                $(`#modal-default`).modal("show");
-                $(`#lead_id`).val(leadId);
-            }
-            const handleStatusValues = (value) => {
-                status = value;
-                let submitButton = $('#status-submit-button')
-                let conditionalInput = $('.conditional-input')
+        $(`#modal-default`).modal("show");
+        $(`#lead_id`).val(leadId);
+    }
+    const handleStatusValues = (value) => {
+        status = value;
+        let submitButton = $('#status-submit-button')
+        let conditionalInput = $('.conditional-input')
+        conditionalInput.hide()
+        if (value == "0") {
+            submitButton.attr('disabled', true);
+        } else {
+            if (value == "Follow Up" || value == "Busy") {
+
+                conditionalInput.show()
+            } else {
                 conditionalInput.hide()
-                if (value == "0") {
-                    submitButton.attr('disabled', true);
-                } else {
-                    if (value == "Follow Up" || value == "Busy") {
-
-                        conditionalInput.show()
-                    } else {
-                        conditionalInput.hide()
-                    }
-                    submitButton.removeAttr('disabled');
-                }
             }
-            const submitStatusChange = () => {
-                let submitButton = $('#status-submit-button')
-                event.preventDefault();
-                let datePicker = $('#datePicker').val()
-                if ((status == "Follow Up" || status == "Busy") && !datePicker) {
-                    $('.error-date').html('Please enter valid date')
+            submitButton.removeAttr('disabled');
+        }
+    }
+    const submitStatusChange = () => {
+        let submitButton = $('#status-submit-button')
+        event.preventDefault();
+        let datePicker = $('#datePicker').val()
+        if ((status == "Follow Up" || status == "Busy") && !datePicker) {
+            $('.error-date').html('Please enter valid date')
 
-                } else {
-                    $('#status-form').submit();
-                }
+        } else {
+            $('#status-form').submit();
+        }
+    }
+    // history modal
+    const openHistoryModal = (leadId) => {
+        $(`#modal-history`).modal("show");
+        $(`#lead_id`).val(leadId);
+        searchLeadsStatus(leadId)
+    }
+
+    function searchLeadsStatus(lead_id) {
+        const leadsStatusData = {!! json_encode($leads_status_history) !!};
+        const filteredData = leadsStatusData.filter(data => data.lead_id == lead_id);
+        const table = createTable(filteredData);
+        const loadingSpinner = "<div class='text-center'><i class='fa fa-spinner fa-spin'></i> Loading...</div>";
+        const noData = "<div class='text-center'>No Data Found</div>";
+        $("#historytable").html(loadingSpinner);
+        setTimeout(() => {
+            const filteredData = leadsStatusData.filter(data => data.lead_id == lead_id);
+            if (filteredData.length == 0) {
+                $("#historytable").html(noData);
+            } else {
+                $("#historytable").html(table);
             }
-            // history modal
-            const openHistoryModal = (leadId) => {
-                $(`#modal-history`).modal("show");
-                $(`#lead_id`).val(leadId);
-                searchLeadsStatus(leadId)
-            }
+        }, 500);
+    }
 
-            function searchLeadsStatus(lead_id) {
-                const leadsStatusData = {!! json_encode($leads_status_history) !!};
-                const filteredData = leadsStatusData.filter(data => data.lead_id == lead_id);
-                const table = createTable(filteredData);
-                const loadingSpinner = "<div class='text-center'><i class='fa fa-spinner fa-spin'></i> Loading...</div>";
-                const noData = "<div class='text-center'>No Data Found</div>";
-                $("#historytable").html(loadingSpinner);
-                setTimeout(() => {
-                    const filteredData = leadsStatusData.filter(data => data.lead_id == lead_id);
-                    if (filteredData.length == 0) {
-                        $("#historytable").html(noData);
-                    } else {
-                        $("#historytable").html(table);
-                    }
-                }, 500);
-            }
-
-            function createTable(data) {
-                let table = "<table class='table '>";
-                table +=
-                    "<thead><tr><th>Sr.No</th><th style='width:10%;text-align:center'>Status</th><th style='width:30%;text-align:center'>FollowUp Date</th><th>Created at</th><th>Remark</th></tr></thead>";
-                table += "<tbody>";
-                data.forEach((item, index) => {
-                    table +=
-                        `<tr><td>${index+1}</td><td style='width:10%;text-align:center'>${item.name}</td><td style='width:30%;text-align:center'>${item.followup_date??'--'}</td><td style="word-wrap">${(moment(item.created_at).format('y-m-d')) ??'--'}</td><td style="word-wrap">${item.remark??'--'}</td></tr>`;
-                });
-                table += "</tbody></table>";
-                return table;
-            }
-        </script>
+    function createTable(data) {
+        let table = "<table class='table '>";
+        table +=
+            "<thead><tr><th>Sr.No</th><th style='width:10%;text-align:center'>Status</th><th style='width:30%;text-align:center'>FollowUp Date</th><th>Created at</th><th>Remark</th></tr></thead>";
+        table += "<tbody>";
+        data.forEach((item, index) => {
+            table +=
+                `<tr><td>${index+1}</td><td style='width:10%;text-align:center'>${item.name}</td><td style='width:30%;text-align:center'>${item.followup_date??'--'}</td><td style="word-wrap">${(moment(item.created_at).format('y-m-d')) ??'--'}</td><td style="word-wrap">${item.remark??'--'}</td></tr>`;
+        });
+        table += "</tbody></table>";
+        return table;
+    }
+</script>
 
 
 
 
-    @endsection
+@endsection
