@@ -405,11 +405,11 @@
     function createTable(data) {
         let table = "<table class='table '>";
         table +=
-            "<thead><tr><th>Sr.No</th><th style='width:10%;text-align:center'>Status</th><th style='width:30%;text-align:center'>FollowUp Date</th><th>Created at</th><th>Remark</th></tr></thead>";
+            "<thead><tr><th>Sr.No</th><th style='width:10%;text-align:center'>Status</th><th style='width:30%;text-align:center'>FollowUp Date</th><th style='width:10%;text-align:center'>Amount</th><th>Created at</th><th>Remark</th></tr></thead>";
         table += "<tbody>";
         data.forEach((item, index) => {
             table +=
-                `<tr><td>${index+1}</td><td style='width:10%;text-align:center'>${item.status_name}</td><td style='width:30%;text-align:center'>${item.followup_date??'--'}</td><td style="word-wrap">${(moment(item.created_at).format('y-m-d')) ??'--'}</td><td style="word-wrap">${item.remark??'--'}</td></tr>`;
+                `<tr><td>${index+1}</td><td style='width:10%;text-align:center'>${item.status_name}</td><td style='width:30%;text-align:center'>${item.followup_date??'--'}</td><th style='width:10%;text-align:center'>${item.amount??'--'}</th><td style="word-wrap">${(moment(item.created_at).format('y-m-d')) ??'--'}</td><td style="word-wrap">${item.remark??'--'}</td></tr>`;
         });
         table += "</tbody></table>";
         return table;
