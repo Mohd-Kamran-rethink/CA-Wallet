@@ -15,6 +15,8 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                 data-accordion="false">
+                @if(session('user')->role == 'agent' || (session('user')->role == 'manager' && session('user')->is_admin == 'Yes'))
+
                 <li class="nav-item  ">
                     <a href="{{ url('/dashboard') }}" class="nav-link {{ Request::is('dashboard') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -23,7 +25,8 @@
                         </p>
                     </a>
                 </li>
-                @if((session('user')->role=='manager')&&session('user')->is_admin=='Yes')
+                @endif
+                @if((session('user')->role == 'manager' && session('user')->is_admin == 'Yes'))
                 <li class="nav-item ">
                     <a href="{{ url('/managers') }}"
                         class="nav-link {{ Request::is('managers') || Request::is('managers/add') || Request::is('managers/edit') ? 'active' : '' }}">
@@ -64,6 +67,7 @@
                     </a>
                 </li>
                 @endif
+                @if(session('user')->role == 'agent' || (session('user')->role == 'manager' && session('user')->is_admin == 'Yes'))
 
                 <li class="nav-item ">
                     <a href="{{ url('/leads') }}"
@@ -75,7 +79,7 @@
                         </p>
                     </a>
                 </li>
-               
+               @endif
             </ul>
 
 
