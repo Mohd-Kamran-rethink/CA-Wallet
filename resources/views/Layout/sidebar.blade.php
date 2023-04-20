@@ -23,7 +23,7 @@
                         </p>
                     </a>
                 </li>
-                @if(session('user')->role=='manager')
+                @if((session('user')->role=='manager')&&session('user')->is_admin=='Yes')
                 <li class="nav-item ">
                     <a href="{{ url('/managers') }}"
                         class="nav-link {{ Request::is('managers') || Request::is('managers/add') || Request::is('managers/edit') ? 'active' : '' }}">
@@ -54,7 +54,17 @@
                         </p>
                     </a>
                 </li>
+                <li class="nav-item ">
+                    <a href="{{ url('/statuses') }}"
+                        class="nav-link {{ Request::is('statuses') || Request::is('statuses/add') || Request::is('statuses/edit') ? 'active' : '' }}">
+                        <i class="nav-icon fa fa-th-list"></i>
+                        <p>
+                            Status
+                        </p>
+                    </a>
+                </li>
                 @endif
+
                 <li class="nav-item ">
                     <a href="{{ url('/leads') }}"
                         class="nav-link {{ Request::is('leads') || Request::is('leads/add') || Request::is('leads/edit') ? 'active' : '' }}">

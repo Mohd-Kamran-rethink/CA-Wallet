@@ -22,8 +22,14 @@ class LeadsController extends Controller
 
     public function list(Request $req)
     {
-        $leads_status_history=LeadStatus::get();
-        $statuses = LeadStatusOption::get();
+        $leads_status_history=DB::table('lead_statuses')
+        ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
+        ->select('lead_statuses.*','lead_status_options.name as status_name')
+        ->get();
+           
+    
+        $statuses = LeadStatusOption::where('isDeleted','=','No')->get();
+        $agents = User::where('role','=','agent')->get();
         $agent=null;
         if (session('user')->role=="agent") {
             $agent = User::find(session('user')->id);
@@ -31,18 +37,22 @@ class LeadsController extends Controller
             
         $searchTerm = $req->query('table_search');
         $Filterstatus = $req->query('status');
+        $FilterAgent = $req->query('agent_id');
+
+        $currentStatus=LeadStatusOption::find($Filterstatus);
 
         $leads = DB::table('leads')
             ->join('sources', 'leads.source_id', '=', 'sources.id')
             ->join('users', 'leads.agent_id', '=', 'users.id')
-            ->when($agent, function ($query, $agent) {
-                $query->where(function ($query) use ($agent) {
-                    $query->where('leads.agent_id', '=', $agent->id);
+            
+            ->when($FilterAgent, function ($query, $FilterAgent) {
+                $query->where(function ($query) use ($FilterAgent) {
+                    $query->where('leads.agent_id', '=', $FilterAgent);
                 });
             })
-            ->when($Filterstatus, function ($query, $Filterstatus) {
-                $query->where(function ($query) use ($Filterstatus) {
-                    $query->where('leads.status_name', '=', $Filterstatus);
+            ->when($currentStatus, function ($query, $currentStatus) {
+                $query->where(function ($query) use ($currentStatus) {
+                    $query->Where('leads.current_status', '=', $currentStatus->name);
                 });
             })
             ->when($searchTerm, function ($query, $searchTerm) {
@@ -54,7 +64,7 @@ class LeadsController extends Controller
             })
             ->select('leads.*','sources.name as source_name', 'users.name as agent_name')
             ->paginate(10);
-        return view('Admin.Leads.list', compact('leads', 'searchTerm', 'Filterstatus', 'statuses','leads_status_history'));
+        return view('Admin.Leads.list', compact('leads', 'searchTerm', 'Filterstatus','FilterAgent', 'statuses','leads_status_history','agents'));
     }
 
     public function importView()
@@ -178,24 +188,25 @@ class LeadsController extends Controller
     {
         
             $lead_id = $req->leadId;
-            $statusValue = $req->status;
+            $statusId = $req->status;
             $date = $req->date;
             $remark = $req->remark;
-            if (($statusValue == "Follow Up" || $statusValue == "Busy") && $date == '') {
+            $statusValue=LeadStatusOption::find($statusId);
+            if (($statusValue->name == "Follow Up" || $statusValue->name == "Busy") && $date == '') {
                 return ['dateError' => "Date is mandatory"];
             }
             else
             {
                 $lead=Lead::find($lead_id);
                 $lead->remark = $remark;
-                $lead->status_name = $statusValue;
+                $lead->current_status = $statusValue->name;
                 $lead->followup_date = $date??null;
                 $lead->updated_at = $date??null;
                 $lead->update();
              
                 $lead_status =new  LeadStatus();
                 $lead_status->lead_id=$lead_id; 
-                $lead_status->name=$statusValue; 
+                $lead_status->status_id=$statusId; 
                 $lead_status->remark=$remark; 
                 $lead_status->followup_date=$date??null;
                 $result=$lead_status->save();
@@ -206,13 +217,13 @@ class LeadsController extends Controller
                 else
                 {
                     return redirect()->back()->with(['msg-error' => "Somthing went wrong"]);
-
                 }
-
             }
+        }
+
+
 
         
-    }
     public function downloadfile()
     {
         $file = public_path('assets/Sample.xlsx');

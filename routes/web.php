@@ -6,6 +6,7 @@ use App\Http\Controllers\LeadsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SourceController;
+use App\Http\Controllers\StatusesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -58,6 +59,16 @@ Route::middleware('ValidateManager')->prefix('/sources')->group(function () {
     Route::get('/edit',[SourceController::class,'addView'])->name('addView');
     Route::post('/edit',[SourceController::class,'edit'])->name('edit');
     Route::post('/delete',[SourceController::class,'delete'])->name('delete');
+});
+
+// statuses
+Route::middleware('ValidateManager')->prefix('/statuses')->group(function () {
+    Route::get('',[StatusesController::class,'list'])->name('list');
+    Route::get('/add',[StatusesController::class,'addView'])->name('addView');
+    Route::post('/add',[StatusesController::class,'add'])->name('add');
+    Route::get('/edit',[StatusesController::class,'addView'])->name('addView');
+    Route::post('/edit',[StatusesController::class,'edit'])->name('edit');
+    Route::post('/delete',[StatusesController::class,'delete'])->name('delete');
 });
 
 // leads

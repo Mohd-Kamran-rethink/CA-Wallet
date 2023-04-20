@@ -15,7 +15,7 @@ class ValidateManager
      */
     public function handle($request, Closure $next)
     {
-        if (session()->has('user')&& session('user')->role=="manager") {
+        if (session()->has('user') && session('user')->role=="manager" && session('user')->is_admin=="Yes") {
             return $next($request);
         }
         else

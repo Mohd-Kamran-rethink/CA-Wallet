@@ -23,7 +23,7 @@ class Leads extends Migration
             $table->string('date')->nullable();
             $table->string('language')->nullable();
             $table->string('idName')->nullable();
-            $table->string('status_name')->nullable();
+            $table->string('current_status')->nullable();
             $table->string('remark')->nullable();
             $table->string('followup_date')->nullable();
              

@@ -18,6 +18,7 @@ class DefaultManager extends Seeder
         $Manager->email="manager@gmail.com";
         $Manager->phone="928277273";
         $Manager->role="manager";
+        $Manager->is_admin="Yes";
         $Manager->password=Hash::make("123456789");
         $Manager->save();
     }
