@@ -147,16 +147,17 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="input-group col-4">
-                            <select name="agent_id" id="agent_id" class="form-control">
-                                <option value="">--Filter By Agent--</option>
-                                @foreach ($agents as $item)
-                                    <option {{ isset($FilterAgent) && $FilterAgent == $item->id ? 'selected' : '' }}
-                                        value="{{ $item->id }}">{{ $item->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
+                        @if (session('user')->role == 'manager')
+                            <div class="input-group col-4">
+                                <select name="agent_id" id="agent_id" class="form-control">
+                                    <option value="">--Filter By Agent--</option>
+                                    @foreach ($agents as $item)
+                                        <option {{ isset($FilterAgent) && $FilterAgent == $item->id ? 'selected' : '' }}
+                                            value="{{ $item->id }}">{{ $item->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
                         <div class="input-group col-4">
                             <button class="btn btn-success" onclick="searchData()">Filter</button>
                         </div>
@@ -369,7 +370,7 @@
         if ((status == "Follow Up" || status == "Busy") && !datePicker) {
             $('.error-date').html('Please enter valid date')
 
-        } else if ((status == "Deposited")&& !amount) {
+        } else if ((status == "Deposited") && !amount) {
             $('.error-amount').html('Please enter amount')
         } else {
             $('#status-form').submit();
@@ -386,7 +387,7 @@
         const leadsStatusData = {!! json_encode($leads_status_history) !!};
         console.log(leadsStatusData)
         const filteredData = leadsStatusData.filter(data => data.lead_id == lead_id);
-        
+
         const table = createTable(filteredData);
         const loadingSpinner = "<div class='text-center'><i class='fa fa-spinner fa-spin'></i> Loading...</div>";
         const noData = "<div class='text-center'>No Data Found</div>";

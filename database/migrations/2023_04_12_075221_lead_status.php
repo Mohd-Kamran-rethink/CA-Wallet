@@ -18,6 +18,7 @@ class LeadStatus extends Migration
             $table->string('status_id');
             $table->string('remark')->nullable();
             $table->string('followup_date')->nullable();
+            $table->string('amount')->nullable();
             $table->string('lead_id');
             $table->timestamps();
         });
