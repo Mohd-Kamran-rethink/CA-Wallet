@@ -142,8 +142,17 @@
                             <select name="status" id="status_id" class="form-control">
                                 <option value="">--Filter By Status--</option>
                                 @foreach ($statuses as $item)
-                                    <option {{ isset($Filterstatus) && $Filterstatus == $item->name ? 'selected' : '' }}
-                                        value="{{ trim($item->name) }}">{{ $item->name }}</option>
+                                    <option {{ isset($Filterstatus) && $Filterstatus == $item->id ? 'selected' : '' }}
+                                        value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="input-group col-4">
+                            <select name="agent_id" id="agent_id" class="form-control">
+                                <option value="">--Filter By Agent--</option>
+                                @foreach ($agents as $item)
+                                    <option {{ isset($FilterAgent) && $FilterAgent == $item->id ? 'selected' : '' }}
+                                        value="{{ $item->id }}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -189,7 +198,7 @@
                                                 <td>{{ $item->language }}</td>
                                                 <td>{{ $item->idName }}</td>
                                                 <td> {{ $item->agent_name }}</td>
-                                                <td> {{ $item->status_name ?? '--' }}</td>
+                                                <td> {{ $item->current_status ?? '--' }}</td>
                                                 <td>
                                                     <button onclick="openLeadModal({{ $item->id }})"
                                                         title="Chnage status" class="btn btn-secondary">Change
@@ -248,14 +257,21 @@
                     <input type="hidden" name="leadId" id="lead_id">
                     <div class="form-group">
                         <label for="">Status <span class="text-danger">*</span></label>
-                        <select onchange="handleStatusValues(this.value)" name="status" class="form-control"
-                            id="">
-                            <option value="0">--Choose--</option>
+                        <select onchange="handleStatusValues(this)" name="status" class="form-control" id="">
+                            <option value="0" data-second-value="null">--Choose--</option>
                             @foreach ($statuses as $item)
-                                <option value="{{ $item->name }}">{{ $item->name }}</option>
+                                <option value="{{ $item->id }}" data-second-value="{{ $item->name }}">
+                                    {{ $item->name }}</option>
                             @endforeach
                         </select>
                     </div>
+                    {{-- for deposited options --}}
+                    <div class="form-group  for-deposited" style="display: none">
+                        <label for="">Amout <span class="text-danger">*</span></label>
+                        <input name="amount" id="amount" type="text" class="form-control">
+                        <span class="text-danger error-amount"></span>
+                    </div>
+                    {{-- for followup and busy options --}}
                     <div class="form-group  conditional-input" style="display: none">
                         <label for="">Date <span class="text-danger">*</span></label>
                         <input name="date" type="date" class="form-control" id="datePicker">
@@ -310,8 +326,10 @@
         const url = new URL(window.location.href);
         const searchValue = $('#searchInput').val().trim();
         const status_id = $('#status_id').val();
+        const filter_agent = $('#agent_id').val();
         url.searchParams.set('search', searchValue);
         url.searchParams.set('status', status_id ?? '');
+        url.searchParams.set('agent', filter_agent ?? '');
         $('#search-form').attr('action', url.toString()).submit();
     }
     const openLeadModal = (leadId) => {
@@ -319,15 +337,16 @@
         $(`#modal-default`).modal("show");
         $(`#lead_id`).val(leadId);
     }
-    const handleStatusValues = (value) => {
-        status = value;
+    const handleStatusValues = (option) => {
+        status = $(option).find(':selected').data('second-value');
         let submitButton = $('#status-submit-button')
         let conditionalInput = $('.conditional-input')
+        let forDepostied = $('.for-deposited')
         conditionalInput.hide()
-        if (value == "0") {
+        if (status == "0") {
             submitButton.attr('disabled', true);
         } else {
-            if (value == "Follow Up" || value == "Busy") {
+            if (status == "Follow Up" || status == "Busy") {
 
                 conditionalInput.show()
             } else {
@@ -335,14 +354,23 @@
             }
             submitButton.removeAttr('disabled');
         }
+        if (status == "Deposited") {
+            forDepostied.show()
+        } else {
+            forDepostied.hide()
+        }
+
     }
     const submitStatusChange = () => {
         let submitButton = $('#status-submit-button')
         event.preventDefault();
         let datePicker = $('#datePicker').val()
+        let amount = $('#amount').val()
         if ((status == "Follow Up" || status == "Busy") && !datePicker) {
             $('.error-date').html('Please enter valid date')
 
+        } else if ((status == "Deposited")&& !amount) {
+            $('.error-amount').html('Please enter amount')
         } else {
             $('#status-form').submit();
         }
@@ -356,7 +384,9 @@
 
     function searchLeadsStatus(lead_id) {
         const leadsStatusData = {!! json_encode($leads_status_history) !!};
+        console.log(leadsStatusData)
         const filteredData = leadsStatusData.filter(data => data.lead_id == lead_id);
+        
         const table = createTable(filteredData);
         const loadingSpinner = "<div class='text-center'><i class='fa fa-spinner fa-spin'></i> Loading...</div>";
         const noData = "<div class='text-center'>No Data Found</div>";
@@ -378,7 +408,7 @@
         table += "<tbody>";
         data.forEach((item, index) => {
             table +=
-                `<tr><td>${index+1}</td><td style='width:10%;text-align:center'>${item.name}</td><td style='width:30%;text-align:center'>${item.followup_date??'--'}</td><td style="word-wrap">${(moment(item.created_at).format('y-m-d')) ??'--'}</td><td style="word-wrap">${item.remark??'--'}</td></tr>`;
+                `<tr><td>${index+1}</td><td style='width:10%;text-align:center'>${item.status_name}</td><td style='width:30%;text-align:center'>${item.followup_date??'--'}</td><td style="word-wrap">${(moment(item.created_at).format('y-m-d')) ??'--'}</td><td style="word-wrap">${item.remark??'--'}</td></tr>`;
         });
         table += "</tbody></table>";
         return table;

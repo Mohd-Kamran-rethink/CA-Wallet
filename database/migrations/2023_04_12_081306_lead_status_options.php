@@ -16,6 +16,8 @@ class LeadStatusOptions extends Migration
         Schema::create('lead_status_options', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('manager_id')->nullable();
+            $table->enum('isDeleted',['Yes','No'])->default('No');
             $table->timestamps();
         });
     }

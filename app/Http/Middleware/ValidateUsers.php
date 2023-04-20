@@ -16,7 +16,16 @@ class ValidateUsers
     public function handle($request, Closure $next)
     {
         if (session()->has('user')) {
-            return $next($request);
+            if((session('user')->role=='manager') && (session('user')->is_admin=='Yes'))
+            {
+                return $next($request);
+            }
+            else
+            {
+                session()->remove('user');
+                return redirect('/')->with(['msg-error-username'=>'You dont have permission to login.']);
+            }
+
         }
         else
         {
