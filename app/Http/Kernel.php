@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'ValidateManager'=> \App\Http\Middleware\ValidateManager::class,
         'ValidateAgent'=> \App\Http\Middleware\AgentMiddleware::class,
         'ValidateUsers'=> \App\Http\Middleware\ValidateUsers::class,
+        'adminManager'=> \App\Http\Middleware\AdminManager::class,
     ];
 }

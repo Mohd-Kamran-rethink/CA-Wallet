@@ -26,6 +26,7 @@ class Leads extends Migration
             $table->string('current_status')->nullable();
             $table->string('remark')->nullable();
             $table->string('followup_date')->nullable();
+            $table->string('amount')->nullable();
              
             $table->timestamps();
         });

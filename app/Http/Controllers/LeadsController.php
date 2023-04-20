@@ -31,10 +31,14 @@ class LeadsController extends Controller
         $statuses = LeadStatusOption::where('isDeleted','=','No')->get();
         $agents = User::where('role','=','agent')->get();
         $agent=null;
+        $manager=null;
         if (session('user')->role=="agent") {
             $agent = User::find(session('user')->id);
         }
-            
+         
+        if (session('user')->role=="manager") {
+            $manager = User::find(session('user')->id);
+        }
         $searchTerm = $req->query('table_search');
         $Filterstatus = $req->query('status');
         $FilterAgent = $req->query('agent_id');
@@ -44,17 +48,31 @@ class LeadsController extends Controller
         $leads = DB::table('leads')
             ->join('sources', 'leads.source_id', '=', 'sources.id')
             ->join('users', 'leads.agent_id', '=', 'users.id')
-            
+            // if session has manager show all the leads added by thi smanager
+            ->when($manager, function ($query, $manager) {
+                $query->where(function ($query) use ($manager) {
+                    $query->where('leads.manager_id', '=', $manager->id);
+                });
+            })
+            // if session has agesnt show all his assigned leads
+            ->when($agent, function ($query, $agent) {
+                $query->where(function ($query) use ($agent) {
+                    $query->where('leads.agent_id', '=', $agent->id);
+                });
+            })
+            // filter by agent
             ->when($FilterAgent, function ($query, $FilterAgent) {
                 $query->where(function ($query) use ($FilterAgent) {
                     $query->where('leads.agent_id', '=', $FilterAgent);
                 });
             })
+            // filter by status
             ->when($currentStatus, function ($query, $currentStatus) {
                 $query->where(function ($query) use ($currentStatus) {
                     $query->Where('leads.current_status', '=', $currentStatus->name);
                 });
             })
+            // filter by general terms
             ->when($searchTerm, function ($query, $searchTerm) {
                 $query->where(function ($query) use ($searchTerm) {
                     $query->where('sources.name', 'like', '%' . $searchTerm . '%')
@@ -190,6 +208,7 @@ class LeadsController extends Controller
             $lead_id = $req->leadId;
             $statusId = $req->status;
             $date = $req->date;
+            $amount = $req->amount;
             $remark = $req->remark;
             $statusValue=LeadStatusOption::find($statusId);
             if (($statusValue->name == "Follow Up" || $statusValue->name == "Busy") && $date == '') {
@@ -202,13 +221,17 @@ class LeadsController extends Controller
                 $lead->current_status = $statusValue->name;
                 $lead->followup_date = $date??null;
                 $lead->updated_at = $date??null;
+                $lead->amount=$amount??null;
+                
                 $lead->update();
              
+                
                 $lead_status =new  LeadStatus();
                 $lead_status->lead_id=$lead_id; 
                 $lead_status->status_id=$statusId; 
                 $lead_status->remark=$remark; 
                 $lead_status->followup_date=$date??null;
+                $lead_status->amount=$amount??null;
                 $result=$lead_status->save();
                 if($result)
                 {

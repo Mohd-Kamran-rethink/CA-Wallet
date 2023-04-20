@@ -4,9 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
-use App\Models\User;
-use App\Setting;
 
+use App\Setting;
+use App\User;
 class SettingDataProvider extends ServiceProvider
 {
     /**
@@ -27,7 +27,16 @@ class SettingDataProvider extends ServiceProvider
     public function boot()
     {
         View::composer('Admin.index', function ($view) {
-            $view->with('settings', Setting::first());
+            $settings = Setting::first();
+            $user = session('user');
+            $userData = null;
+            if ($user) {
+                $userData = User::find($user->id);
+            }
+            $view->with([
+                'settings' => $settings,
+                'userData' => $userData
+            ]);
         });
     }
 }

@@ -11,10 +11,9 @@
     </section>
     <section class="content">
         <div class="container-fluid">
-           
-            
+
             <div class="row">
-                @if ((session('user')->role =="manager")&&(session('user')->is_admin == "Yes"))
+                @if (session('user')->role == 'manager' && session('user')->is_admin == 'Yes')
                     <div class="col-lg-3 col-6">
                         <div class="small-box bg-info">
                             <div class="inner">
@@ -28,6 +27,8 @@
                                     class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
+                @endif
+                @if (session('user')->role == 'manager')
                     <div class="col-lg-3 col-6">
                         <div class="small-box bg-success">
                             <div class="inner">
@@ -42,7 +43,7 @@
                         </div>
                     </div>
                 @endif
-                @if(session('user')->role =="agent")
+                @if (session('user')->role == 'agent')
                     <div class="col-lg-3 col-6">
                         <div class="small-box bg-warning">
                             <div class="inner">
@@ -71,9 +72,9 @@
                     </div>
                 @endif
             </div>
-           
-          
-           
+
+
+
         </div>
     </section>
 @endsection
