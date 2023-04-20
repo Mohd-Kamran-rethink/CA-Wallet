@@ -37,7 +37,7 @@
                         </div>
                     </form>
                     <div>
-                        <a href="{{ url('statuses/add') }}" class="btn btn-primary">Add New Source</a>
+                        <a href="{{ url('statuses/add') }}" class="btn btn-primary">Add New Status</a>
                     </div>
                 </div>
                 <div class="row">
