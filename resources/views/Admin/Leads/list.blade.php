@@ -189,7 +189,7 @@
                                     </thead>
                                     <tbody>
                                         @forelse($leads as $item)
-                                            @if ($item->current_status == 'Deposited' || $item->name == 'Not Intrested')
+                                            @if ($item->current_status == 'Deposited' || $item->current_status == 'Not Intrested')
                                                 @continue
                                             @endif
 
