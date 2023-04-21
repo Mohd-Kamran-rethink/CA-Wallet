@@ -79,6 +79,28 @@
                         </p>
                     </a>
                 </li>
+                <li class="nav-item ">
+                    <a href="{{ url('leads/follow-up') }}"
+                        class="nav-link {{ Request::is('leads/follow-up')? 'active' : '' }}">
+                        <i class="nav-icon fa fa-th"></i>
+                        <p>
+                            FollowUp Leads
+                        </p>
+                    </a>
+                </li>
+
+                @if($userData->role == 'agent')
+                <li class="nav-item ">
+                    <a href="{{ url('/clients') }}"
+                        class="nav-link {{ Request::is('clients') || Request::is('clients/add') || Request::is('clients/edit') ? 'active' : '' }}">
+                        <i class="nav-icon fa fa-users"></i>
+                        <p>
+                           My Clients
+
+                        </p>
+                    </a>
+                </li>
+                @endif
              
             </ul>
 

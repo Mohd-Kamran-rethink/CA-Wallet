@@ -4,7 +4,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Agents</h1>
+                    <h1>Clients</h1>
                 </div>
             </div>
             @if (session()->has('msg-success'))
@@ -25,19 +25,9 @@
         <div class="card">
             <div class="card-body">
                 <div class="mb-3 d-flex justify-content-between align-items-centers">
-                    <form action="{{ url('managers') }}" method="GET" id="search-form">
-                        <div class="input-group input-group-sm" style="width: 150px;">
-                            <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
-                                class="form-control float-right" placeholder="Search" id="searchInput">
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-default" onclick="searchData()" id="search-button">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+
                     <div>
-                        <a href="{{ url('agents/add') }}" class="btn btn-primary">Add New Agent</a>
+                        <a href="{{ url('clients/add') }}" class="btn btn-primary">Add New Client</a>
                     </div>
                 </div>
                 <div class="row">
@@ -49,31 +39,32 @@
                                         <tr>
                                             <th>S.No.</th>
                                             <th>Name</th>
-                                            <th>Email</th>
+                                            <th>ID Name</th>
                                             <th>Phone</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse ($agents as $item)
+                                        @forelse($clients as $item)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->name }}</td>
-                                                <td>{{ $item->email }}</td>
-                                                <td>{{ $item->phone }}</td>
+                                                <td>{{ $item->ca_id }}</td>
+                                                <td>{{ $item->number }}</td>
                                                 <td>
-                                                    <a class="btn btn-dark" href="{{url('leads?agent_id='.$item->id)}}">View Leads</a>
-                                                    <a href="{{ url('agents/edit/?id=' . $item->id) }}"
-                                                        title="Edit this agent" class="btn btn-primary"><i
+                                                    <button onclick="openRedepositModal({{ $item->id }})"
+                                                        class="btn btn-secondary">Redeposit</button>
+                                                    <a href="{{ url('clients/edit/?id=' . $item->id) }}"
+                                                        title="Edit this client" class="btn btn-primary"><i
                                                             class="fa fa-pen"></i></a>
-                                                    <button title="Delte this agent"
-                                                        onclick="manageModal({{ $item->id }})"
-                                                        class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                                                    <button title="Delte this client"
+                                                        onclick="manageModal({{ $item->id }})" class="btn btn-danger"><i
+                                                            class="fa fa-trash"></i></button>
                                                 </td>
-
-
                                             </tr>
-                                            @empty
+
+
+                                        @empty
                                             <tr>
                                                 <td colspan="10" class="text-center">No data</td>
                                             </tr>
@@ -83,7 +74,7 @@
                                 </table>
                             </div>
                             <div class="card-footer clearfix">
-                                {{ $agents->links('pagination::bootstrap-4') }}
+                                {{ $clients->links('pagination::bootstrap-4') }}
                             </div>
                         </div>
                     </div>
@@ -91,6 +82,38 @@
             </div>
         </div>
     </section>
+
+    {{-- redepostit modal --}}
+    <div class="modal fade show" id="modal-redeposit" style=" padding-right: 17px;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered custom-modal" style="">
+            <div class="modal-content" style="height: 100%;">
+                <div class="modal-header">
+                    <h4 class="modal-title">Redeposit</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form action="{{ url('clients/redeposit') }}" method="POST">
+                    @csrf
+                    <div class="px-3">
+                        <input type="hidden" id="deposit-id" name="depositId">
+                        <div class="form-group mt-3">
+                            <label for="">Amount <span class="text-danger">*</span></label>
+                            <input type="number" placeholder="1000" name="amount" class="form-control">
+                        </div>
+                    </div>
+                    <div class="modal-footer ">
+                        <button type="submit" 
+                            class="btn btn-success">Submit</button>
+                        <button type="button" data-dismiss="modal" aria-label="Close"
+                            class="btn btn-default">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- delete client modal --}}
     <div class="modal fade show" id="modal-default" style=" padding-right: 17px;" aria-modal="true" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -100,12 +123,11 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <form action="{{ url('/agents/delete') }}" method="POST">
+                <form action="{{ url('/clients/delete') }}" method="POST">
                     @csrf
                     <input type="hidden" name="deleteId" id="deleteInput">
-                    <input type="hidden" name="role" id="deleteInput" value="agent">
                     <div class="modal-body">
-                        <h4>Are you sure you want to delete this agent?</h4>
+                        <h4>Are you sure you want to delete this client?</h4>
                     </div>
                     <div class="modal-footer ">
                         <button type="submit" class="btn btn-danger">Delete</button>
@@ -116,13 +138,9 @@
         </div>
     </div>
     <script>
-        const searchData = () => {
-            event.preventDefault();
-            const url = new URL(window.location.href);
-
-            const searchValue = $('#searchInput').val().trim();
-            url.searchParams.set('search', searchValue);
-            $('#search-form').attr('action', url.toString()).submit();
+        function openRedepositModal(id) {
+            $(`#modal-redeposit`).modal("show");
+            $(`#deposit-id`).val(id);
         }
     </script>
 @endsection

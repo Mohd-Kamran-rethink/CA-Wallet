@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\LeadsImport;
+use App\Client;
+use App\Deposit;
 use App\Lead;
 use App\LeadStatus;
 use App\LeadStatusOption;
 use App\Source;
-use Carbon\Carbon;
 use App\User;
 use Illuminate\Support\Facades\Validator;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 
 class LeadsController extends Controller
@@ -22,14 +19,16 @@ class LeadsController extends Controller
 
     public function list(Request $req)
     {
+        // seperately send lead status history and will render this in modal using jquerry
         $leads_status_history=DB::table('lead_statuses')
         ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
         ->select('lead_statuses.*','lead_status_options.name as status_name')
         ->get();
            
-    
+        // statuses and agents list to filter out data
         $statuses = LeadStatusOption::where('isDeleted','=','No')->get();
         $agents = User::where('role','=','agent')->get();
+
         $agent=null;
         $manager=null;
         if (session('user')->role=="agent") {
@@ -39,10 +38,12 @@ class LeadsController extends Controller
         if (session('user')->role=="manager") {
             $manager = User::find(session('user')->id);
         }
+        // querry paramaters
         $searchTerm = $req->query('table_search');
         $Filterstatus = $req->query('status');
         $FilterAgent = $req->query('agent_id');
 
+        // get details of the status from status id 
         $currentStatus=LeadStatusOption::find($Filterstatus);
 
         $leads = DB::table('leads')
@@ -82,6 +83,8 @@ class LeadsController extends Controller
             })
             ->select('leads.*','sources.name as source_name', 'users.name as agent_name')
             ->paginate(10);
+            
+            
         return view('Admin.Leads.list', compact('leads', 'searchTerm', 'Filterstatus','FilterAgent', 'statuses','leads_status_history','agents'));
     }
 
@@ -204,49 +207,71 @@ class LeadsController extends Controller
     }
     public function submitStatus(Request $req)
     {
+        // request data
+        $client=null;
+        $lead_id = $req->leadId;
+        $statusId = $req->status;
+        $date = $req->date;
+        $amount = $req->amount;
+        $remark = $req->remark;
+        $clientIDName=$req->IdName;
+
+        // find leads
+        $lead=Lead::find($lead_id);
+        $agent=User::where('role','=','agent')->find($lead->agent_id);
         
-            $lead_id = $req->leadId;
-            $statusId = $req->status;
-            $date = $req->date;
-            $amount = $req->amount;
-            $remark = $req->remark;
-            $statusValue=LeadStatusOption::find($statusId);
-            if (($statusValue->name == "Follow Up" || $statusValue->name == "Busy") && $date == '') {
-                return ['dateError' => "Date is mandatory"];
-            }
-            else
+        
+        // get status full details from status id
+        $statusValue=LeadStatusOption::find($statusId);
+        
+        
+        // check if status is deposted and  client exists if not exists than create new
+        if($statusValue->name=="Deposited")
+        {
+            $client=client::where('ca_id','=',trim($clientIDName))->where('number','=',$lead->number)->first();
+            
+            if(!$client)
             {
-                $lead=Lead::find($lead_id);
-                $lead->remark = $remark;
-                $lead->current_status = $statusValue->name;
-                $lead->followup_date = $date??null;
-                $lead->updated_at = $date??null;
-                $lead->amount=$amount??null;
-                
-                $lead->update();
-             
-                
-                $lead_status =new  LeadStatus();
-                $lead_status->lead_id=$lead_id; 
-                $lead_status->status_id=$statusId; 
-                $lead_status->remark=$remark; 
-                $lead_status->followup_date=$date??null;
-                $lead_status->amount=$amount??null;
-                $result=$lead_status->save();
-                if($result)
-                {
-                    return redirect()->back()->with(['msg-success' => "Status has been changed"]);
-                }
-                else
-                {
-                    return redirect()->back()->with(['msg-error' => "Somthing went wrong"]);
-                }
+                $client=new Client();
+                $client->name='';
+                $client->number=$lead->number;
+                $client->ca_id=$req->IdName;
             }
+            $client->agent_id=$agent->id;
+            $client->deposit_amount=$amount;
+            $client->save();
+            $deposit=new Deposit();   
+            $deposit->agent_id=$agent->id;
+            $deposit->client_id=$client->id;
+            $deposit->deposit_amount=$amount;
+            $deposit->type='deposit';
+            $deposit->save();
         }
-
-
-
-        
+        // firstly update lead table
+        $lead->remark = $remark;
+        $lead->current_status = $statusValue->name;
+        $lead->followup_date = $date??null;
+        $lead->updated_at = $date??null;
+        $lead->amount=$amount??null;
+        $lead->idName=$req->IdName??null;
+        $lead->update();
+        // create lead status entery 
+        $lead_status =new  LeadStatus();
+        $lead_status->lead_id=$lead_id; 
+        $lead_status->status_id=$statusId; 
+        $lead_status->remark=$remark; 
+        $lead_status->followup_date=$date??null;
+        $lead_status->amount=$amount??null;
+        $result=$lead_status->save();
+        if($result)
+        {
+            return redirect()->back()->with(['msg-success' => "Status has been changed"]);
+        }
+        else
+        {
+            return redirect()->back()->with(['msg-error' => "Somthing went wrong"]);
+        }
+    }
     public function downloadfile()
     {
         $file = public_path('assets/Sample.xlsx');
@@ -255,5 +280,89 @@ class LeadsController extends Controller
         ];
         return response()->download($file, 'Sample.xlsx', $headers);
     }
+    
+    // folllow up leads module
+    public function followUp(Request $req)
+    {
+        // seperately send lead status history and will render this in modal using jquerry
+        $leads_status_history=DB::table('lead_statuses')
+        ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
+        ->select('lead_statuses.*','lead_status_options.name as status_name')
+        ->get();
+           
+        // statuses and agents list to filter out data
+        $statuses = LeadStatusOption::where('isDeleted','=','No')->get();
+        $agents = User::where('role','=','agent')->get();
+
+        $agent=null;
+        $manager=null;
+        if (session('user')->role=="agent") {
+            $agent = User::find(session('user')->id);
+        }
+         
+        if (session('user')->role=="manager") {
+            $manager = User::find(session('user')->id);
+        }
+        // querry paramaters
+        $searchTerm = $req->query('table_search');
+        $Filterstatus = $req->query('status');
+        $FilterAgent = $req->query('agent_id');
+
+        // get details of the status from status id 
+        $currentStatus=LeadStatusOption::find($Filterstatus);
+
+        $leads = DB::table('leads')
+            ->join('sources', 'leads.source_id', '=', 'sources.id')
+            ->join('users', 'leads.agent_id', '=', 'users.id')
+            // if session has manager show all the leads added by thi smanager
+            ->when($manager, function ($query, $manager) {
+                $query->where(function ($query) use ($manager) {
+                    $query->where('leads.manager_id', '=', $manager->id);
+                });
+            })
+            // if session has agesnt show all his assigned leads
+            ->when($agent, function ($query, $agent) {
+                $query->where(function ($query) use ($agent) {
+                    $query->where('leads.agent_id', '=', $agent->id);
+                });
+            })
+            // filter by agent
+            ->when($FilterAgent, function ($query, $FilterAgent) {
+                $query->where(function ($query) use ($FilterAgent) {
+                    $query->where('leads.agent_id', '=', $FilterAgent);
+                });
+            })
+            // filter by status
+            ->when($currentStatus, function ($query, $currentStatus) {
+                $query->where(function ($query) use ($currentStatus) {
+                    $query->Where('leads.current_status', '=', $currentStatus->name);
+                });
+            })
+            // filter by general terms
+            ->when($searchTerm, function ($query, $searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('sources.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('users.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
+                });
+            })
+            ->whereDate('leads.created_at', now()->toDateString())
+            ->select('leads.*','sources.name as source_name', 'users.name as agent_name')
+            ->paginate(10);
+            
+            
+        return view('Admin.Leads.followupList', compact('leads', 'searchTerm', 'Filterstatus','FilterAgent', 'statuses','leads_status_history','agents'));
+   
+    }
+           
+           
+
+        
+        
+                
+
+
+
+        
     
 }
