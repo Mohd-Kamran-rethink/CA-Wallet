@@ -228,7 +228,7 @@ class LeadsController extends Controller
         // check if status is deposted and  client exists if not exists than create new
         if($statusValue->name=="Deposited")
         {
-            $client=client::where('ca_id','=',trim($clientIDName))->where('number','=',$lead->number)->first();
+            $client=Client::where('ca_id','=',trim($clientIDName))->where('number','=',$lead->number)->first();
             
             if(!$client)
             {
