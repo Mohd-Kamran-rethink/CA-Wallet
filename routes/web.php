@@ -79,6 +79,8 @@ Route::middleware('ValidateUsers')->prefix('/leads')->group(function () {
     Route::post('/import',[LeadsController::class,'import'])->name('import');
     Route::post('/status/submit',[LeadsController::class,'submitStatus'])->name('submitStatus');
     Route::get('/download-sample-file',[LeadsController::class,'downloadfile'])->name('downloadfile');
+    // followup leads
+    Route::get('/follow-up',[LeadsController::class,'followUp'])->name('followUp');
 });
 
 // clients for agents
@@ -89,6 +91,7 @@ Route::middleware('ValidateAgent')->prefix('/clients')->group(function () {
     Route::get('/edit',[ClientController::class,'addView'])->name('addView');
     Route::post('/edit',[ClientController::class,'edit'])->name('edit');
     Route::post('/delete',[ClientController::class,'delete'])->name('delete');
+    Route::post('/redeposit',[ClientController::class,'redeposit'])->name('redeposit');
+});
    
-    });
    

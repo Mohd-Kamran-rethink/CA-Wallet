@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\client;
+use App\Deposit;
 use Illuminate\Http\Request;
 use PhpParser\Node\Stmt\Return_;
 
@@ -79,6 +80,21 @@ class ClientController extends Controller
         else 
         {
             return redirect('/clients')->with(['msg-error'=>'Something went wrong could not update client.']);   
+        }
+    }
+    public function redeposit(Request $req)
+    {
+        $deposit=Deposit::find($req->depositId);
+        $deposit->deposit_amount=$deposit->deposit_amount+$req->amount;
+        $deposit->type='redeposit';
+        $result=$deposit->update();
+        if ($result) 
+        {
+                return redirect('/clients')->with(['msg-success' => 'Amount has been redeposited.']);
+        } 
+        else 
+        {
+            return redirect('/clients')->with(['msg-error'=>'Something went wrong could not redeposit amount.']);   
         }
     }
                 

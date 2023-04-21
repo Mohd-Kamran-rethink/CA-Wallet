@@ -25,7 +25,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="mb-3 d-flex justify-content-between align-items-centers">
-                    
+
                     <div>
                         <a href="{{ url('clients/add') }}" class="btn btn-primary">Add New Client</a>
                     </div>
@@ -52,17 +52,19 @@
                                                 <td>{{ $item->ca_id }}</td>
                                                 <td>{{ $item->number }}</td>
                                                 <td>
-                                                    @if (session('user')->phone !== $item->phone)
-                                                        <a href="{{ url('clients/edit/?id=' . $item->id) }}"
-                                                            title="Edit this client" class="btn btn-primary"><i
-                                                                class="fa fa-pen"></i></a>
-                                                        <button title="Delte this client"
-                                                            onclick="manageModal({{ $item->id }})"
-                                                            class="btn btn-danger"><i class="fa fa-trash"></i></button>
-                                                    @endif
+                                                    <button onclick="openRedepositModal({{ $item->id }})"
+                                                        class="btn btn-secondary">Redeposit</button>
+                                                    <a href="{{ url('clients/edit/?id=' . $item->id) }}"
+                                                        title="Edit this client" class="btn btn-primary"><i
+                                                            class="fa fa-pen"></i></a>
+                                                    <button title="Delte this client"
+                                                        onclick="manageModal({{ $item->id }})" class="btn btn-danger"><i
+                                                            class="fa fa-trash"></i></button>
                                                 </td>
                                             </tr>
-                                            @empty
+
+
+                                        @empty
                                             <tr>
                                                 <td colspan="10" class="text-center">No data</td>
                                             </tr>
@@ -80,6 +82,38 @@
             </div>
         </div>
     </section>
+
+    {{-- redepostit modal --}}
+    <div class="modal fade show" id="modal-redeposit" style=" padding-right: 17px;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-dialog-centered custom-modal" style="">
+            <div class="modal-content" style="height: 100%;">
+                <div class="modal-header">
+                    <h4 class="modal-title">Redeposit</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form action="{{ url('clients/redeposit') }}" method="POST">
+                    @csrf
+                    <div class="px-3">
+                        <input type="hidden" id="deposit-id" name="depositId">
+                        <div class="form-group mt-3">
+                            <label for="">Amount <span class="text-danger">*</span></label>
+                            <input type="number" placeholder="1000" name="amount" class="form-control">
+                        </div>
+                    </div>
+                    <div class="modal-footer ">
+                        <button type="submit" 
+                            class="btn btn-success">Submit</button>
+                        <button type="button" data-dismiss="modal" aria-label="Close"
+                            class="btn btn-default">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- delete client modal --}}
     <div class="modal fade show" id="modal-default" style=" padding-right: 17px;" aria-modal="true" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -103,4 +137,10 @@
             </div>
         </div>
     </div>
+    <script>
+        function openRedepositModal(id) {
+            $(`#modal-redeposit`).modal("show");
+            $(`#deposit-id`).val(id);
+        }
+    </script>
 @endsection

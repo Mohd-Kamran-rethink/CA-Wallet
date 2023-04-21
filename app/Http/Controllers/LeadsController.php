@@ -272,7 +272,88 @@ class LeadsController extends Controller
             return redirect()->back()->with(['msg-error' => "Somthing went wrong"]);
         }
     }
+    public function downloadfile()
+    {
+        $file = public_path('assets/Sample.xlsx');
+        $headers = [
+        'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ];
+        return response()->download($file, 'Sample.xlsx', $headers);
+    }
+    
+    // folllow up leads module
+    public function followUp(Request $req)
+    {
+        // seperately send lead status history and will render this in modal using jquerry
+        $leads_status_history=DB::table('lead_statuses')
+        ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
+        ->select('lead_statuses.*','lead_status_options.name as status_name')
+        ->get();
            
+        // statuses and agents list to filter out data
+        $statuses = LeadStatusOption::where('isDeleted','=','No')->get();
+        $agents = User::where('role','=','agent')->get();
+
+        $agent=null;
+        $manager=null;
+        if (session('user')->role=="agent") {
+            $agent = User::find(session('user')->id);
+        }
+         
+        if (session('user')->role=="manager") {
+            $manager = User::find(session('user')->id);
+        }
+        // querry paramaters
+        $searchTerm = $req->query('table_search');
+        $Filterstatus = $req->query('status');
+        $FilterAgent = $req->query('agent_id');
+
+        // get details of the status from status id 
+        $currentStatus=LeadStatusOption::find($Filterstatus);
+
+        $leads = DB::table('leads')
+            ->join('sources', 'leads.source_id', '=', 'sources.id')
+            ->join('users', 'leads.agent_id', '=', 'users.id')
+            // if session has manager show all the leads added by thi smanager
+            ->when($manager, function ($query, $manager) {
+                $query->where(function ($query) use ($manager) {
+                    $query->where('leads.manager_id', '=', $manager->id);
+                });
+            })
+            // if session has agesnt show all his assigned leads
+            ->when($agent, function ($query, $agent) {
+                $query->where(function ($query) use ($agent) {
+                    $query->where('leads.agent_id', '=', $agent->id);
+                });
+            })
+            // filter by agent
+            ->when($FilterAgent, function ($query, $FilterAgent) {
+                $query->where(function ($query) use ($FilterAgent) {
+                    $query->where('leads.agent_id', '=', $FilterAgent);
+                });
+            })
+            // filter by status
+            ->when($currentStatus, function ($query, $currentStatus) {
+                $query->where(function ($query) use ($currentStatus) {
+                    $query->Where('leads.current_status', '=', $currentStatus->name);
+                });
+            })
+            // filter by general terms
+            ->when($searchTerm, function ($query, $searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('sources.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('users.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
+                });
+            })
+            ->whereDate('leads.created_at', now()->toDateString())
+            ->select('leads.*','sources.name as source_name', 'users.name as agent_name')
+            ->paginate(10);
+            
+            
+        return view('Admin.Leads.followupList', compact('leads', 'searchTerm', 'Filterstatus','FilterAgent', 'statuses','leads_status_history','agents'));
+   
+    }
            
            
 
@@ -283,13 +364,5 @@ class LeadsController extends Controller
 
 
         
-    public function downloadfile()
-    {
-        $file = public_path('assets/Sample.xlsx');
-        $headers = [
-        'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ];
-        return response()->download($file, 'Sample.xlsx', $headers);
-    }
     
 }
