@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\client;
+use App\Client;
 use App\Deposit;
 use Illuminate\Http\Request;
 use PhpParser\Node\Stmt\Return_;
@@ -12,7 +12,7 @@ class ClientController extends Controller
     public function list()
     {
        $currentUser=session('user');
-       $clients=client::where('isDeleted','=','No')->where('agent_id','=',$currentUser->id)->paginate(10);
+       $clients=Client::where('isDeleted','=','No')->where('agent_id','=',$currentUser->id)->paginate(10);
        return view('Admin.Clients.list',compact('clients'));
     }
     public function addView(Request $req)
@@ -30,7 +30,7 @@ class ClientController extends Controller
             'number'=>'required|unique:clients,number',
         ]);
         $Agent=session('user');
-        $client=new client();
+        $client=new Client();
         $client->name=$req->name;
         $client->number=$req->number;
         $client->ca_id=$req->ca_id;
@@ -67,7 +67,7 @@ class ClientController extends Controller
             'number'=>'required',
         ]);
         $Agent=session('user');
-        $client=client::find($req->userId);
+        $client=Client::find($req->userId);
         $client->name=$req->name;
         $client->number=$req->number;
         $client->ca_id=$req->ca_id;
