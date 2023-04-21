@@ -22,14 +22,15 @@
         <li class="nav-item dropdown ">
             <a class="nav-link d-flex flex-row align-items-center " data-toggle="dropdown" href="#">
                 <i class="far fa-user p-2"></i>
-                {{ session()->has('user') ? session('user')->name : ' ' }}
+                {{ $userData ? $userData->name : ' ' }}
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                 <div class="dropdown-divider"></div>
-                {{-- <a href="#" class="dropdown-item">
-             <i class="fas fa-cog mr-2"></i> Setting
-             </a> --}}
-                <div class="dropdown-divider"></div>
+                
+                {{-- <div class="dropdown-divider"></div> --}}
+                <a href="{{ $onBreak ? route('end_break') : route('start_break') }}" class="dropdown-item">
+                    <i class="fa fa-clock mr-2"></i>{{$onBreak ? 'End Break' : 'Break' }}
+                </a>
                 @if (session('user')->role === 'manager')
                     <a href="{{ url('/profile/edit?id=' . session('user')->id) }}" class="dropdown-item">
                         <i class="fas  fa-cog mr-2"></i>Profile

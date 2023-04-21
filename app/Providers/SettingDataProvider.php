@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\AttendanceService;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 
@@ -27,6 +28,11 @@ class SettingDataProvider extends ServiceProvider
     public function boot()
     {
         View::composer('Admin.index', function ($view) {
+            // for break work 
+            $userId = session('user')->id;
+            $attendanceService = app(AttendanceService::class);
+            $onBreak = $attendanceService->isOnBreak($userId);
+
             $settings = Setting::first();
             $user = session('user');
             $userData = null;
@@ -35,7 +41,8 @@ class SettingDataProvider extends ServiceProvider
             }
             $view->with([
                 'settings' => $settings,
-                'userData' => $userData
+                'userData' => $userData,
+                'onBreak'=> $onBreak,
             ]);
         });
     }

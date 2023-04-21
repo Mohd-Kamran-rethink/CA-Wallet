@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Attendance;
 use App\Manager;
 use App\Setting;
 use App\User;
@@ -33,6 +34,10 @@ class AuthController extends Controller
         if ($user) {
             if (Hash::check($req->password, $user->password)) {
                 session()->put('user', $user);
+                $attendace=new Attendance();
+                $attendace->user_id=$user->id;
+                $attendace->action="login";
+                $attendace->save();
                 return redirect('/dashboard');
             } else {
                 return redirect('/')->with(['msg-error-password' => 'Invalid password']);
@@ -47,6 +52,10 @@ class AuthController extends Controller
     {
         if(session()->has('user'))
         {
+            $attendace=new Attendance();
+                $attendace->user_id=session('user')->id;
+                $attendace->action="logout";
+                $attendace->save();
             session()->remove('user');
         }
         return redirect('/');

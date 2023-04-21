@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
@@ -93,5 +94,10 @@ Route::middleware('ValidateAgent')->prefix('/clients')->group(function () {
     Route::post('/delete',[ClientController::class,'delete'])->name('delete');
     Route::post('/redeposit',[ClientController::class,'redeposit'])->name('redeposit');
 });
+
+// attendance management
+Route::get('/attendance/start-break', [AttendanceController::class, 'startBreak'])->name('start_break');
+Route::get('/attendance/end-break', [AttendanceController::class, 'endBreak'])->name('end_break');
+
    
    
