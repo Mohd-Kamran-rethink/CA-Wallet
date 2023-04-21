@@ -188,8 +188,11 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @forelse($leads as $item)
+                                            @if ($item->current_status == 'Deposited' || $item->name == 'Not Intrested')
+                                                @continue
+                                            @endif
 
-                                        @forelse  ($leads as $item)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->source_name }}</td>
@@ -201,7 +204,7 @@
                                                 <td> {{ $item->agent_name }}</td>
                                                 <td> {{ $item->current_status ?? '--' }}</td>
                                                 <td>
-                                                    <button onclick="openLeadModal({{ $item->id }})"
+                                                    <button onclick="openLeadModal({{ $item->id}},'{{$item->idName}}')"
                                                         title="Chnage status" class="btn btn-secondary">Change
                                                         status</button>
                                                     @foreach ($leads_status_history as $history)
@@ -221,14 +224,6 @@
                                     @endforelse
                                 </tbody>
                             </table>
-
-
-
-
-
-
-
-
                         </div>
                         <div class="card-footer clearfix">
                             {{ $leads->links('pagination::bootstrap-4') }}
@@ -271,6 +266,11 @@
                         <label for="">Amout <span class="text-danger">*</span></label>
                         <input name="amount" id="amount" type="text" class="form-control">
                         <span class="text-danger error-amount"></span>
+                    </div>
+                    <div class="form-group  for-deposited" style="display: none">
+                        <label for="">ID Name<span class="text-danger">*</span></label>
+                        <input name="IdName" id="idName" type="text" class="form-control">
+                        <span class="text-danger error-idName"></span>
                     </div>
                     {{-- for followup and busy options --}}
                     <div class="form-group  conditional-input" style="display: none">
@@ -333,10 +333,11 @@
         url.searchParams.set('agent', filter_agent ?? '');
         $('#search-form').attr('action', url.toString()).submit();
     }
-    const openLeadModal = (leadId) => {
-
+    const openLeadModal = (leadId,idName) => {
+       
         $(`#modal-default`).modal("show");
         $(`#lead_id`).val(leadId);
+        $(`#idName`).val(idName);
     }
     const handleStatusValues = (option) => {
         status = $(option).find(':selected').data('second-value');
@@ -367,12 +368,16 @@
         event.preventDefault();
         let datePicker = $('#datePicker').val()
         let amount = $('#amount').val()
+        let IdName = $('#idName').val()
         if ((status == "Follow Up" || status == "Busy") && !datePicker) {
             $('.error-date').html('Please enter valid date')
 
         } else if ((status == "Deposited") && !amount) {
             $('.error-amount').html('Please enter amount')
-        } else {
+        }
+        else if ((status == "Deposited") && !IdName) {
+            $('.error-idName').html('Please enter IdName')
+        }  else {
             $('#status-form').submit();
         }
     }
