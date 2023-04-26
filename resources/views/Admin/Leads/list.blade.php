@@ -181,7 +181,9 @@
                                     <thead>
                                         <tr>
                                             <th>Select</th>
-                                            <th>S.No.</th>
+                                            @if (session('user')->role === 'manager')
+                                                <th>S.No.</th>
+                                            @endif
                                             <th>Source</th>
                                             <th>Date</th>
                                             <th>Name</th>
@@ -200,8 +202,10 @@
                                             @endif
 
                                             <tr>
-                                                <td><input type="checkbox" onchange="selectedLeads()"
-                                                        value="{{ $item->id }}"></td>
+                                                @if (session('user')->role === 'manager')
+                                                    <td><input type="checkbox" onchange="selectedLeads()"
+                                                            value="{{ $item->id }}"></td>
+                                                @endif
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->source_name }}</td>
                                                 <td>{{ $item->date }}</td>
@@ -407,13 +411,12 @@
                             id="agent-mass-dropdown">
                             <option value="0" data-second-value="0">--Choose--</option>
                             @foreach ($agents as $item)
-                                
                                 <option value="{{ $item->id }}" data-second-value="{{ $item->name }}">
                                     {{ $item->name }}</option>
                             @endforeach
                         </select>
                     </div>
-                   
+
                 </form>
             </div>
             <div class="modal-footer ">
@@ -532,6 +535,7 @@
     }
     // mass selection function 
     const selectedItems = [];
+
     function selectedLeads() {
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach((checkbox) => {
@@ -561,45 +565,33 @@
         return selectedIds;
 
     }
+
     function MassModals(modalId) {
         let selectedIds = selectedLeads();
         $(`#${modalId}`).modal('show');
         $('.lead_ids').val(selectedIds);
     }
-    
-    const handleAgentChange=(option)=>
-    {
+
+    const handleAgentChange = (option) => {
         agentId = $(option).find(':selected').data('second-value');
         let submitButton = $('.agent-modal-submit-button')
         if (agentId == "0") {
             submitButton.attr('disabled', true);
-        }
-        else
-        {
+        } else {
             submitButton.attr('disabled', false);
         }
     }
-    const changeMassAgent=(formId)=>
-    {
+    const changeMassAgent = (formId) => {
         let submitButton = $('.agent-modal-submit-button')
         event.preventDefault();
         let agentId = $('#agent-mass-dropdown').val()
-        
+
         if (agentId == "0") {
             $('.error-agent').html('Please select agent first')
-        } 
-        else
-        {
+        } else {
             $(`#${formId}`).submit();
         }
     }
-
-       
-        
-
-
-
-
 </script>
 
 

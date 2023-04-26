@@ -82,7 +82,7 @@ class LeadsController extends Controller
                 });
             })
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
-            ->paginate(10);
+            ->paginate(45);
 
 
         return view('Admin.Leads.list', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
@@ -310,10 +310,7 @@ class LeadsController extends Controller
         }
         return redirect()->back()->with(['msg-success' => "Agent has been reassigned"]);
     }
-
-
-
-
+    // to download sample file
     public function downloadfile()
     {
         $file = public_path('assets/Sample.xlsx');
@@ -322,7 +319,6 @@ class LeadsController extends Controller
         ];
         return response()->download($file, 'Sample.xlsx', $headers);
     }
-
     // folllow up leads module
     public function followUp(Request $req)
     {
@@ -390,7 +386,7 @@ class LeadsController extends Controller
             })
             ->whereDate('leads.created_at', now()->toDateString())
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
-            ->paginate(10);
+            ->paginate(45);
 
 
         return view('Admin.Leads.followupList', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));

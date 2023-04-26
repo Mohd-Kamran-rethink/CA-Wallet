@@ -5,9 +5,15 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1>Dashboard</h1>
+
                 </div>
             </div>
         </div>
+        @if (isset($lastEntry) && $lastEntry->actions == 'break')
+            <div class="alert alert-danger" role="alert">
+                You are on break please change your break status
+            </div>
+        @endif
     </section>
     <section class="content">
         <div class="container-fluid">
@@ -46,18 +52,16 @@
                 <div class="col-lg-3 col-6">
                     <div class="small-box bg-warning">
                         <div class="inner">
-                            <h3>{{$leads??0}}</h3>
+                            <h3>{{ $leads ?? 0 }}</h3>
                             <p>Total Leads</p>
                         </div>
                         <div class="icon">
                             <i class="ion ion-person-add"></i>
                         </div>
-                        <a href="#" class="small-box-footer">More info <i
-                                class="fas fa-arrow-circle-right"></i></a>
+                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
-                @if(session('user')->role =="agent")
-                   
+                @if (session('user')->role == 'agent')
                     <div class="col-lg-3 col-6">
                         <div class="small-box bg-danger">
                             <div class="inner">
