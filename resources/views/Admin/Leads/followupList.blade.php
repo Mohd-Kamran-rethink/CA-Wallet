@@ -40,89 +40,7 @@
                     {{ session('msg-success') }}
                 </div>
             @endif
-            @if (
-                (session()->has('errors') && count(session('errors')) > 0) ||
-                    (session()->has('skipped') && count(session('skipped')) > 0))
-                <div class="card">
-                    <div class="card-body">
-                        @if (count(session('skipped')) > 0)
-                            <div class="alert alert-warning" role="alert"><span class="font-weight-bold"
-                                    style="color: white">Skipped Entries</span> </div>
-                            <div class="card-body table-responsive p-0">
-                                <table class="table table-hover text-nowrap">
-                                    <thead>
-                                        <tr>
-                                            <th>S.No.</th>
-                                            <th>Source</th>
-                                            <th>Date</th>
-                                            <th>Name</th>
-                                            <th>Number</th>
-                                            <th>Language</th>
-                                            <th>ID Name</th>
-                                            <th>Agent</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (session('skipped') as $item)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item['Sources'] }}</td>
-                                                <td>{{ serialToDate($item['Date']) }}</td>
-                                                <td>{{ $item['Name'] }}</td>
-                                                <td>{{ $item['Number'] }}</td>
-                                                <td>{{ $item['Language'] }}</td>
-                                                <td>{{ $item['ID NAME'] }}</td>
-                                                <td> {{ $item['Agent'] }}</td>
-                                            </tr>
-                                        @endforeach
-
-
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        @endif
-                        @if (count(session('errors')) > 0)
-                            <div class="alert alert-danger" role="alert"><span class="font-weight-bold"
-                                    style="color: white">Errors Entries</span> </div>
-                            <div class="card-body table-responsive p-0">
-                                <table class="table table-hover text-nowrap">
-                                    <thead>
-                                        <tr>
-                                            <th>S.No.</th>
-                                            <th>Source</th>
-                                            <th>Date</th>
-                                            <th>Name</th>
-                                            <th>Number</th>
-                                            <th>Language</th>
-                                            <th>ID Name</th>
-                                            <th>Agent</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (session('errors') as $item)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item['Sources'] }}</td>
-                                                <td>{{ serialToDate($item['Date']) }}</td>
-                                                <td>{{ $item['Name'] }}</td>
-                                                <td>{{ $item['Number'] }}</td>
-                                                <td>{{ $item['Language'] }}</td>
-                                                <td>{{ $item['ID NAME'] }}</td>
-                                                <td> {{ $item['Agent'] }}</td>
-                                            </tr>
-                                        @endforeach
-
-
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        @endif
-
-                    </div>
-                </div>
-            @endif
+           
         </div>
     </section>
 
@@ -132,7 +50,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="mb-3 d-flex justify-content-between align-items-centers row">
-                    <form action="{{ url('leads/list') }}" method="GET" id="search-form"
+                    <form action="{{ url('leads/follow-up') }}" method="GET" id="search-form"
                         class="filters d-flex flex-row col-8">
                         <div class="input-group input-group-md col-4 " style="width: 150px;">
                             <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
@@ -162,11 +80,7 @@
                             <button class="btn btn-success" onclick="searchData()">Filter</button>
                         </div>
                     </form>
-                    @if (session('user')->role === 'manager')
-                        <div>
-                            <a href="{{ url('leads/import') }}" class="btn btn-primary">Import Leads</a>
-                        </div>
-                    @endif
+                  
                 </div>
                 <div class="row">
                     <div class="col-12">

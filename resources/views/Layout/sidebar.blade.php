@@ -101,7 +101,15 @@
                     </a>
                 </li>
                 @endif
-             
+                <li class="nav-item ">
+                    <a href="{{ url('/attendance') }}"
+                        class="nav-link {{ Request::is('attendance')? 'active' : '' }}">
+                        <i class="nav-icon fa fa-calendar"></i>
+                        <p>
+                            Attendance
+                        </p>
+                    </a>
+                </li>
             </ul>
 
 

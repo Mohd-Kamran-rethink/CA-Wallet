@@ -390,7 +390,6 @@
 
     function searchLeadsStatus(lead_id) {
         const leadsStatusData = {!! json_encode($leads_status_history) !!};
-        console.log(leadsStatusData)
         const filteredData = leadsStatusData.filter(data => data.lead_id == lead_id);
 
         const table = createTable(filteredData);

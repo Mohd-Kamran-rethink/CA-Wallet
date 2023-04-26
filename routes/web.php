@@ -96,8 +96,12 @@ Route::middleware('ValidateAgent')->prefix('/clients')->group(function () {
 });
 
 // attendance management
-Route::get('/attendance/start-break', [AttendanceController::class, 'startBreak'])->name('start_break');
-Route::get('/attendance/end-break', [AttendanceController::class, 'endBreak'])->name('end_break');
+Route::middleware('ValidateUsers')->prefix('/attendance')->group(function () {
+    Route::get('/start-break', [AttendanceController::class, 'startBreak'])->name('start_break');
+    Route::get('/end-break', [AttendanceController::class, 'endBreak'])->name('end_break');
+    Route::get('/', [AttendanceController::class, 'list'])->name('list');
+    Route::get('/viewActivity', [AttendanceController::class, 'viewActivity'])->name('viewActivity');
+});
 
    
    
