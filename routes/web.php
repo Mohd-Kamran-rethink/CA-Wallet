@@ -82,6 +82,8 @@ Route::middleware('ValidateUsers')->prefix('/leads')->group(function () {
     Route::get('/download-sample-file',[LeadsController::class,'downloadfile'])->name('downloadfile');
     // followup leads
     Route::get('/follow-up',[LeadsController::class,'followUp'])->name('followUp');
+    Route::post('/status/mass/submit',[LeadsController::class,'massStatusChange'])->name('massStatusChange');
+    Route::post('/agent/mass/change',[LeadsController::class,'massAgentChange'])->name('massAgentChange');
 });
 
 // clients for agents

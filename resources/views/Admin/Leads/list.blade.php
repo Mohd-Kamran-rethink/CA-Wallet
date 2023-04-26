@@ -23,7 +23,7 @@
             return $date->format('d-m-Y');
         }
     @endphp
-
+    {{-- leads upload status tables --}}
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
@@ -128,6 +128,7 @@
 
 
 
+
     <section class="content">
         <div class="card">
             <div class="card-body">
@@ -158,13 +159,17 @@
                                 </select>
                             </div>
                         @endif
-                        <div class="input-group col-4">
+                        <div class="input-group ">
                             <button class="btn btn-success" onclick="searchData()">Filter</button>
                         </div>
                     </form>
                     @if (session('user')->role === 'manager')
                         <div>
-                            <a href="{{ url('leads/import') }}" class="btn btn-primary">Import Leads</a>
+                            <button onclick="MassModals('modal-mass-agent')" disabled
+                                class="mass-action-buttons btn btn-primary ">Reassign To</button>
+                            <button onclick="MassModals('modal-mass-status')"disabled
+                                class="mass-action-buttons btn btn-secondary ">Change Status</button>
+                            <a href="{{ url('leads/import') }}" class="btn btn-success">Import Leads</a>
                         </div>
                     @endif
                 </div>
@@ -175,7 +180,10 @@
                                 <table class="table table-hover text-nowrap">
                                     <thead>
                                         <tr>
-                                            <th>S.No.</th>
+                                            <th>Select</th>
+                                            @if (session('user')->role === 'manager')
+                                                <th>S.No.</th>
+                                            @endif
                                             <th>Source</th>
                                             <th>Date</th>
                                             <th>Name</th>
@@ -194,6 +202,10 @@
                                             @endif
 
                                             <tr>
+                                                @if (session('user')->role === 'manager')
+                                                    <td><input type="checkbox" onchange="selectedLeads()"
+                                                            value="{{ $item->id }}"></td>
+                                                @endif
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->source_name }}</td>
                                                 <td>{{ $item->date }}</td>
@@ -204,7 +216,8 @@
                                                 <td> {{ $item->agent_name }}</td>
                                                 <td> {{ $item->current_status ?? '--' }}</td>
                                                 <td>
-                                                    <button onclick="openLeadModal({{ $item->id}},'{{$item->idName}}')"
+                                                    <button
+                                                        onclick="openLeadModal({{ $item->id }},'{{ $item->idName }}')"
                                                         title="Chnage status" class="btn btn-secondary">Change
                                                         status</button>
                                                     @foreach ($leads_status_history as $history)
@@ -253,8 +266,9 @@
                     <input type="hidden" name="leadId" id="lead_id">
                     <div class="form-group">
                         <label for="">Status <span class="text-danger">*</span></label>
-                        <select onchange="handleStatusValues(this)" name="status" class="form-control" id="">
-                            <option value="0" data-second-value="null">--Choose--</option>
+                        <select onchange="handleStatusValues(this)" name="status" class="form-control"
+                            id="">
+                            <option value="0" data-second-value="0">--Choose--</option>
                             @foreach ($statuses as $item)
                                 <option value="{{ $item->id }}" data-second-value="{{ $item->name }}">
                                     {{ $item->name }}</option>
@@ -285,8 +299,8 @@
                 </form>
             </div>
             <div class="modal-footer ">
-                <button onclick="submitStatusChange()" type="submit" class="btn btn-success "
-                    id="status-submit-button" disabled>Change</button>
+                <button onclick="submitStatusChange('status-form')" type="submit"
+                    class="btn btn-success status-submit-button" id="status-submit-button" disabled>Change</button>
                 <button type="button" data-dismiss="modal" aria-label="Close"
                     class="btn btn-default">Cancel</button>
 
@@ -314,7 +328,108 @@
     </div>
 </div>
 
+{{-- mass status change modal --}}
+<div class="modal fade show" id="modal-mass-status" style=" padding-right: 17px;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Change Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url('/leads/status/mass/submit') }}" method="post" id="mass-status-form">
+                    @csrf
+                    <input type="hidden" name="leadIds" class="lead_ids">
+                    <div class="form-group">
+                        <label for="">Status <span class="text-danger">*</span></label>
+                        <select onchange="handleStatusValues(this)" name="status" class="form-control"
+                            id="">
+                            <option value="0" data-second-value="0">--Choose--</option>
+                            @foreach ($statuses as $item)
+                                @if ($item->name == 'Deposited')
+                                    @continue
+                                @endif
+                                <option value="{{ $item->id }}" data-second-value="{{ $item->name }}">
+                                    {{ $item->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    {{-- for deposited options --}}
+                    <div class="form-group  for-deposited" style="display: none">
+                        <label for="">Amout <span class="text-danger">*</span></label>
+                        <input name="amount" id="amount" type="text" class="form-control">
+                        <span class="text-danger error-amount"></span>
+                    </div>
+                    <div class="form-group  for-deposited" style="display: none">
+                        <label for="">ID Name<span class="text-danger">*</span></label>
+                        <input name="IdName" id="idName" type="text" class="form-control">
+                        <span class="text-danger error-idName"></span>
+                    </div>
+                    {{-- for followup and busy options --}}
+                    <div class="form-group  conditional-input" style="display: none">
+                        <label for="">Date <span class="text-danger">*</span></label>
+                        <input name="date" type="date" class="form-control" id="mass-datePicker">
+                        <span class="text-danger error-date"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Remark</label>
+                        <textarea rows="3" type="text" class="form-control" name="remark" id="remark"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer ">
+                <button onclick="submitStatusChange('mass-status-form')" type="submit"
+                    class="btn btn-success status-submit-button" id="mass-status-change-button"
+                    disabled>Change</button>
+                <button type="button" data-dismiss="modal" aria-label="Close"
+                    class="btn btn-default">Cancel</button>
 
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- assign to agent --}}
+<div class="modal fade show" id="modal-mass-agent" style=" padding-right: 17px;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Assign leads to agent</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url('/leads/agent/mass/change') }}" method="post" id="mass-agent-form">
+                    @csrf
+                    <input type="hidden" name="leadIds" class="lead_ids">
+                    <div class="form-group">
+                        <label for="">Agents<span class="text-danger">*</span></label>
+                        <select onchange="handleAgentChange(this)" name="agent_id" class="form-control"
+                            id="agent-mass-dropdown">
+                            <option value="0" data-second-value="0">--Choose--</option>
+                            @foreach ($agents as $item)
+                                <option value="{{ $item->id }}" data-second-value="{{ $item->name }}">
+                                    {{ $item->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer ">
+                <button onclick="changeMassAgent('mass-agent-form')" type="submit"
+                    class="btn btn-success agent-modal-submit-button" id="mass-status-change-button"
+                    disabled>Submit</button>
+                <button type="button" data-dismiss="modal" aria-label="Close"
+                    class="btn btn-default">Cancel</button>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -333,15 +448,15 @@
         url.searchParams.set('agent', filter_agent ?? '');
         $('#search-form').attr('action', url.toString()).submit();
     }
-    const openLeadModal = (leadId,idName) => {
-       
+    const openLeadModal = (leadId, idName) => {
+
         $(`#modal-default`).modal("show");
         $(`#lead_id`).val(leadId);
         $(`#idName`).val(idName);
     }
     const handleStatusValues = (option) => {
         status = $(option).find(':selected').data('second-value');
-        let submitButton = $('#status-submit-button')
+        let submitButton = $('.status-submit-button')
         let conditionalInput = $('.conditional-input')
         let forDepostied = $('.for-deposited')
         conditionalInput.hide()
@@ -363,8 +478,8 @@
         }
 
     }
-    const submitStatusChange = () => {
-        let submitButton = $('#status-submit-button')
+    const submitStatusChange = (formId) => {
+        let submitButton = $('.status-submit-button')
         event.preventDefault();
         let datePicker = $('#datePicker').val()
         let amount = $('#amount').val()
@@ -374,13 +489,13 @@
 
         } else if ((status == "Deposited") && !amount) {
             $('.error-amount').html('Please enter amount')
-        }
-        else if ((status == "Deposited") && !IdName) {
+        } else if ((status == "Deposited") && !IdName) {
             $('.error-idName').html('Please enter IdName')
-        }  else {
-            $('#status-form').submit();
+        } else {
+            $(`#${formId}`).submit();
         }
     }
+
     // history modal
     const openHistoryModal = (leadId) => {
         $(`#modal-history`).modal("show");
@@ -417,6 +532,65 @@
         });
         table += "</tbody></table>";
         return table;
+    }
+    // mass selection function 
+    const selectedItems = [];
+
+    function selectedLeads() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach((checkbox) => {
+            if (checkbox.checked) { // If the checkbox is checked
+                if (!selectedItems.includes(checkbox
+                        .value)) { // If the value is not already in the array
+                    selectedItems.push(checkbox
+                        .value); // Add the checkbox value to the selected items array
+                }
+            } else { // If the checkbox is unchecked
+                const index = selectedItems.indexOf(checkbox
+                    .value); // Find the index of the checkbox value in the selected items array
+                if (index !== -1) { // If the checkbox value is found in the array
+                    selectedItems.splice(index,
+                        1); // Remove the checkbox value from the selected items array
+                }
+            }
+        });
+        if (selectedItems.length === 0) {
+            $('.mass-action-buttons').attr('disabled', true);
+        } else {
+            $('.mass-action-buttons').attr('disabled', false);
+        }
+
+        // Convert the selected items array to a comma-separated string
+        const selectedIds = selectedItems.join(',');
+        return selectedIds;
+
+    }
+
+    function MassModals(modalId) {
+        let selectedIds = selectedLeads();
+        $(`#${modalId}`).modal('show');
+        $('.lead_ids').val(selectedIds);
+    }
+
+    const handleAgentChange = (option) => {
+        agentId = $(option).find(':selected').data('second-value');
+        let submitButton = $('.agent-modal-submit-button')
+        if (agentId == "0") {
+            submitButton.attr('disabled', true);
+        } else {
+            submitButton.attr('disabled', false);
+        }
+    }
+    const changeMassAgent = (formId) => {
+        let submitButton = $('.agent-modal-submit-button')
+        event.preventDefault();
+        let agentId = $('#agent-mass-dropdown').val()
+
+        if (agentId == "0") {
+            $('.error-agent').html('Please select agent first')
+        } else {
+            $(`#${formId}`).submit();
+        }
     }
 </script>
 
