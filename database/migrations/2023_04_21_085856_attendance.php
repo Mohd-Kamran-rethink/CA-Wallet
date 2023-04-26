@@ -17,8 +17,8 @@ class Attendance extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
             $table->string('user_id');
-            $table->date('date')->default(DB::raw('CURRENT_DATE'));
-            $table->time('time')->default(DB::raw('CURRENT_TIME'));
+            $table->date('date')->default(date('Y-m-d'));
+            $table->time('time')->default(date('H:i:s'));
             $table->string('action');
             $table->timestamps();
         });

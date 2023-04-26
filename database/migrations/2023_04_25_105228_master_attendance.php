@@ -17,7 +17,7 @@ class MasterAttendance extends Migration
         Schema::create('master_attendances', function (Blueprint $table) {
             $table->id();
             $table->string('user_id');
-            $table->date('date')->default(DB::raw('CURRENT_DATE'));
+            $table->date('date')->default(date('Y-m-d'));
             $table->string('hours');
             $table->string('actions');
             $table->timestamps();
