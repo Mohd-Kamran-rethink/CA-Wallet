@@ -26,7 +26,7 @@ class AttendanceService
 
     public function startBreak($userId)
     {
-        $lastEntry = AppMasterAttendance::where('user_id', session('user')->id)->latest()->first();
+        $lastEntry = AppMasterAttendance::where('user_id', session('user')->id)->whereDate('created_at', Carbon::today())->first();
 
         if ($lastEntry && $lastEntry->created_at->isToday()) {
            // If there is an entry for today, increment the hours based on the last entry
@@ -61,7 +61,7 @@ class AttendanceService
 
     public function endBreak($userId)
     {
-        $lastEntry = AppMasterAttendance::where('user_id', session('user')->id)->latest()->first();
+        $lastEntry = AppMasterAttendance::where('user_id', session('user')->id)->whereDate('created_at', Carbon::today())->first();
         $lastEntry->actions="break_end";
         $lastEntry->update();
         $attendance=new Attendance();
