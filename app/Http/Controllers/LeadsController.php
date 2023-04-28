@@ -384,7 +384,7 @@ class LeadsController extends Controller
                         ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
                 });
             })
-            ->whereDate('leads.created_at', now()->toDateString())
+            ->whereDate('leads.followup_date', now()->toDateString())
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
             ->paginate(45);
 
