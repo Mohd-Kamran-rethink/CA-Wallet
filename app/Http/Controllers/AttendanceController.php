@@ -57,7 +57,7 @@ class AttendanceController extends Controller
     public function viewActivity(Request $req)
     {
         $querryId = $req->id ?? null;
-        $querryDate = now()->format('Y-m-d');
+        $querryDate =$req->date?? now()->format('Y-m-d');
         $attendances = Attendance::where('user_id', '=', $querryId)
                     ->whereDate('created_at', $querryDate )
                     ->get();
