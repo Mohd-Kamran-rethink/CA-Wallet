@@ -133,13 +133,13 @@
         <div class="card">
             <div class="card-body">
                 <div class="mb-3 d-flex justify-content-between align-items-centers row">
-                    <form action="{{ url('leads/list') }}" method="GET" id="search-form"
-                        class="filters d-flex flex-row col-8">
-                        <div class="input-group input-group-md col-4 " style="width: 150px;">
+                    <form class="filters d-flex flex-row  col-lg-7 mt-2" action="{{ url('leads/list') }}" method="GET" id="search-form"
+                        >
+                        <div class="input-group input-group-md col-3 " style="width: 150px;">
                             <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
                                 class="form-control float-right" placeholder="Search" id="searchInput">
                         </div>
-                        <div class="input-group col-4">
+                        <div class="input-group col-3">
                             <select name="status" id="status_id" class="form-control">
                                 <option value="">--Filter By Status--</option>
                                 @foreach ($statuses as $item)
@@ -149,7 +149,7 @@
                             </select>
                         </div>
                         @if (session('user')->role == 'manager')
-                            <div class="input-group col-4">
+                            <div class="input-group col-3">
                                 <select name="agent_id" id="agent_id" class="form-control">
                                     <option value="">--Filter By Agent--</option>
                                     @foreach ($agents as $item)
@@ -164,11 +164,11 @@
                         </div>
                     </form>
                     @if (session('user')->role === 'manager')
-                        <div>
+                        <div class="col-md-12 col-lg-5 d-flex justify-content-end mt-2">
                             <button onclick="MassModals('modal-mass-agent')" disabled
                                 class="mass-action-buttons btn btn-primary ">Reassign To</button>
                             <button onclick="MassModals('modal-mass-status')"disabled
-                                class="mass-action-buttons btn btn-secondary ">Change Status</button>
+                                class="mass-action-buttons btn btn-secondary mx-2">Change Status</button>
                             <a href="{{ url('leads/import') }}" class="btn btn-success">Import Leads</a>
                         </div>
                     @endif
@@ -300,7 +300,7 @@
             </div>
             <div class="modal-footer ">
                 <button onclick="submitStatusChange('status-form')" type="submit"
-                    class="btn btn-success status-submit-button" id="status-submit-button" disabled>Change</button>
+                    class="btn btn-success status-submit-button" id="status-submit-button" disabled>Submit</button>
                 <button type="button" data-dismiss="modal" aria-label="Close"
                     class="btn btn-default">Cancel</button>
 
@@ -380,9 +380,9 @@
                 </form>
             </div>
             <div class="modal-footer ">
-                <button onclick="submitStatusChange('mass-status-form')" type="submit"
+                <button onclick="submitMassStatusChange('mass-status-form')" type="submit"
                     class="btn btn-success status-submit-button" id="mass-status-change-button"
-                    disabled>Change</button>
+                    disabled>Submit</button>
                 <button type="button" data-dismiss="modal" aria-label="Close"
                     class="btn btn-default">Cancel</button>
 
@@ -481,7 +481,8 @@
     const submitStatusChange = (formId) => {
         let submitButton = $('.status-submit-button')
         event.preventDefault();
-        let datePicker = $('#datePicker').val()
+        let datePicker = $('#datePicker').val();
+        let massdatePicker = $('#mass-datePicker').val();
         let amount = $('#amount').val()
         let IdName = $('#idName').val()
         if ((status == "Follow Up" || status == "Busy") && !datePicker) {
@@ -492,6 +493,21 @@
         } else if ((status == "Deposited") && !IdName) {
             $('.error-idName').html('Please enter IdName')
         } else {
+            $(`#${formId}`).submit();
+        }
+    }
+    const submitMassStatusChange=(formId)=>
+    {
+        let submitButton = $('#mass-status-change-button')
+        event.preventDefault();
+        let massdatePicker = $('#mass-datePicker').val();
+       
+       
+        if ((status == "Follow Up" || status == "Busy") && !massdatePicker) {
+            $('.error-date').html('Please enter valid date')
+
+        } 
+         else {
             $(`#${formId}`).submit();
         }
     }

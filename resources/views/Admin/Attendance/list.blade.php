@@ -4,8 +4,9 @@
     .custom-modal {
         max-width: 70%;
         width: 70%;
-        max-height: 70%;
-        height: auto;
+        /* max-height: 50%; */
+        height: 50%
+        
     }
 
     @media (max-width: 580px) {
@@ -14,6 +15,7 @@
             width: 100%;
         }
     }
+    #historytable{overflow-y: scroll}
 </style>
     <section class="content-header">
         <div class="container-fluid">
@@ -163,14 +165,13 @@
 
         }
         function createTable(data) {
-            console.log("f")
         let table = "<table class='table'>";
         table +=
             "<thead><tr><th>Sr.No</th><th style='width:30%;text-align:center'>Activity</th><th style='width:10%;text-align:center'>Time </th><th>Created at</th></thead>";
         table += "<tbody>";
         data.forEach((item, index) => {
             table +=
-                `<tr><td>${index+1}</td><td style='width:30%;text-align:center'>${item.action??'--'}</td><th style='width:10%;text-align:center'>${item.date??'--'}</th><td style="word-wrap">${(moment(item.created_at).format('y-m-d')) ??'--'}</td></tr>`;
+                `<tr><td>${index+1}</td><td style='width:30%;text-align:center'>${item.action??'--'}</td><th style='width:10%;text-align:center'>${item.time??'--'}</th><td style="word-wrap">${(item.date) ??'--'}</td></tr>`;
         });
         table += "</tbody></table>";
         return table;

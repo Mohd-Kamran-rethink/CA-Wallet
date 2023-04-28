@@ -12,7 +12,7 @@ class DashboardController extends Controller
 {
     public function view()
     {
-        $lastEntry = MasterAttendance::where('user_id', session('user')->id)->latest()->first();
+        $lastEntry = MasterAttendance::where('user_id', session('user')->id)->whereDate('created_at', now()->format('Y-m-d') )->first();
         $role=session("user")->role;
         $id=session("user")->id;
         $agents = User::where("role", '=', 'agent')->orderBy('id', "desc")->get();

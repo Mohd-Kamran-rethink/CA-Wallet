@@ -26,21 +26,19 @@ class AttendanceController extends Controller
     {
 
         $querryId = $req->query('id') ?? null;
-        $querryDate = $req->query('date');
+        $querryDate = $req->query('date')?? now()->format('Y-m-d');
         
         
         $agents = User::where('role', '=', 'agent')->get();
         if(session('user')->role==="manager")
         {
-
             $users = DB::table('users')
             ->leftJoin('master_attendances', 'users.id', '=', 'master_attendances.user_id')
             ->when($querryId, function ($query, $querryId) {
                 $query->where('users.id', '=', $querryId)
                 ->where('master_attendances.user_id', '=', $querryId);
             })
-            ->whereDate('master_attendances.created_at', $querryDate ?? now()->format('Y-m-d'))
-           
+            ->whereDate('master_attendances.created_at', $querryDate )
             ->get();
         }
         else
@@ -48,9 +46,11 @@ class AttendanceController extends Controller
             $users = DB::table('users')
             ->leftJoin('master_attendances', 'users.id', '=', 'master_attendances.user_id')
             ->where('master_attendances.user_id', '=', session('user')->id)
-            ->whereDate('master_attendances.created_at', $querryDate ?? now()->format('Y-m-d'))
+            ->whereDate('master_attendances.created_at', $querryDate)
             ->get();
         }
+
+           
         return view('Admin.Attendance.list', compact("agents", 'users', 'querryDate', 'querryId'));
     }
 
@@ -61,8 +61,8 @@ class AttendanceController extends Controller
         $attendances = Attendance::where('user_id', '=', $querryId)
                     ->whereDate('created_at', $querryDate )
                     ->get();
+                    return ["status"=>true,'data'=>$attendances];
         
-        return ["status"=>true,'data'=>$attendances];
         
     }
             
