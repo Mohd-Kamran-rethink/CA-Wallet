@@ -40,6 +40,7 @@ class AttendanceController extends Controller
                 ->where('master_attendances.user_id', '=', $querryId);
             })
             ->whereDate('master_attendances.created_at', $querryDate ?? now()->format('Y-m-d'))
+           
             ->get();
         }
         else
@@ -55,15 +56,14 @@ class AttendanceController extends Controller
 
     public function viewActivity(Request $req)
     {
-        $querryId = $req->query('id') ?? null;
-        $querryDate = $req->query('date');
+        $querryId = $req->id ?? null;
+        $querryDate = now()->format('Y-m-d');
         $attendances = Attendance::where('user_id', '=', $querryId)
-                    ->whereDate('created_at', $querryDate ?? now()->format('Y-m-d'))
+                    ->whereDate('created_at', $querryDate )
                     ->get();
-        if($attendances)
-        {
-            return ["status"=>true,'data'=>$attendances];
-        }
+        
+        return ["status"=>true,'data'=>$attendances];
+        
     }
             
 

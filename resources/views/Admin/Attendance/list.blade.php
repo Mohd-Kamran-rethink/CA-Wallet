@@ -89,7 +89,7 @@
                                                 <td>{{ $item->date }}</td>
                                                 <td>{{ $item->hours }}</td>
                                                 <td><button class="btn btn-success"
-                                                        onclick="attendanceModal({{ $item->id }})">View
+                                                        onclick="attendanceModal({{ $item->user_id }})">View
                                                         Activity</button></td>
 
                                             </tr>
@@ -147,7 +147,7 @@
             $.ajax({
                 url: BASE_URL +
                     "/attendance/viewActivity?id=" +
-                    agentId+'&date='+date??null,
+                    agentId+'&date='+date,
                 success: function(data) {
                     if(data?.data.length>0)
                     {
