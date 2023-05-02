@@ -17,7 +17,7 @@ class DashboardController extends Controller
         $id=session("user")->id;
         $agents = User::where("role", '=', 'agent')->orderBy('id', "desc")->get();
         $managers = User::where("role", '=', 'manager')->orderBy('id', "desc")->get();
-        $leads=Lead::where($role=='manager'?"manager_id":"agent_id",'=',$id)->get()->count();
+        $leads=Lead::where($role=='manager'?"manager_id":"agent_id",'=',$id)->where('is_approved','=','Yes')->get()->count();
         return view('Admin.Dashboard.index',compact("agents",'managers','leads','lastEntry'));
     }
 }

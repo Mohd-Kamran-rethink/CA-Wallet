@@ -4,8 +4,8 @@
     .custom-modal {
         max-width: 70%;
         width: 70%;
-        max-height: 50%;
-        /* height: 50% */
+        /* max-height: 50%; */
+        height: 50%
         
     }
 
@@ -54,15 +54,15 @@
                                     @endforeach
                                 </select>
                             </div>
-                        <div class="input-group ">
-                            <input name="date" type="date" class="form-control" id="datePicker"
-                                value="{{ isset($querryDate) ? $querryDate : '' }}">
-                        </div>
-                        <div class="input-group col-4">
-                            <button class="btn btn-success" onclick="searchData()">Filter</button>
-                        </div>
+                            <div class="input-group ">
+                                <input name="date" type="date" class="form-control" id="datePicker"
+                                    value="{{ isset($querryDate) ? $querryDate : '' }}">
+                            </div>
+                            <div class="input-group col-4">
+                                <button class="btn btn-success" onclick="searchData()">Filter</button>
+                            </div>
+                            @endif  
                         
-                        @endif  
                     </form>
                     <div>
                         <a href="{{ url('managers/add') }}" class="btn btn-primary">Add New Manager</a>
@@ -142,7 +142,7 @@
         }
         const attendanceModal = (agentId) => {
             $(`#modal-history`).modal("show");
-            let date=$('#datePicker').val();
+            let date=$('#datePicker').val()??null;
             const loadingSpinner = "<div class='text-center'><i class='fa fa-spinner fa-spin'></i> Loading...</div>";
             const noData = "<div class='text-center'>No Data Found</div>";
             $("#historytable").html(loadingSpinner);

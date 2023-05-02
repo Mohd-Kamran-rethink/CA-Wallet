@@ -51,8 +51,9 @@ class AttendanceService
            $attendance=new Attendance();
            $attendance->user_id=session('user')->id;
            $attendance->action='Break Start';
+           $attendance->time=Carbon::now('Asia/Kolkata')->toTimeString();
            $attendance->save();
-    }
+        }
         
         
 
@@ -67,6 +68,7 @@ class AttendanceService
         $attendance=new Attendance();
         $attendance->user_id=session('user')->id;
         $attendance->action='Break End';
+        $attendance->time=Carbon::now('Asia/Kolkata')->toTimeString();
         $attendance->save();
     }
         

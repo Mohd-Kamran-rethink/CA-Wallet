@@ -88,6 +88,18 @@
                         </p>
                     </a>
                 </li>
+                @if($userData->id==1)
+                <li class="nav-item ">
+                    <a href="{{ url('/leads/approval') }}"
+                        class="nav-link {{ Request::is('leads/approval') ? 'active' : '' }}">
+                        <i class="nav-icon fa fa-th"></i>
+                        <p>
+                            Leads For Approval
+
+                        </p>
+                    </a>
+                </li>
+                @endif
 
                 @if($userData->role == 'agent')
                 <li class="nav-item ">

@@ -19,7 +19,7 @@ class Leads extends Migration
             $table->string('name');
             $table->string('number');
             $table->string('agent_id');
-            $table->string('manager_id');
+            $table->string('manager_id')->nullable();
             $table->string('date')->nullable();
             $table->string('language')->nullable();
             $table->string('idName')->nullable();
@@ -27,9 +27,11 @@ class Leads extends Migration
             $table->string('remark')->nullable();
             $table->string('followup_date')->nullable();
             $table->string('amount')->nullable();
-             
+            $table->string('leads_date')->nullable();
+            $table->enum('is_approved',['No','Yes']);
             $table->timestamps();
-        });
+        }); 
+             
     }
 
     /**
