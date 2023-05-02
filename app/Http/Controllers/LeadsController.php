@@ -81,17 +81,93 @@ class LeadsController extends Controller
                         ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
                 });
             })
+            ->where('is_approved','=','Yes')
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
             ->paginate(45);
 
 
         return view('Admin.Leads.list', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
     }
+    //leads for approval only show to default manager
+    public function nonApprovedLeads(Request $req)
+    {
+        // seperately send lead status history and will render this in modal using jquerry
+        $leads_status_history = DB::table('lead_statuses')
+            ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
+            ->select('lead_statuses.*', 'lead_status_options.name as status_name')
+            ->get();
+
+        // statuses and agents list to filter out data
+        $statuses = LeadStatusOption::where('isDeleted', '=', 'No')->get();
+        $agents = User::where('role', '=', 'agent')->get();
+
+        
+        $manager = null;
+        
+
+        if (session('user')->role == "manager") {
+            $manager = User::find(session('user')->id);
+        }
+        // querry paramaters
+        $searchTerm = $req->query('table_search');
+        $Filterstatus = $req->query('status');
+        $FilterAgent = $req->query('agent_id');
+
+        // get details of the status from status id 
+        $currentStatus = LeadStatusOption::find($Filterstatus);
+
+        $leads = DB::table('leads')
+            ->join('sources', 'leads.source_id', '=', 'sources.id')
+            ->join('users', 'leads.agent_id', '=', 'users.id')
+            // if session has manager show all the leads added by thi smanager
+            ->when($manager, function ($query, $manager) {
+                $query->where(function ($query) use ($manager) {
+                    $query->where('leads.manager_id', '=', $manager->id);
+                });
+            })
+           
+            // filter by agent
+            ->when($FilterAgent, function ($query, $FilterAgent) {
+                $query->where(function ($query) use ($FilterAgent) {
+                    $query->where('leads.agent_id', '=', $FilterAgent);
+                });
+            })
+            // filter by status
+            ->when($currentStatus, function ($query, $currentStatus) {
+                $query->where(function ($query) use ($currentStatus) {
+                    $query->Where('leads.current_status', '=', $currentStatus->name);
+                });
+            })
+            // filter by general terms
+            ->when($searchTerm, function ($query, $searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('sources.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('users.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
+                });
+            })
+            ->where('is_approved','=','No')
+            ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
+            ->paginate(45);
+        return view('Admin.Leads.list', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
+    }
+    public function approveLead(Request $req)
+    {
+        $leadIds = explode(',', $req->leadIds);
+        foreach ($leadIds as $key => $value) {
+            $lead=Lead::find($value);
+            $lead->is_approved="Yes";
+            $lead->update();
+        }
+        return redirect()->back()->with(['msg-success'=>"Leads approved successfully"]);
+    }
+
 
     public function importView()
     {
         return view('Admin.Leads.import');
     }
+    //leads import by  manager
     public function import(Request $req)
     {
         $validatedData = $req->validate([
@@ -111,6 +187,8 @@ class LeadsController extends Controller
         $addedCount = 0;
         $skippedCount = 0;
         $errorCount = 0;
+        $manager='';
+        $sessionUser=session('user');
 
 
         // Define validation rules for each column
@@ -128,11 +206,21 @@ class LeadsController extends Controller
         $sources = Source::pluck('name', 'id')->map(function ($name) {
             return trim($name);
         })->toArray();
+        //conditons if user is agent or manager accordingly
+        if($sessionUser->role=='agent')
+        {
+            $agents = User::where('role', '=', 'agent')->where('email','=',session('user')->email)->pluck('name', 'id')->map(function ($name) {
+                return trim($name);
+            })->toArray();
+        }
+        else if($sessionUser->role=='manager')
+        {
+            $agents = User::where('role', '=', 'agent')->pluck('name', 'id')->map(function ($name) {
+                return trim($name);
+            })->toArray();
+            $manager = User::where('role', '=', 'manager')->where('email', '=', session('user')->email)->first();
+        }
 
-        $agents = User::where('role', '=', 'agent')->pluck('name', 'id')->map(function ($name) {
-            return trim($name);
-        })->toArray();
-        $manager = User::where('role', '=', 'manager')->where('email', '=', session('user')->email)->first();
 
 
 
@@ -178,7 +266,7 @@ class LeadsController extends Controller
                 continue;
             }
 
-            // Add entry to results
+            // Add entry to results and if agent is importing than manger_id will be blank
             $entry = [
                 'source_id' => $sourceId,
                 'name' => $data['Name'],
@@ -187,7 +275,8 @@ class LeadsController extends Controller
                 'language' => $data['Language'],
                 'idName' => $data['ID NAME'],
                 'agent_id' => $agentId,
-                'manager_id' => $manager->id,
+                'manager_id' => $sessionUser->role=='agent'?1:$manager->id,
+                'is_approved' => $sessionUser->role=='agent'?'No':'Yes',
             ];
             Lead::create($entry);
 
@@ -205,6 +294,8 @@ class LeadsController extends Controller
             'error_count' => $errorCount,
         ]);
     }
+    
+    // single status change
     public function submitStatus(Request $req)
     {
         // request data

@@ -61,6 +61,7 @@ class AuthController extends Controller
                 $attendance=new Attendance();
                 $attendance->user_id=session('user')->id;
                 $attendance->action='login';
+                $attendance->time=Carbon::now('Asia/Kolkata')->toTimeString();
                 $attendance->save();
                 return redirect('/dashboard');
                 
@@ -76,8 +77,8 @@ class AuthController extends Controller
     public function logout()
     {
         
-        $lastEntry = AppMasterAttendance::where('user_id', session('user')->id)->latest()->first();
-
+        $lastEntry = AppMasterAttendance::where('user_id', session('user')->id)->whereDate('master_attendances.created_at', now()->format('Y-m-d') )->latest()->first();
+        
         if ($lastEntry && $lastEntry->created_at->isToday()) {
            // If there is an entry for today, increment the hours based on the last entry
            $lastEntryTime = Carbon::parse($lastEntry->updated_at);
@@ -101,6 +102,7 @@ class AuthController extends Controller
            $attendance=new Attendance();
            $attendance->user_id=session('user')->id;
            $attendance->action='logout';
+           $attendance->time=Carbon::now('Asia/Kolkata')->toTimeString();
            $attendance->save();
            session()->remove('user');
         }

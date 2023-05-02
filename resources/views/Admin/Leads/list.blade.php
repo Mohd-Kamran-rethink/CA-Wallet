@@ -133,8 +133,8 @@
         <div class="card">
             <div class="card-body">
                 <div class="mb-3 d-flex justify-content-between align-items-centers row">
-                    <form class="filters d-flex flex-row  col-lg-7 mt-2" action="{{ url('leads/list') }}" method="GET" id="search-form"
-                        >
+                    <form class="filters d-flex flex-row  col-lg-7 mt-2" action="{{ url('leads/list') }}" method="GET"
+                        id="search-form">
                         <div class="input-group input-group-md col-3 " style="width: 150px;">
                             <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
                                 class="form-control float-right" placeholder="Search" id="searchInput">
@@ -163,15 +163,20 @@
                             <button class="btn btn-success" onclick="searchData()">Filter</button>
                         </div>
                     </form>
-                    @if (session('user')->role === 'manager')
-                        <div class="col-md-12 col-lg-5 d-flex justify-content-end mt-2">
+                    <div class="col-md-12 col-lg-5 d-flex justify-content-end mt-2">
+                        @if (session('user')->role === 'manager')
+                                @if(Request::is('leads/approval') && session('user')->id == 1)
+                                <button onclick="approveLeadsModal()"
+                                    title="Approvelead"
+                                    class="mass-action-buttons btn btn-danger mx-2" disabled>Approve</button>
+                                @endif
                             <button onclick="MassModals('modal-mass-agent')" disabled
                                 class="mass-action-buttons btn btn-primary ">Reassign To</button>
                             <button onclick="MassModals('modal-mass-status')"disabled
                                 class="mass-action-buttons btn btn-secondary mx-2">Change Status</button>
-                            <a href="{{ url('leads/import') }}" class="btn btn-success">Import Leads</a>
-                        </div>
-                    @endif
+                        @endif
+                        <a href="{{ url('leads/import') }}" class="btn btn-success">Import Leads</a>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-12">
@@ -180,10 +185,10 @@
                                 <table class="table table-hover text-nowrap">
                                     <thead>
                                         <tr>
-                                            <th>Select</th>
                                             @if (session('user')->role === 'manager')
-                                                <th>S.No.</th>
+                                                <th><input type="checkbox" onchange="selectAll()" value="null"></th>
                                             @endif
+                                            <th>S.No.</th>
                                             <th>Source</th>
                                             <th>Date</th>
                                             <th>Name</th>
@@ -203,7 +208,7 @@
 
                                             <tr>
                                                 @if (session('user')->role === 'manager')
-                                                    <td><input type="checkbox" onchange="selectedLeads()"
+                                                    <td><input class="checkbox" type="checkbox" onchange="selectedLeads()"
                                                             value="{{ $item->id }}"></td>
                                                 @endif
                                                 <td>{{ $loop->iteration }}</td>
@@ -223,11 +228,16 @@
                                                     @foreach ($leads_status_history as $history)
                                                         @if ($history->lead_id == $item->id)
                                                             <button onclick="openHistoryModal({{ $item->id }})"
-                                                                title="Chnage status"
+                                                                title="Change status"
                                                                 class="btn btn-success">History</button>
                                                         @break
                                                     @endif
-                                                @endforeach
+                                                    @endforeach
+                                                    @if(Request::is('leads/approval') && session('user')->id == 1)
+                                                        <button onclick="approveLeadsModal({{ $item->id }})"
+                                                            title="Approve this lead"
+                                                            class="btn btn-danger">Approve</button>
+                                                    @endif
                                             </td>
                                         </tr>
                                     @empty
@@ -431,6 +441,36 @@
     </div>
 </div>
 
+{{-- leads aproval --}}
+<div class="modal fade show" id="approveLeads" style=" padding-right: 17px;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Leads Approval</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url('/leads/acceptapproval') }}" method="post" >
+                    @csrf
+                    <input type="hidden" name="leadIds" class="lead_ids">
+                    <h4 class="">Are you sure you want to approve lead?</h4>
+                
+            </div>
+
+            <div class="modal-footer ">
+                <button  type="submit"
+                    class="btn btn-success"
+                    >Submit</button>
+                <button type="button" data-dismiss="modal" aria-label="Close"
+                    class="btn btn-default">Cancel</button>
+
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
 
 
 
@@ -496,18 +536,16 @@
             $(`#${formId}`).submit();
         }
     }
-    const submitMassStatusChange=(formId)=>
-    {
+    const submitMassStatusChange = (formId) => {
         let submitButton = $('#mass-status-change-button')
         event.preventDefault();
         let massdatePicker = $('#mass-datePicker').val();
-       
-       
+
+
         if ((status == "Follow Up" || status == "Busy") && !massdatePicker) {
             $('.error-date').html('Please enter valid date')
 
-        } 
-         else {
+        } else {
             $(`#${formId}`).submit();
         }
     }
@@ -552,8 +590,16 @@
     // mass selection function 
     const selectedItems = [];
 
+    function selectAll() {
+        const checkboxes = document.querySelectorAll('input[class="checkbox"]');
+        checkboxes.forEach((checkbox) => {
+            checkbox.checked = !checkbox.checked;
+        });
+        selectedLeads()
+    }
+
     function selectedLeads() {
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const checkboxes = document.querySelectorAll('input[class="checkbox"]');
         checkboxes.forEach((checkbox) => {
             if (checkbox.checked) { // If the checkbox is checked
                 if (!selectedItems.includes(checkbox
@@ -580,6 +626,18 @@
         const selectedIds = selectedItems.join(',');
         return selectedIds;
 
+    }
+    function approveLeadsModal(leadId)
+    {
+        if(leadId)
+        {
+            $('.lead_ids').val(leadId)
+        }
+        else
+        {
+            $('.lead_ids').val(selectedLeads())
+        }
+        $('#approveLeads').modal('show') 
     }
 
     function MassModals(modalId) {

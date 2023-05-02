@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Route;
 // AUTH ROUTES
 Route::get('/',[AuthController::class,'loginView'])->name('loginView');
 Route::post('/login',[AuthController::class,'login'])->name('login');
-Route::get('/logout',[AuthController::class,'logout'])->name('logout');
+Route::get('/logout',[AuthController::class,'logout'])->name('logout')->middleware('ValidateUsers');
 
 // SETTINGS
 Route::get('/project/settings',[SettingsController::class,'view'])->name('view')->middleware('adminManager');
@@ -84,6 +84,9 @@ Route::middleware('ValidateUsers')->prefix('/leads')->group(function () {
     Route::get('/follow-up',[LeadsController::class,'followUp'])->name('followUp');
     Route::post('/status/mass/submit',[LeadsController::class,'massStatusChange'])->name('massStatusChange');
     Route::post('/agent/mass/change',[LeadsController::class,'massAgentChange'])->name('massAgentChange');
+    // for approval leads only show to default manager
+    Route::get('/approval',[LeadsController::class,'nonApprovedLeads'])->name('nonApprovedLeads');
+    Route::post('/acceptapproval',[LeadsController::class,'approveLead'])->name('approveLead');
 });
 
 // clients for agents

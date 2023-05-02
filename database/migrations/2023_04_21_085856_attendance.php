@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
 
 class Attendance extends Migration
 {
@@ -18,7 +19,7 @@ class Attendance extends Migration
             $table->id();
             $table->string('user_id');
             $table->date('date')->default(date('Y-m-d'));
-            $table->time('time')->default(date('H:i:s'));
+            $table->string('time')->default(date('H:i:s'));
             $table->string('action');
             $table->timestamps();
         });
