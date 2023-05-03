@@ -39,6 +39,7 @@ class AttendanceController extends Controller
                 ->where('master_attendances.user_id', '=', $querryId);
             })
             ->whereDate('master_attendances.created_at', $querryDate )
+            ->orderBy('users.id', 'desc')
             ->get();
         }
         else
@@ -47,6 +48,7 @@ class AttendanceController extends Controller
             ->leftJoin('master_attendances', 'users.id', '=', 'master_attendances.user_id')
             ->where('master_attendances.user_id', '=', session('user')->id)
             ->whereDate('master_attendances.created_at', $querryDate)
+            ->orderBy('users.id', 'desc')
             ->get();
         }
 

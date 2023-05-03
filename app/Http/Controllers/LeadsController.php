@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Client;
 use App\Deposit;
+use App\DepositHistory;
 use App\Lead;
 use App\LeadStatus;
 use App\LeadStatusOption;
@@ -23,6 +24,7 @@ class LeadsController extends Controller
         $leads_status_history = DB::table('lead_statuses')
             ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
             ->select('lead_statuses.*', 'lead_status_options.name as status_name')
+            ->orderBy('lead_statuses.id','desc')
             ->get();
 
         // statuses and agents list to filter out data
@@ -83,6 +85,7 @@ class LeadsController extends Controller
             })
             ->where('is_approved','=','Yes')
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
+            ->orderBy('leads.id','desc')
             ->paginate(45);
 
 
@@ -95,6 +98,7 @@ class LeadsController extends Controller
         $leads_status_history = DB::table('lead_statuses')
             ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
             ->select('lead_statuses.*', 'lead_status_options.name as status_name')
+            ->orderBy('lead_statuses.id','desc')
             ->get();
 
         // statuses and agents list to filter out data
@@ -148,8 +152,9 @@ class LeadsController extends Controller
             })
             ->where('is_approved','=','No')
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
+            ->orderBy('leads.id','desc')
             ->paginate(45);
-        return view('Admin.Leads.list', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
+        return view('Admin.Leads.leadsForApproval', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
     }
     public function approveLead(Request $req)
     {
@@ -160,6 +165,15 @@ class LeadsController extends Controller
             $lead->update();
         }
         return redirect()->back()->with(['msg-success'=>"Leads approved successfully"]);
+    }
+    public function deleteLeads(Request $req)
+    {
+        $leadIds = explode(',', $req->leadIds);
+        foreach ($leadIds as $key => $value) {
+            $lead=Lead::find($value);
+            $lead->delete();
+        }
+        return redirect()->back()->with(['msg-success'=>"Leads rejected successfully"]);
     }
 
 
@@ -335,6 +349,11 @@ class LeadsController extends Controller
             $deposit->deposit_amount = $amount;
             $deposit->type = 'deposit';
             $deposit->save();
+            $depositHistory=new DepositHistory();
+            $depositHistory->deposit_id=$deposit->id;
+            $depositHistory->amount=$amount;
+            $depositHistory->type = "Deposit";
+            $depositHistory->save();
         }
         // firstly update lead table
         $lead->remark = $remark;
@@ -417,6 +436,7 @@ class LeadsController extends Controller
         $leads_status_history = DB::table('lead_statuses')
             ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
             ->select('lead_statuses.*', 'lead_status_options.name as status_name')
+            ->orderBy('lead_statuses.id','desc')
             ->get();
 
         // statuses and agents list to filter out data
@@ -477,6 +497,7 @@ class LeadsController extends Controller
             })
             ->whereDate('leads.followup_date', now()->toDateString())
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
+            ->orderBy('leads.id','desc')
             ->paginate(45);
 
 

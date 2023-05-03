@@ -88,7 +88,7 @@
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->name }}</td>
-                                                <td>{{date('Y-m-d', strtotime($item->created_at))}}</td>
+                                                <td>{{date('d-m-Y', strtotime($item->created_at))}}</td>
                                                 <td>{{ $item->hours }}</td>
                                                 <td><button class="btn btn-success"
                                                         onclick="attendanceModal({{ $item->user_id }})">View
@@ -171,7 +171,7 @@
         table += "<tbody>";
         data.forEach((item, index) => {
             table +=
-                `<tr><td>${index+1}</td><td style='width:30%;text-align:center'>${item.action??'--'}</td><th style='width:10%;text-align:center'>${item.time??'--'}</th><td style="word-wrap">${moment(item.created_at).format('YYYY-MM-DD') ??'--'}</td></tr>`;
+                `<tr><td>${index+1}</td><td style='width:30%;text-align:center'>${item.action??'--'}</td><th style='width:10%;text-align:center'>${item.time??'--'}</th><td style="word-wrap">${moment(item.created_at).format('DD-MM-YYYY') ??'--'}</td></tr>`;
         });
         table += "</tbody></table>";
         return table;
