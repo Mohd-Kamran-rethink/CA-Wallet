@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Client;
 use App\Deposit;
+use App\DepositHistory;
 use Illuminate\Http\Request;
 use PhpParser\Node\Stmt\Return_;
 
@@ -12,7 +13,7 @@ class ClientController extends Controller
     public function list()
     {
        $currentUser=session('user');
-       $clients=Client::where('isDeleted','=','No')->where('agent_id','=',$currentUser->id)->paginate(10);
+       $clients=Client::where('isDeleted','=','No')->where('agent_id','=',$currentUser->id)->orderBy('id','desc')->paginate(10);
        return view('Admin.Clients.list',compact('clients'));
     }
     public function addView(Request $req)
@@ -87,7 +88,12 @@ class ClientController extends Controller
         $deposit=Deposit::find($req->depositId);
         $deposit->deposit_amount=$deposit->deposit_amount+$req->amount;
         $deposit->type='redeposit';
-        $result=$deposit->update();
+        $deposit->update();
+        $depositHistory=new DepositHistory();
+        $depositHistory->deposit_id=$deposit->id;
+        $depositHistory->amount=$req->amount;
+        $depositHistory->type = "Redeposit";
+        $result=$depositHistory->save();
         if ($result) 
         {
                 return redirect('/clients')->with(['msg-success' => 'Amount has been redeposited.']);
@@ -97,7 +103,23 @@ class ClientController extends Controller
             return redirect('/clients')->with(['msg-error'=>'Something went wrong could not redeposit amount.']);   
         }
     }
-                
+
+    public function depositHistory($id)
+    {
+        $agentId=session('user')->id;
+        $deposit=Deposit::where('client_id','=',$id)->where('agent_id','=',$agentId)->first();
+        if($deposit)
+        {
+            $depositHistory=DepositHistory::where('deposit_id','=',$deposit->id)->orderBy('id','desc')->paginate();
+            return view('Admin.Clients.depositList',compact('depositHistory'));
+        }
+        else
+        {
+            return redirect()->back()->with(['msg-error'=>'Sorry you dont have data for this client']);
+        }
+
+
+    }
            
            
            

@@ -4,7 +4,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Clients</h1>
+                    <h1>Deposit History</h1>
                 </div>
             </div>
             @if (session()->has('msg-success'))
@@ -24,12 +24,7 @@
     <section class="content">
         <div class="card">
             <div class="card-body">
-                <div class="mb-3 d-flex justify-content-between align-items-centers">
-
-                    <div>
-                        <a href="{{ url('clients/add') }}" class="btn btn-primary">Add New Client</a>
-                    </div>
-                </div>
+                
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
@@ -38,35 +33,20 @@
                                     <thead>
                                         <tr>
                                             <th>S.No.</th>
-                                            <th>Name</th>
-                                            <th>ID Name</th>
-                                            <th>Phone</th>
-                                            <th>Actions</th>
+                                            <th>Date</th>
+                                            <th>type</th>
+                                            <th>Amount</th>
+                                           
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse($clients as $item)
+                                        @forelse($depositHistory as $item)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item->name }}</td>
-                                                <td>{{ $item->ca_id }}</td>
-                                                <td>{{ $item->number }}</td>
-                                                <td>
-                                                    <button onclick="openRedepositModal({{ $item->id }})"
-                                                        class="btn btn-secondary">Redeposit</button>
-                                                        <a href="{{ url('clients/deposit/history/'.$item->id) }}"
-                                                            title="View deposit history" class="btn btn-warning">Deposit
-                                                            History</a>
-
-
-                                                    <a href="{{ url('clients/edit/?id=' . $item->id) }}"
-                                                        title="Edit this client" class="btn btn-primary"><i
-                                                            class="fa fa-pen"></i></a>
-
-                                                    <button title="Delete this client"
-                                                        onclick="manageModal({{ $item->id }})"
-                                                        class="btn btn-danger"><i class="fa fa-trash"></i></button>
-                                                </td>
+                                                <td>{{ $item->created_at->format('d-m-Y H:i:s') }}</td>
+                                                <td>{{ $item->type }}</td>
+                                                <td>{{ $item->amount }}</td>
+                                                
                                             </tr>
 
 
@@ -80,7 +60,7 @@
                                 </table>
                             </div>
                             <div class="card-footer clearfix">
-                                {{ $clients->links('pagination::bootstrap-4') }}
+                                {{ $depositHistory->links('pagination::bootstrap-4') }}
                             </div>
                         </div>
                     </div>
@@ -109,7 +89,8 @@
                         </div>
                     </div>
                     <div class="modal-footer ">
-                        <button type="submit" class="btn btn-success">Submit</button>
+                        <button type="submit" 
+                            class="btn btn-success">Submit</button>
                         <button type="button" data-dismiss="modal" aria-label="Close"
                             class="btn btn-default">Cancel</button>
                     </div>

@@ -87,6 +87,7 @@ Route::middleware('ValidateUsers')->prefix('/leads')->group(function () {
     // for approval leads only show to default manager
     Route::get('/approval',[LeadsController::class,'nonApprovedLeads'])->name('nonApprovedLeads');
     Route::post('/acceptapproval',[LeadsController::class,'approveLead'])->name('approveLead');
+    Route::post('/delete',[LeadsController::class,'deleteLeads'])->name('deleteLeads');
 });
 
 // clients for agents
@@ -98,6 +99,7 @@ Route::middleware('ValidateAgent')->prefix('/clients')->group(function () {
     Route::post('/edit',[ClientController::class,'edit'])->name('edit');
     Route::post('/delete',[ClientController::class,'delete'])->name('delete');
     Route::post('/redeposit',[ClientController::class,'redeposit'])->name('redeposit');
+    Route::get('/deposit/history/{id}',[ClientController::class,'depositHistory'])->name('depositHistory');
 });
 
 // attendance management
