@@ -122,6 +122,29 @@
                         </p>
                     </a>
                 </li>
+                @if($userData->role == 'manager' )
+                {{--reports --}}
+                <li class="nav-item ">
+                    <a href="{{ url('/reports/leads') }}"
+                        class="nav-link {{  Request::is('reports/leads') ? 'active' : '' }}">
+                        <i class="nav-icon fa fa-table"></i>
+
+                        <p>
+                           Reports for leads
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a href="{{ url('/reports/deposits') }}"
+                        class="nav-link {{  Request::is('reports/deposits') ? 'active' : '' }}">
+                        <i class="nav-icon fa fa-table"></i>
+
+                        <p>
+                           Reports for deposits
+                        </p>
+                    </a>
+                </li>
+                @endif
             </ul>
 
 
