@@ -17,6 +17,14 @@ class ReportController extends Controller
 {
     public function leadsReport(Request $req)
     {
+       
+       
+        if (session('user')->role == "agent") {
+            $agents = User::where('id','=',session('user')->id)->get();
+        }
+        else{
+            $agents = User::where('role', '=', 'agent')->get();
+        }
         $startDate = $req->query('from_date');
         $endDate = $req->query('to_date');
         if (!$startDate) {
@@ -29,25 +37,28 @@ class ReportController extends Controller
 
         $currentUser = session('user');
         $statuses = LeadStatusOption::get();
-        $agents = User::where('role', '=', 'agent')->get();
+        
         $data = [];
         foreach ($agents as $key => $value) {
             # code...
             $row = [];
             array_push($row, $value->name);
             $totalLeads = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
+                    
                 ->where('created_at', '>=', $startDate)
                 ->where('created_at', '<=', $endDate)
                 ->get()->count();
 
             array_push($row, $totalLeads);
             $notProcessed = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
+            
                 ->where("current_status", '=', NUll)
                 ->where('created_at', '>=', $startDate)
                 ->where('created_at', '<=', $endDate)->get()->count();
             array_push($row, $notProcessed);
             foreach ($statuses as $status) {
                 $leadsCount = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
+                
                     ->where("current_status", '=', $status->name)
                     ->where('created_at', '>=', $startDate)
                     ->where('created_at', '<=', $endDate)->get()->count();
@@ -61,6 +72,7 @@ class ReportController extends Controller
     }
     public function exportLeads(Request $req)
     {
+       
         $startDate = $req->date_from;
         $endDate = $req->date_to;
         $header = ['Name', 'Total Leads', 'Not Processed Leads'];
@@ -68,16 +80,22 @@ class ReportController extends Controller
         foreach ($statuses as $statusValue) {
             array_push($header, $statusValue->name);
         }
-
-        if (!$startDate) {
-            $startDate = Carbon::now()->startOfMonth()->toDateString();
+        if (session('user')->role == "agent") {
+            $agents = User::where('id','=',session('user')->id)->get();
         }
-        if (!$endDate) {
-            $endDate = Carbon::now()->toDateString();
+        else{
+            $agents = User::where('role', '=', 'agent')->get();
+        }
+       
+        if (!$startDate) {
+            $startDate = Carbon::now()->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+        } else {
+            $startDate = Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
+            $endDate = Carbon::createFromFormat('Y-m-d', $endDate)->endOfDay();
         }
 
         $currentUser = session('user');
-        $agents = User::where('role', '=', 'agent')->get();
         $data = [];
         foreach ($agents as $key => $value) {
             # code...
@@ -116,6 +134,10 @@ class ReportController extends Controller
     // deposits report and exports
     public function deposits(Request $req)
     {
+        $agent=null;
+        if (session('user')->role == "agent") {
+            $agent = User::find(session('user')->id);
+        }
         $startDate = $req->query('from_date');
         $endDate = $req->query('to_date');
         if (!$startDate) {
@@ -129,7 +151,13 @@ class ReportController extends Controller
         $clients = Client::with(['depositHistories' => function ($query) use ($startDate, $endDate) {
             $query->where('deposit_histories.created_at', '>=', $startDate)
             ->where('deposit_histories.created_at', '<=', $endDate);
-        }])->get();
+        }])
+        ->when($agent, function ($query, $agent) {
+            $query->where(function ($query) use ($agent) {
+                $query->where('agent_id', '=', $agent->id);
+            });
+        })
+        ->get();
 
         // Initialize the two-dimensional array
         $data = [];
@@ -163,6 +191,10 @@ class ReportController extends Controller
     }
     public function exportDeposit(Request $req)
     {
+        $agent=null;
+        if (session('user')->role == "agent") {
+            $agent = User::find(session('user')->id);
+        }
         $startDate = $req->query('from_date');
         $endDate = $req->query('to_date');
         if (!$startDate) {
@@ -176,7 +208,13 @@ class ReportController extends Controller
         $clients = Client::with(['depositHistories' => function ($query) use ($startDate, $endDate) {
             $query->where('deposit_histories.created_at', '>=', $startDate)
             ->where('deposit_histories.created_at', '<=', $endDate);
-        }])->get();
+        }])
+        ->when($agent, function ($query, $agent) {
+            $query->where(function ($query) use ($agent) {
+                $query->where('agent_id', '=', $agent->id);
+            });
+        })
+        ->get();
 
         // Initialize the two-dimensional array
         $data = [];

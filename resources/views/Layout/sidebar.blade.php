@@ -122,7 +122,7 @@
                         </p>
                     </a>
                 </li>
-                @if($userData->role == 'manager' )
+               
                 {{--reports --}}
                 <li class="nav-item ">
                     <a href="{{ url('/reports/leads') }}"
@@ -144,7 +144,7 @@
                         </p>
                     </a>
                 </li>
-                @endif
+                
             </ul>
 
 
