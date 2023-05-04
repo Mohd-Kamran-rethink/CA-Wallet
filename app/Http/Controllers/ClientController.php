@@ -85,10 +85,23 @@ class ClientController extends Controller
     }
     public function redeposit(Request $req)
     {
-        $deposit=Deposit::find($req->depositId);
-        $deposit->deposit_amount=$deposit->deposit_amount+$req->amount;
-        $deposit->type='redeposit';
-        $deposit->update();
+        $currentUser=session('user');
+        $deposit=Deposit::where('client_id','=',$req->depositId)->where('agent_id','=',$currentUser->id)->first();
+        if($deposit)
+        {
+            $deposit->deposit_amount=$deposit->deposit_amount+$req->amount;
+            $deposit->type='redeposit';
+            $deposit->update();
+        }
+        else
+        {
+            $deposit=new Deposit();
+            $deposit->deposit_amount=$req->amount;
+            $deposit->type='Deposit';
+            $deposit->agent_id=$currentUser->id;
+            $deposit->client_id=$req->depositId;
+            $deposit->save();
+        }
         $depositHistory=new DepositHistory();
         $depositHistory->deposit_id=$deposit->id;
         $depositHistory->amount=$req->amount;

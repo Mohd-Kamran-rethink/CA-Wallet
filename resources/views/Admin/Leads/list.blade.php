@@ -233,11 +233,7 @@
                                                         @break
                                                     @endif
                                                     @endforeach
-                                                    @if(Request::is('leads/approval') && session('user')->id == 1)
-                                                        <button onclick="approveLeadsModal({{ $item->id }})"
-                                                            title="Approve this lead"
-                                                            class="btn btn-danger">Approve</button>
-                                                    @endif
+                                                   
                                             </td>
                                         </tr>
                                     @empty
@@ -441,36 +437,7 @@
     </div>
 </div>
 
-{{-- leads aproval --}}
-<div class="modal fade show" id="approveLeads" style=" padding-right: 17px;" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Leads Approval</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ url('/leads/acceptapproval') }}" method="post" >
-                    @csrf
-                    <input type="hidden" name="leadIds" class="lead_ids">
-                    <h4 class="">Are you sure you want to approve lead?</h4>
-                
-            </div>
 
-            <div class="modal-footer ">
-                <button  type="submit"
-                    class="btn btn-success"
-                    >Submit</button>
-                <button type="button" data-dismiss="modal" aria-label="Close"
-                    class="btn btn-default">Cancel</button>
-
-            </div>
-        </form>
-        </div>
-    </div>
-</div>
 
 
 
@@ -627,18 +594,7 @@
         return selectedIds;
 
     }
-    function approveLeadsModal(leadId)
-    {
-        if(leadId)
-        {
-            $('.lead_ids').val(leadId)
-        }
-        else
-        {
-            $('.lead_ids').val(selectedLeads())
-        }
-        $('#approveLeads').modal('show') 
-    }
+    
 
     function MassModals(modalId) {
         let selectedIds = selectedLeads();

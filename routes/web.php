@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeadsController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SourceController;
@@ -110,5 +111,12 @@ Route::middleware('ValidateUsers')->prefix('/attendance')->group(function () {
     Route::get('/viewActivity', [AttendanceController::class, 'viewActivity'])->name('viewActivity');
 });
 
+// repors
+Route::middleware('ValidateManager')->prefix('/reports')->group(function () {
+    Route::get('leads', [ReportController::class, 'leadsReport'])->name('leadsReport');
+    Route::get('deposits', [ReportController::class, 'deposits'])->name('deposits');
+    Route::post('/leads/export', [ReportController::class, 'exportLeads'])->name('exportLeads');
+    Route::post('/deposits/export', [ReportController::class, 'exportDeposit'])->name('exportDeposit');
+});
    
    

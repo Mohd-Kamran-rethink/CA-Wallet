@@ -52,11 +52,11 @@ class LeadsController extends Controller
             ->join('sources', 'leads.source_id', '=', 'sources.id')
             ->join('users', 'leads.agent_id', '=', 'users.id')
             // if session has manager show all the leads added by thi smanager
-            ->when($manager, function ($query, $manager) {
-                $query->where(function ($query) use ($manager) {
-                    $query->where('leads.manager_id', '=', $manager->id);
-                });
-            })
+            // ->when($manager, function ($query, $manager) {
+            //     $query->where(function ($query) use ($manager) {
+            //         $query->where('leads.manager_id', '=', $manager->id);
+            //     });
+            // })
             // if session has agesnt show all his assigned leads
             ->when($agent, function ($query, $agent) {
                 $query->where(function ($query) use ($agent) {
@@ -124,11 +124,11 @@ class LeadsController extends Controller
             ->join('sources', 'leads.source_id', '=', 'sources.id')
             ->join('users', 'leads.agent_id', '=', 'users.id')
             // if session has manager show all the leads added by thi smanager
-            ->when($manager, function ($query, $manager) {
-                $query->where(function ($query) use ($manager) {
-                    $query->where('leads.manager_id', '=', $manager->id);
-                });
-            })
+            // ->when($manager, function ($query, $manager) {
+            //     $query->where(function ($query) use ($manager) {
+            //         $query->where('leads.manager_id', '=', $manager->id);
+            //     });
+            // })
            
             // filter by agent
             ->when($FilterAgent, function ($query, $FilterAgent) {
@@ -464,11 +464,11 @@ class LeadsController extends Controller
             ->join('sources', 'leads.source_id', '=', 'sources.id')
             ->join('users', 'leads.agent_id', '=', 'users.id')
             // if session has manager show all the leads added by thi smanager
-            ->when($manager, function ($query, $manager) {
-                $query->where(function ($query) use ($manager) {
-                    $query->where('leads.manager_id', '=', $manager->id);
-                });
-            })
+            // ->when($manager, function ($query, $manager) {
+            //     $query->where(function ($query) use ($manager) {
+            //         $query->where('leads.manager_id', '=', $manager->id);
+            //     });
+            // })
             // if session has agesnt show all his assigned leads
             ->when($agent, function ($query, $agent) {
                 $query->where(function ($query) use ($agent) {

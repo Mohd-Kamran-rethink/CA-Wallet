@@ -4,7 +4,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Dashboard</h1>
+                    <h1 class="font-weight-bold">Dashboard</h1>
 
                 </div>
             </div>
@@ -49,7 +49,7 @@
                         </div>
                     </div>
                 @endif
-                @if(session('user')->role =="agent")
+                @if (session('user')->role == 'agent')
                     <div class="col-lg-3 col-6">
                         <div class="small-box bg-warning">
                             <div class="inner">
@@ -83,4 +83,5 @@
 
         </div>
     </section>
+   
 @endsection
