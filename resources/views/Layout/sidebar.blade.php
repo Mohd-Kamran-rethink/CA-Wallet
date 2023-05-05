@@ -140,7 +140,7 @@
                                 <i class="nav-icon fa fa-table"></i>
         
                                 <p>
-                                    Reports for leads
+                                    Leads
                                 </p>
                             </a>
                         </li>
@@ -150,7 +150,7 @@
                                 <i class="nav-icon fa fa-table"></i>
         
                                 <p>
-                                    Reports for deposits
+                                    Deposits
                                 </p>
                             </a>
                         </li>

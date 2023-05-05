@@ -47,11 +47,11 @@
             </div>
          </div>
          @endif
-         @if (session('user')->role == 'agent')
+        
          <div class="col-lg-3 col-6">
             <div class="small-box bg-warning">
                <div class="inner">
-                  <h3>44</h3>
+                  <h3>{{$leads}}</h3>
                   <p>Total Leads</p>
                </div>
                <div class="icon">
@@ -61,20 +61,6 @@
                   class="fas fa-arrow-circle-right"></i></a>
             </div>
          </div>
-         <div class="col-lg-3 col-6">
-            <div class="small-box bg-danger">
-               <div class="inner">
-                  <h3>65</h3>
-                  <p>Completed Leads</p>
-               </div>
-               <div class="icon">
-                  <i class="ion ion-pie-graph"></i>
-               </div>
-               <a href="#" class="small-box-footer">More info <i
-                  class="fas fa-arrow-circle-right"></i></a>
-            </div>
-         </div>
-         @endif
       </div>
    </div>
 </section>
