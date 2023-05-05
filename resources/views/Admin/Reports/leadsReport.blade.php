@@ -77,11 +77,12 @@
     <script>
          const exportData = () => {
             event.preventDefault();
+            var currentUrl = window.location.href;
             const filterDateFrom=$('.from_date').val()
             const filterDateTo=$('.to_date').val()
             const date_from = $('#date_from').val(filterDateFrom);
             const date_to = $('#date_to').val(filterDateTo);
-            $('#leads-report-export-form').attr('action','/reports/leads/export').submit();
+            $('#leads-report-export-form').attr('action',`${currentUrl}/export`).submit();
     }
     </script>
 @endsection
