@@ -85,7 +85,8 @@ class LeadsController extends Controller
             })
             ->where('is_approved','=','Yes')
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
-            ->orderBy('leads.id','desc')
+            ->orderByDesc('leads.date')
+
             ->paginate(45);
 
 
@@ -298,9 +299,9 @@ class LeadsController extends Controller
             $existingEntries[$entryKey] = true;
             $addedCount++;
         }
-
+        $sessionMsg=$sessionUser->role=='agent'?"We have sent your leads to manager for approval":'Imported Successfully';
         return  redirect('/leads')->with([
-            'msg-success' => "Imported Successfully",
+            'msg-success' =>$sessionMsg,
             'added' => $addedCount,
             'skippedCount' => $skippedCount,
             'skipped' => $skipped,

@@ -82,7 +82,8 @@
 <section class="content mt-4">
    <div class="row mb-2">
       <div class="col-sm-6">
-         <h4 class="font-weight-bold px-2">InCosistent Clients</h4>
+         <h4 class="font-weight-bold px-2">
+            Follow Up Clients</h4>
       </div>
    </div>
    <div class="card-body ">
