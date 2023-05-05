@@ -153,7 +153,7 @@ class LeadsController extends Controller
             })
             ->where('is_approved','=','No')
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
-            ->orderBy('leads.id','desc')
+            ->orderByDesc('leads.date')
             ->paginate(45);
         return view('Admin.Leads.leadsForApproval', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
     }
@@ -498,7 +498,7 @@ class LeadsController extends Controller
             })
             ->whereDate('leads.followup_date', now()->toDateString())
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
-            ->orderBy('leads.id','desc')
+            ->orderByDesc('leads.date')
             ->paginate(45);
 
 
