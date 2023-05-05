@@ -157,6 +157,7 @@ class ReportController extends Controller
                 $query->where('agent_id', '=', $agent->id);
             });
         })
+        ->where('isDeleted','=','No')
         ->get();
 
         // Initialize the two-dimensional array
@@ -214,6 +215,7 @@ class ReportController extends Controller
                 $query->where('agent_id', '=', $agent->id);
             });
         })
+        ->where('isDeleted','=','No')
         ->get();
 
         // Initialize the two-dimensional array

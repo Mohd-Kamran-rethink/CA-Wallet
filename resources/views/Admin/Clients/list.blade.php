@@ -99,17 +99,18 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <form action="{{ url('clients/redeposit') }}" method="POST">
+                <form action="{{ url('clients/redeposit') }}" method="POST" id="redeposit-form">
                     @csrf
                     <div class="px-3">
                         <input type="hidden" id="deposit-id" name="depositId">
                         <div class="form-group mt-3">
                             <label for="">Amount <span class="text-danger">*</span></label>
-                            <input type="number" placeholder="1000" name="amount" class="form-control">
+                            <input type="number" placeholder="1000" id="amount-input" name="amount" class="form-control" value="">
+                            <span class="text-danger error-amount"></span>
                         </div>
                     </div>
-                    <div class="modal-footer ">
-                        <button type="submit" class="btn btn-success">Submit</button>
+                    <div class="modal-footer">
+                        <button type="button" onclick="redeposit()" class="btn btn-success">Submit</button>
                         <button type="button" data-dismiss="modal" aria-label="Close"
                             class="btn btn-default">Cancel</button>
                     </div>
@@ -146,6 +147,19 @@
         function openRedepositModal(id) {
             $(`#modal-redeposit`).modal("show");
             $(`#deposit-id`).val(id);
+        }
+        function redeposit()
+        {
+            event.preventDefault();
+            let amount = $('#amount-input').val()
+            if (!amount) {
+                $('.error-amount').html('Please enter amount')
+            } 
+            else
+            {
+                $('.error-amount').html('')
+                $('#redeposit-form').submit();
+            }
         }
     </script>
 @endsection
