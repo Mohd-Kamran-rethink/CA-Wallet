@@ -24,12 +24,12 @@
                             <button class="btn btn-success form-control" onclick="searchData()">Filter</button>
                         </div>
                     </form>
-                    <form action="{{url('/report/leads/export')}}" method="post" id="leads-report-export-form">
+                    <form action="{{ url('/report/leads/export') }}" method="post" id="leads-report-export-form">
                         @csrf
-                        <div >
+                        <div>
                             <input type="hidden" name="date_from" id="date_from">
                             <input type="hidden" name="date_to" id="date_to">
-                            <label for=""  style="visibility: hidden;"> d</label>
+                            <label for="" style="visibility: hidden;"> d</label>
                             <button onclick="exportData()" class="btn btn-success form-control">Export</button>
                         </div>
                     </form>
@@ -55,7 +55,7 @@
 
                                 @foreach ($data as $row)
                                     <tr>
-                                        <td>{{ $loop->iteration}}</td>
+                                        <td>{{ $loop->iteration }}</td>
                                         @foreach ($row as $cell)
                                             <td class="text-center">{{ $cell }}</td>
                                         @endforeach
@@ -75,14 +75,14 @@
         </div>
     </section>
     <script>
-         const exportData = () => {
+        const exportData = () => {
             event.preventDefault();
             var currentUrl = window.location.href;
-            const filterDateFrom=$('.from_date').val()
-            const filterDateTo=$('.to_date').val()
+            const filterDateFrom = $('.from_date').val()
+            const filterDateTo = $('.to_date').val()
             const date_from = $('#date_from').val(filterDateFrom);
             const date_to = $('#date_to').val(filterDateTo);
-            $('#leads-report-export-form').attr('action',`${currentUrl}/export`).submit();
-    }
+            $('#leads-report-export-form').attr('action', `${currentUrl}/export`).submit();
+        }
     </script>
 @endsection

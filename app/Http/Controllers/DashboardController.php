@@ -34,10 +34,13 @@ class DashboardController extends Controller
                 $query->where('agent_id', '=', $agent->id);
             });
         })
+        ->where('isDeleted','=','No')
         ->select('clients.*', DB::raw('DATEDIFF(NOW(), (SELECT MAX(created_at) FROM deposit_histories WHERE deposit_histories.deposit_id IN (SELECT id FROM deposits WHERE deposits.client_id = clients.id))) AS days_since_last_deposit'))
+        ->where(DB::raw('DATEDIFF(NOW(), (SELECT MAX(created_at) FROM deposit_histories WHERE deposit_histories.deposit_id IN (SELECT id FROM deposits WHERE deposits.client_id = clients.id)))'), '>', 0)
         ->orderBy('days_since_last_deposit', 'DESC')
-
         ->paginate(40);
+
+
 
         
         $lastEntry = MasterAttendance::where('user_id', session('user')->id)->whereDate('created_at', now()->format('Y-m-d'))->first();
