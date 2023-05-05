@@ -171,7 +171,7 @@
         table += "<tbody>";
         data.forEach((item, index) => {
             table +=
-                `<tr><td>${index+1}</td><td style='width:30%;text-align:center'>${item.action??'--'}</td><th style='width:10%;text-align:center'>${item.time??'--'}</th><td style="word-wrap">${moment(item.created_at).format('DD-MM-YYYY') ??'--'}</td></tr>`;
+                `<tr><td>${index+1}</td><td style='width:30%;text-align:center'>${item.action??'--'}</td><th style='width:10%;text-align:center'>${moment(item.time, 'HH:mm:ss').format('h:mm A')??'--'}</th><td style="word-wrap">${moment(item.created_at).format('DD-MM-YYYY') ??'--'}</td></tr>`;
         });
         table += "</tbody></table>";
         return table;

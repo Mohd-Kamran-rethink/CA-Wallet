@@ -82,7 +82,8 @@
             const filterDateTo = $('.to_date').val()
             const date_from = $('#date_from').val(filterDateFrom);
             const date_to = $('#date_to').val(filterDateTo);
-            $('#leads-report-export-form').attr('action', `${currentUrl}/export`).submit();
+            const url = currentUrl.replace(/\?.*/, '') + '/export' + window.location.search;
+            $('#leads-report-export-form').attr('action', url).submit();
         }
     </script>
 @endsection

@@ -164,7 +164,7 @@ class ReportController extends Controller
         $data = [];
 
         // Add the header row with the date range
-        $headerRow = ['Name'];
+        $headerRow = ['Name','ID Name','Number'];
         $currentDate = Carbon::parse($startDate);
         while ($currentDate <= Carbon::parse($endDate)) {
             $headerRow[] = $currentDate->format('d-m-Y');
@@ -174,7 +174,7 @@ class ReportController extends Controller
 
         // Add the data rows with the client names and deposit totals for each date
         foreach ($clients as $client) {
-            $dataRow = [$client->name];
+            $dataRow = [$client->name,$client->ca_id,$client->number];
             $currentDate = Carbon::parse($startDate);
             while ($currentDate <= Carbon::parse($endDate)) {
                 $depositTotal = $client->depositHistories
@@ -222,7 +222,7 @@ class ReportController extends Controller
         $data = [];
 
         // Add the header row with the date range
-        $headerRow = ['Name'];
+        $headerRow = ['Name','ID Name','Number'];
         $currentDate = Carbon::parse($startDate);
         while ($currentDate <= Carbon::parse($endDate)) {
             $headerRow[] = $currentDate->format('d-m-Y');
@@ -232,7 +232,7 @@ class ReportController extends Controller
 
         // Add the data rows with the client names and deposit totals for each date
         foreach ($clients as $client) {
-            $dataRow = [$client->name];
+            $dataRow = [$client->name,$client->ca_id,$client->number];
             $currentDate = Carbon::parse($startDate);
             while ($currentDate <= Carbon::parse($endDate)) {
                 $depositTotal = $client->depositHistories
