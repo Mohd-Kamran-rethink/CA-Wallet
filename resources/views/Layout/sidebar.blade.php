@@ -50,7 +50,7 @@
                         <li class="nav-item ">
                             <a href="{{ url('/sources') }}"
                                 class="nav-link {{ Request::is('sources') || Request::is('sources/add') || Request::is('sources/edit') ? 'active' : '' }}">
-                                <i class="nav-icon fa fa-th-list"></i>
+                                <i class="nav-icon fas fa-folder "></i>
                                 <p>
                                     Sources
 
