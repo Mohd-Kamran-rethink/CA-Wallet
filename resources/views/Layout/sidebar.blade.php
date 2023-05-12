@@ -124,40 +124,40 @@
                 </li>
 
                 {{-- reports --}}
-                
-                <li class="nav-item {{ Request::is('reports/leads')||Request::is('reports/deposits') ? 'menu-is-opening menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ Request::is('reports/leads')||Request::is('reports/deposits') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-chart-pie"></i>
-                        <p>
-                            Reports
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview" style="display: {{ Request::is('reports/leads')||Request::is('reports/deposits') ? 'block' : 'none' }}">
-                        <li class="nav-item">
-                            <a href="{{ url('/reports/leads') }}"
-                                class="nav-link {{ Request::is('reports/leads') ? 'active' : '' }}">
-                                <i class="nav-icon fa fa-table"></i>
-        
-                                <p>
-                                    Leads
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item ">
-                            <a href="{{ url('/reports/deposits') }}"
-                                class="nav-link {{ Request::is('reports/deposits') ? 'active' : '' }}">
-                                <i class="nav-icon fa fa-table"></i>
-        
-                                <p>
-                                    Deposits
-                                </p>
-                            </a>
-                        </li>
+                @if ($userData->role == 'manager')
+                    <li class="nav-item {{ Request::is('reports/leads')||Request::is('reports/deposits') ? 'menu-is-opening menu-open' : '' }}">
+                        <a href="#" class="nav-link {{ Request::is('reports/leads')||Request::is('reports/deposits') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-chart-pie"></i>
+                            <p>
+                                Reports
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview" style="display: {{ Request::is('reports/leads')||Request::is('reports/deposits') ? 'block' : 'none' }}">
+                            <li class="nav-item">
+                                <a href="{{ url('/reports/leads') }}"
+                                    class="nav-link {{ Request::is('reports/leads') ? 'active' : '' }}">
+                                    <i class="nav-icon fa fa-table"></i>
+            
+                                    <p>
+                                        Leads
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item ">
+                                <a href="{{ url('/reports/deposits') }}"
+                                    class="nav-link {{ Request::is('reports/deposits') ? 'active' : '' }}">
+                                    <i class="nav-icon fa fa-table"></i>
+            
+                                    <p>
+                                        Deposits
+                                    </p>
+                                </a>
+                            </li>
 
-                    </ul>
-                </li>
-                
+                        </ul>
+                    </li>
+                @endif
             </ul>
 
 

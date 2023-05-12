@@ -2,10 +2,10 @@
 @section('content')
     <section class="content-header">
         <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
+            <div class="row mb-2 d-flex justify-content-between">
                     <h1>Deposit History</h1>
-                </div>
+                    <a href="{{url('/clients')}}" class="btn btn-sm btn-primary">Go Back</a>
+               
             </div>
             @if (session()->has('msg-success'))
                 <div class="alert alert-success" role="alert">
