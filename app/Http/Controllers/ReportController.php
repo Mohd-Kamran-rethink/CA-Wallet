@@ -12,19 +12,14 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\VarDumper\Cloner\Data;
 
 class ReportController extends Controller
 {
     public function leadsReport(Request $req)
     {
-       
-       
-        if (session('user')->role == "agent") {
-            $agents = User::where('id','=',session('user')->id)->get();
-        }
-        else{
-            $agents = User::where('role', '=', 'agent')->get();
-        }
+        $agents = User::where('role', '=', 'agent')->get();
+        
         $startDate = $req->query('from_date');
         $endDate = $req->query('to_date');
         if (!$startDate) {
@@ -34,7 +29,6 @@ class ReportController extends Controller
             $startDate = Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
             $endDate = Carbon::createFromFormat('Y-m-d', $endDate)->endOfDay();
         }
-
         $currentUser = session('user');
         $statuses = LeadStatusOption::get();
         
@@ -43,25 +37,33 @@ class ReportController extends Controller
             # code...
             $row = [];
             array_push($row, $value->name);
+
             $totalLeads = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
-                    
-                ->where('created_at', '>=', $startDate)
-                ->where('created_at', '<=', $endDate)
-                ->get()->count();
+            ->whereBetween(DB::raw("STR_TO_DATE(date, '%d-%m-%Y')"), [
+                date('Y-m-d', strtotime($startDate)),
+                date('Y-m-d', strtotime($endDate))
+            ])
+                            ->get()->count();
 
             array_push($row, $totalLeads);
             $notProcessed = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
+            ->where("current_status", '=', NUll)
+            ->whereBetween(DB::raw("STR_TO_DATE(date, '%d-%m-%Y')"), [
+                date('Y-m-d', strtotime($startDate)),
+                date('Y-m-d', strtotime($endDate))
+            ])
+            ->get()->count();
             
-                ->where("current_status", '=', NUll)
-                ->where('created_at', '>=', $startDate)
-                ->where('created_at', '<=', $endDate)->get()->count();
             array_push($row, $notProcessed);
             foreach ($statuses as $status) {
                 $leadsCount = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
                 
                     ->where("current_status", '=', $status->name)
-                    ->where('created_at', '>=', $startDate)
-                    ->where('created_at', '<=', $endDate)->get()->count();
+                    ->whereBetween(DB::raw("STR_TO_DATE(date, '%d-%m-%Y')"), [
+                        date('Y-m-d', strtotime($startDate)),
+                        date('Y-m-d', strtotime($endDate))
+                    ])
+                    ->get()->count();
                 array_push($row, $leadsCount);
             }
             array_push($data, $row);
@@ -80,12 +82,10 @@ class ReportController extends Controller
         foreach ($statuses as $statusValue) {
             array_push($header, $statusValue->name);
         }
-        if (session('user')->role == "agent") {
-            $agents = User::where('id','=',session('user')->id)->get();
-        }
-        else{
+        
+        
             $agents = User::where('role', '=', 'agent')->get();
-        }
+        
        
         if (!$startDate) {
             $startDate = Carbon::now()->startOfDay();
@@ -102,21 +102,29 @@ class ReportController extends Controller
             $row = [];
             array_push($row, $value->name);
             $totalLeads = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
-                ->where('created_at', '>=', $startDate)
-                ->where('created_at', '<=', $endDate)
+            ->whereBetween(DB::raw("STR_TO_DATE(date, '%d-%m-%Y')"), [
+                date('Y-m-d', strtotime($startDate)),
+                date('Y-m-d', strtotime($endDate))
+            ])
                 ->get()->count();
 
             array_push($row, $totalLeads === 0 ? '0' : ($totalLeads ?: ''));
             $notProcessed = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
                 ->where("current_status", '=', NUll)
-                ->where('created_at', '>=', $startDate)
-                ->where('created_at', '<=', $endDate)->get()->count();
+                ->whereBetween(DB::raw("STR_TO_DATE(date, '%d-%m-%Y')"), [
+                    date('Y-m-d', strtotime($startDate)),
+                    date('Y-m-d', strtotime($endDate))
+                ])
+                ->get()->count();
             array_push($row, $notProcessed === 0 ? '0' : ($notProcessed ?: ''));
             foreach ($statuses as $status) {
                 $leadsCount = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
                     ->where("current_status", '=', $status->name)
-                    ->where('created_at', '>=', $startDate)
-                    ->where('created_at', '<=', $endDate)->get()->count();
+                    ->whereBetween(DB::raw("STR_TO_DATE(date, '%d-%m-%Y')"), [
+                        date('Y-m-d', strtotime($startDate)),
+                        date('Y-m-d', strtotime($endDate))
+                    ])
+                    ->get()->count();
                 array_push($row, $leadsCount === 0 ? '0' : ($leadsCount ?: ''));
             }
             array_push($data, $row);
@@ -135,9 +143,7 @@ class ReportController extends Controller
     public function deposits(Request $req)
     {
         $agent=null;
-        if (session('user')->role == "agent") {
-            $agent = User::find(session('user')->id);
-        }
+       
         $startDate = $req->query('from_date');
         $endDate = $req->query('to_date');
         if (!$startDate) {
@@ -193,9 +199,7 @@ class ReportController extends Controller
     public function exportDeposit(Request $req)
     {
         $agent=null;
-        if (session('user')->role == "agent") {
-            $agent = User::find(session('user')->id);
-        }
+        
         $startDate = $req->query('from_date');
         $endDate = $req->query('to_date');
         if (!$startDate) {
@@ -239,11 +243,26 @@ class ReportController extends Controller
                     ->where('created_at', '>=', $currentDate->toDateString())
                     ->where('created_at', '<=', $currentDate->toDateString() . ' 23:59:59')
                     ->sum('amount');
-                $dataRow[] = $depositTotal;
+                $dataRow[] = $depositTotal=== 0 ? '0' : ($depositTotal ?: '');
                 $currentDate->addDay();
             }
             $data[] = $dataRow;
         }
+        $totalSum=['TOTAL','-','-'];
+        for ($i = 3; $i < count($headerRow); $i++) {
+            $columnSum = 0;
+            foreach ($data as $row) {
+                if ($row[$i] !== '-') {
+                    if (is_numeric($row[$i])) {
+                        $columnSum += $row[$i];
+                    }
+                }
+            }
+            $totalSum[] = $columnSum;
+        }
+        
+        // Add the total row to the data array
+        $data[] = $totalSum;
         $filename = 'deposit-from-' . $startDate . 'to-' . $endDate . '.xlsx';
         $export = new DepositExport($data, $data[0]);
         return Excel::download($export, $filename);

@@ -112,7 +112,7 @@ Route::middleware('ValidateUsers')->prefix('/attendance')->group(function () {
 });
 
 // repors
-Route::middleware('ValidateUsers')->prefix('/reports')->group(function () {
+Route::middleware('ValidateManager')->prefix('/reports')->group(function () {
     Route::get('leads', [ReportController::class, 'leadsReport'])->name('leadsReport');
     Route::get('deposits', [ReportController::class, 'deposits'])->name('deposits');
     Route::post('/leads/export', [ReportController::class, 'exportLeads'])->name('exportLeads');
