@@ -77,12 +77,15 @@ Route::middleware('adminManager')->prefix('/statuses')->group(function () {
 // leads
 Route::middleware('ValidateUsers')->prefix('/leads')->group(function () {
     Route::get('',[LeadsController::class,'list'])->name('list');
+    Route::get('/duplicate',[LeadsController::class,'duplicateLeads'])->name('duplicateLeads');
     Route::get('/import',[LeadsController::class,'importView'])->name('importView');
     Route::post('/import',[LeadsController::class,'import'])->name('import');
     Route::post('/status/submit',[LeadsController::class,'submitStatus'])->name('submitStatus');
     Route::get('/download-sample-file',[LeadsController::class,'downloadfile'])->name('downloadfile');
     // followup leads
-    Route::get('/follow-up',[LeadsController::class,'followUp'])->name('followUp');
+    Route::get('/demoid',[LeadsController::class,'demoIdLeads'])->name('demoIdLeads');
+    Route::get('/idcreated',[LeadsController::class,'createdIdLeads'])->name('createdIdLeads');
+    Route::get('/callback',[LeadsController::class,'callbackLeads'])->name('callbackLeads');
     Route::post('/status/mass/submit',[LeadsController::class,'massStatusChange'])->name('massStatusChange');
     Route::post('/agent/mass/change',[LeadsController::class,'massAgentChange'])->name('massAgentChange');
     // for approval leads only show to default manager

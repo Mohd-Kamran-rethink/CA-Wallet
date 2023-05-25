@@ -28,7 +28,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>FollowUp Leads</h1>
+                    <h1>Follow Up Leads ({{$status->name}})</h1>
                 </div>
             </div>
             @if (session()->has('msg-success'))
@@ -56,15 +56,7 @@
                             <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
                                 class="form-control float-right" placeholder="Search" id="searchInput">
                         </div>
-                        <div class="input-group col-4">
-                            <select name="status" id="status_id" class="form-control">
-                                <option value="">--Filter By Status--</option>
-                                @foreach ($statuses as $item)
-                                    <option {{ isset($Filterstatus) && $Filterstatus == $item->id ? 'selected' : '' }}
-                                        value="{{ $item->id }}">{{ $item->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        
                         @if (session('user')->role == 'manager')
                             <div class="input-group col-4">
                                 <select name="agent_id" id="agent_id" class="form-control">
@@ -103,10 +95,6 @@
                                     </thead>
                                     <tbody>
                                         @forelse($leads as $item)
-                                            @if ($item->current_status == 'Deposited' || $item->name == 'Not Intrested')
-                                                @continue
-                                            @endif
-
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->source_name }}</td>
@@ -170,7 +158,7 @@
                         <select onchange="handleStatusValues(this)" name="status" class="form-control" id="">
                             <option value="0" data-second-value="null">--Choose--</option>
                             @foreach ($statuses as $item)
-                                <option value="{{ $item->id }}" data-second-value="{{ $item->name }}">
+                                <option value="{{ $item->id }}" data-second-value="{{ $item->id }}">
                                     {{ $item->name }}</option>
                             @endforeach
                         </select>
@@ -240,10 +228,8 @@
         event.preventDefault();
         const url = new URL(window.location.href);
         const searchValue = $('#searchInput').val().trim();
-        const status_id = $('#status_id').val();
         const filter_agent = $('#agent_id').val();
         url.searchParams.set('search', searchValue);
-        url.searchParams.set('status', status_id ?? '');
         url.searchParams.set('agent', filter_agent ?? '');
         $('#search-form').attr('action', url.toString()).submit();
     }
@@ -262,7 +248,7 @@
         if (status == "0") {
             submitButton.attr('disabled', true);
         } else {
-            if (status == "Follow Up" || status == "Busy") {
+            if (status == 6||status == 7||status == 8 || status == 11) {
 
                 conditionalInput.show()
             } else {
@@ -270,11 +256,11 @@
             }
             submitButton.removeAttr('disabled');
         }
-        if (status == "Deposited") {
-            forDepostied.show()
-        } else {
-            forDepostied.hide()
-        }
+        // if (status == 1) {
+        //     forDepostied.show()
+        // } else {
+        //     forDepostied.hide()
+        // }
 
     }
     const submitStatusChange = () => {
@@ -283,15 +269,17 @@
         let datePicker = $('#datePicker').val()
         let amount = $('#amount').val()
         let IdName = $('#idName').val()
-        if ((status == "Follow Up" || status == "Busy") && !datePicker) {
+        if ((status == 6||status == 7||status == 8 || status == 11) && !datePicker) {
             $('.error-date').html('Please enter valid date')
 
-        } else if ((status == "Deposited") && !amount) {
-            $('.error-amount').html('Please enter amount')
-        }
-        else if ((status == "Deposited") && !IdName) {
-            $('.error-idName').html('Please enter IdName')
-        }  else {
+        } 
+        // else if ((status == 1) && !amount) {
+        //     $('.error-amount').html('Please enter amount')
+        // }
+        // else if ((status == 1) && !IdName) {
+        //     $('.error-idName').html('Please enter IdName')
+        // }  
+        else {
             $('#status-form').submit();
         }
     }
@@ -304,7 +292,6 @@
 
     function searchLeadsStatus(lead_id) {
         const leadsStatusData = {!! json_encode($leads_status_history) !!};
-        console.log(leadsStatusData)
         const filteredData = leadsStatusData.filter(data => data.lead_id == lead_id);
 
         const table = createTable(filteredData);

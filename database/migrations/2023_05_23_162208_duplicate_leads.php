@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class Leads extends Migration
+class DuplicateLeads extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class Leads extends Migration
      */
     public function up()
     {
-        Schema::create('leads', function (Blueprint $table) {
+        Schema::create('duplicate_leads', function (Blueprint $table) {
             $table->id();
             $table->string('source_id');
             $table->string('name');
@@ -31,8 +31,7 @@ class Leads extends Migration
             $table->string('leads_date')->nullable();
             $table->enum('is_approved',['No','Yes']);
             $table->timestamps();
-        }); 
-             
+        });
     }
 
     /**

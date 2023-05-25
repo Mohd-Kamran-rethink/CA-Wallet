@@ -19,6 +19,7 @@ class MasterAttendance extends Migration
             $table->string('user_id');
             $table->date('date')->default(date('Y-m-d'));
             $table->string('hours');
+            $table->string('breaktime')->default('00:00:00');
             $table->string('actions');
             $table->timestamps();
         });

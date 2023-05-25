@@ -68,7 +68,7 @@
                         </li>
                     @endif
                 @endif
-
+{{-- main leads --}}
                 <li class="nav-item ">
                     <a href="{{ url('/leads') }}"
                         class="nav-link {{ Request::is('leads') || Request::is('leads/add') || Request::is('leads/edit') ? 'active' : '' }}">
@@ -79,14 +79,60 @@
                         </p>
                     </a>
                 </li>
+                @if ($userData->role == 'manager')
+                {{-- duplicate leads --}}
                 <li class="nav-item ">
-                    <a href="{{ url('leads/follow-up') }}"
-                        class="nav-link {{ Request::is('leads/follow-up') ? 'active' : '' }}">
-                        <i class="nav-icon fa fa-th"></i>
+                    <a href="{{ url('/leads/duplicate') }}"
+                        class="nav-link {{ Request::is('leads/duplicate')? 'active' : '' }}">
+                        <i class="nav-icon  fa fa-clone"></i>
                         <p>
-                            FollowUp Leads
+                           Duplicate Leads
+
                         </p>
                     </a>
+                </li>
+                @endif
+                {{-- followup  --}}
+                <li
+                    class="nav-item {{ Request::is('leads/demoid') || Request::is('leads/callback') ? 'menu-is-opening menu-open' : '' }}">
+                    <a href="#"
+                        class="nav-link {{ Request::is('leads/demoid') || Request::is('leads/callback') ? 'active' : '' }}">
+                        <i class="nav-icon fa fa-th"></i>
+                        <p>
+                            Follow Up
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview"
+                        style="display: {{ Request::is('leads/demoid') || Request::is('leads/callback') ? 'block' : 'none' }}">
+                        <li class="nav-item">
+                            <a href="{{ url('leads/demoid') }}"
+                                class="nav-link {{ Request::is('leads/demoid') ? 'active' : '' }}">
+                                <i class="nav-icon fa fa-table"></i>
+                                <p>
+                                    Demo Id
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url('/leads/idcreated') }}"
+                                class="nav-link {{ Request::is('reports/leads') ? 'active' : '' }}">
+                                <i class="nav-icon fa fa-table"></i>
+                                <p>
+                                    ID Created
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ url('leads/callback') }}"
+                                class="nav-link {{ Request::is('reports/leads') ? 'active' : '' }}">
+                                <i class="nav-icon fa fa-table"></i>
+                                <p>
+                                    Call back
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 @if ($userData->id == 1)
                     <li class="nav-item ">
@@ -100,9 +146,9 @@
                         </a>
                     </li>
                 @endif
-
+                {{-- clients --}}
                 @if ($userData->role == 'agent')
-                    <li class="nav-item ">
+                    {{-- <li class="nav-item ">
                         <a href="{{ url('/clients') }}"
                             class="nav-link {{ Request::is('clients') || Request::is('clients/add') || Request::is('clients/edit') ? 'active' : '' }}">
                             <i class="nav-icon fa fa-users"></i>
@@ -111,7 +157,7 @@
 
                             </p>
                         </a>
-                    </li>
+                    </li> --}}
                 @endif
                 <li class="nav-item ">
                     <a href="{{ url('/attendance') }}"
@@ -125,20 +171,23 @@
 
                 {{-- reports --}}
                 @if ($userData->role == 'manager')
-                    <li class="nav-item {{ Request::is('reports/leads')||Request::is('reports/deposits') ? 'menu-is-opening menu-open' : '' }}">
-                        <a href="#" class="nav-link {{ Request::is('reports/leads')||Request::is('reports/deposits') ? 'active' : '' }}">
+                    <li
+                        class="nav-item {{ Request::is('reports/leads') || Request::is('reports/deposits') ? 'menu-is-opening menu-open' : '' }}">
+                        <a href="#"
+                            class="nav-link {{ Request::is('reports/leads') || Request::is('reports/deposits') ? 'active' : '' }}">
                             <i class="nav-icon fas fa-chart-pie"></i>
                             <p>
                                 Reports
                                 <i class="right fas fa-angle-left"></i>
                             </p>
                         </a>
-                        <ul class="nav nav-treeview" style="display: {{ Request::is('reports/leads')||Request::is('reports/deposits') ? 'block' : 'none' }}">
+                        <ul class="nav nav-treeview"
+                            style="display: {{ Request::is('reports/leads') || Request::is('reports/deposits') ? 'block' : 'none' }}">
                             <li class="nav-item">
                                 <a href="{{ url('/reports/leads') }}"
                                     class="nav-link {{ Request::is('reports/leads') ? 'active' : '' }}">
                                     <i class="nav-icon fa fa-table"></i>
-            
+
                                     <p>
                                         Leads
                                     </p>
@@ -148,7 +197,7 @@
                                 <a href="{{ url('/reports/deposits') }}"
                                     class="nav-link {{ Request::is('reports/deposits') ? 'active' : '' }}">
                                     <i class="nav-icon fa fa-table"></i>
-            
+
                                     <p>
                                         Deposits
                                     </p>
