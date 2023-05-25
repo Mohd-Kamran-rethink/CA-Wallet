@@ -89,8 +89,7 @@
                                             <th>Language</th>
                                             <th>ID Name</th>
                                             <th>Agent</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
+                                            
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -104,20 +103,8 @@
                                                 <td>{{ $item->language }}</td>
                                                 <td>{{ $item->idName }}</td>
                                                 <td> {{ $item->agent_name }}</td>
-                                                <td> {{ $item->current_status ?? '--' }}</td>
-                                                <td>
-                                                    <button onclick="openLeadModal({{ $item->id}},'{{$item->idName}}')"
-                                                        title="Chnage status" class="btn btn-secondary">Change
-                                                        status</button>
-                                                    @foreach ($leads_status_history as $history)
-                                                        @if ($history->lead_id == $item->id)
-                                                            <button onclick="openHistoryModal({{ $item->id }})"
-                                                                title="Chnage status"
-                                                                class="btn btn-success">History</button>
-                                                        @break
-                                                    @endif
-                                                @endforeach
-                                            </td>
+                                                
+                                                
                                         </tr>
                                     @empty
                                         <tr>
