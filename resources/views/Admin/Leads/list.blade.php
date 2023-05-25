@@ -197,9 +197,7 @@
                                     </thead>
                                     <tbody>
                                         @forelse($leads as $key=> $item)
-                                            @if ($item->current_status == 'Deposited' || $item->current_status == 'Not Intrested')
-                                                @continue
-                                            @endif
+                                            
 
                                             <tr>
                                                 @if (session('user')->role === 'manager')
