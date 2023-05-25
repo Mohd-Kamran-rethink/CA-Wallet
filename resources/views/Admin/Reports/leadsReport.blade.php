@@ -90,7 +90,7 @@
             const created_from_date = $('.created_from_date').val()
             const date_from = $('#date_from').val(filterDateFrom);
             const date_to = $('#date_to').val(filterDateTo);
-            const export_created_date_from = $('#export_created_from_date').val(filterDateTo);
+            const export_created_date_from = $('#export_created_from_date').val(created_from_date);
             const url = currentUrl.replace(/\?.*/, '') + '/export' + window.location.search;
 
             $('#leads-report-export-form').attr('action', url).submit();
