@@ -48,6 +48,10 @@ class ReportController extends Controller
                     date('Y-m-d', strtotime($startDate)),
                     date('Y-m-d', strtotime($endDate))
                 ])
+                // here 
+                ->when($created_from_date, function ($query, $created_from_date) {
+                    $query->whereRaw("DATE(created_at) = ?", [$created_from_date]);
+                })
                 ->get()->count();
                 array_push($row, $totalLeads);
                     
@@ -57,7 +61,10 @@ class ReportController extends Controller
                     date('Y-m-d', strtotime($startDate)),
                     date('Y-m-d', strtotime($endDate))
                 ])
-                
+                // here 
+                ->when($created_from_date, function ($query, $created_from_date) {
+                    $query->whereRaw("DATE(created_at) = ?", [$created_from_date]);
+                })
                 ->get()->count();
                 array_push($row, $notProcessed);
                 foreach ($statuses as $status) {
@@ -67,7 +74,11 @@ class ReportController extends Controller
                         date('Y-m-d', strtotime($startDate)),
                         date('Y-m-d', strtotime($endDate))
                     ])
-                   ->get()->count();
+                    ->when($created_from_date, function ($query, $created_from_date) {
+                        $query->whereRaw("DATE(created_at) = ?", [$created_from_date]);
+                    })
+                        
+                    ->get()->count();
                     array_push($row, $leadsCount);
                 }
                 array_push($data, $row);
