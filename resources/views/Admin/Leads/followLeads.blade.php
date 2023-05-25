@@ -177,7 +177,7 @@
                     {{-- for followup and busy options --}}
                     <div class="form-group  conditional-input" style="display: none">
                         <label for="">Date <span class="text-danger">*</span></label>
-                        <input name="date" type="date" class="form-control" id="datePicker">
+                        <input name="date" type="date" class="form-control blockpast" id="datePicker">
                         <span class="text-danger error-date"></span>
                     </div>
                     <div class="form-group">
@@ -222,6 +222,15 @@
 
 
 <script>
+    // Get the datePicker input element
+    const datePicker = document.getElementsByClassName('blockpast');
+    // Get the current date
+    const currentDate = new Date().toISOString().split('T')[0];
+    for (let i = 0; i < datePicker.length; i++) {
+        const element = datePicker[i];
+        // Do something with each element
+        datePicker[i]?.setAttribute('min', currentDate);
+    }
     let lead_id;
     let status;
     const searchData = () => {

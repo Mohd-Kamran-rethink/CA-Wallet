@@ -19,6 +19,9 @@ class DashboardController extends Controller
         if (session('user')->role == "agent") {
             $agent = User::find(session('user')->id);
         }
+        $manager = null;
+        // ignore ids of   Deposited,Not Interested,Demo id,Id created,Call back
+        $ignoredSourceIds = [1, 12, 6, 7, 8];
         $startDate = now()->subDays(4);
         $clients = Client::with('depositHistories')->whereDoesntHave('depositHistories', function ($query) use ($startDate) {
             $query->whereIn('deposit_histories.id', function ($subquery) {
@@ -53,7 +56,12 @@ class DashboardController extends Controller
                 $query->where('agent_id', '=', $agent->id);
             });
         })
-        
+        ->when($agent, function ($query) use ($ignoredSourceIds) {
+            $query->where(function ($query) use ($ignoredSourceIds) {
+                $query->whereNotIn('leads.status_id', $ignoredSourceIds);
+                $query->whereNotNull('leads.status_id');
+            });
+        })
         ->where('is_approved', '=', 'Yes')->get()->count();
         return view('Admin.Dashboard.index', compact("agents", 'managers', 'leads', 'lastEntry', 'clients'));
     }
