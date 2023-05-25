@@ -5,20 +5,26 @@
         <div class="content-header">
             <h2 class="">Leads Reports</h2>
             <div class="card">
-                <div class="card-header d-flex justify-content-between">
+                <div class="card-header d-flex justify-content-between ">
                     <form action="{{ url('reports/leads') }}" method="GET" id="search-form"
                         class="filters d-flex flex-row col-11 pl-0">
 
                         <div class="col-3 ">
-                            <label for="">From</label>
+                            <label for="">Assigned From</label>
                             <input name="from_date" type="date" class="form-control from_date" id="datePicker"
                                 value="{{ isset($startDate) ? $startDate : '' }}">
                         </div>
                         <div class="col-3">
-                            <label for="">To</label>
+                            <label for="">Assigned To</label>
                             <input name="to_date" type="date" class="form-control to_date" id="datePicker"
                                 value="{{ isset($endDate) ? $endDate : '' }}">
                         </div>
+                        <div class="col-3 ">
+                            <label for="">Create At</label>
+                            <input name="created_from_date" type="date" class="form-control from_date" id="datePicker"
+                                value="{{ isset($created_from_date) ? $created_from_date : '' }}">
+                        </div>
+                       
                         <div class="">
                             <label for="" style="visibility: hidden;">filter</label>
                             <button class="btn btn-success form-control" onclick="searchData()">Filter</button>
@@ -82,6 +88,7 @@
             const filterDateTo = $('.to_date').val()
             const date_from = $('#date_from').val(filterDateFrom);
             const date_to = $('#date_to').val(filterDateTo);
+            const created_date_from = $('#created_from_date').val(filterDateTo);
             const url = currentUrl.replace(/\?.*/, '') + '/export' + window.location.search;
 
             $('#leads-report-export-form').attr('action', url).submit();
