@@ -96,6 +96,7 @@ class ReportController extends Controller
 
         $startDate = $req->date_from;
         $endDate = $req->date_to;
+        $created_from_date = $req->created_from_date;
         $header = ['Name', 'Total Leads', 'Not Processed Leads'];
         $statuses = LeadStatusOption::get();
         foreach ($statuses as $statusValue) {
@@ -125,6 +126,9 @@ class ReportController extends Controller
                     date('Y-m-d', strtotime($startDate)),
                     date('Y-m-d', strtotime($endDate))
                 ])
+                ->when($created_from_date, function ($query, $created_from_date) {
+                    $query->whereRaw("DATE(created_at) = ?", [$created_from_date]);
+                })
                 ->get()->count();
 
             array_push($row, $totalLeads === 0 ? '0' : ($totalLeads ?: ''));
@@ -134,6 +138,9 @@ class ReportController extends Controller
                     date('Y-m-d', strtotime($startDate)),
                     date('Y-m-d', strtotime($endDate))
                 ])
+                ->when($created_from_date, function ($query, $created_from_date) {
+                    $query->whereRaw("DATE(created_at) = ?", [$created_from_date]);
+                })
                 ->get()->count();
             array_push($row, $notProcessed === 0 ? '0' : ($notProcessed ?: ''));
             foreach ($statuses as $status) {
@@ -143,6 +150,9 @@ class ReportController extends Controller
                         date('Y-m-d', strtotime($startDate)),
                         date('Y-m-d', strtotime($endDate))
                     ])
+                    ->when($created_from_date, function ($query, $created_from_date) {
+                        $query->whereRaw("DATE(created_at) = ?", [$created_from_date]);
+                    })
                     ->get()->count();
                 array_push($row, $leadsCount === 0 ? '0' : ($leadsCount ?: ''));
             }

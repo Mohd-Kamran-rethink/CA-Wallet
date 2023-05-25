@@ -21,7 +21,7 @@
                         </div>
                         <div class="col-3 ">
                             <label for="">Create At</label>
-                            <input name="created_from_date" type="date" class="form-control from_date" id="datePicker"
+                            <input name="created_from_date"  type="date" class="form-control created_from_date" id="datePicker"
                                 value="{{ isset($created_from_date) ? $created_from_date : '' }}">
                         </div>
                        
@@ -35,6 +35,7 @@
                         <div>
                             <input type="hidden" name="date_from" id="date_from">
                             <input type="hidden" name="date_to" id="date_to">
+                            <input type="hidden" name="created_from_date" id="export_created_from_date">
                             <label for="" style="visibility: hidden;"> d</label>
                             <button onclick="exportData()" class="btn btn-success form-control">Export</button>
                         </div>
@@ -86,9 +87,10 @@
             var currentUrl = window.location.href;
             const filterDateFrom = $('.from_date').val()
             const filterDateTo = $('.to_date').val()
+            const created_from_date = $('.created_from_date').val()
             const date_from = $('#date_from').val(filterDateFrom);
             const date_to = $('#date_to').val(filterDateTo);
-            const created_date_from = $('#created_from_date').val(filterDateTo);
+            const export_created_date_from = $('#export_created_from_date').val(filterDateTo);
             const url = currentUrl.replace(/\?.*/, '') + '/export' + window.location.search;
 
             $('#leads-report-export-form').attr('action', url).submit();
