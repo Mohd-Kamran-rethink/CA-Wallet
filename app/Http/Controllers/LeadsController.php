@@ -101,67 +101,67 @@ class LeadsController extends Controller
        ->orderBy('lead_statuses.id', 'desc')
        ->get();
 
-   // statuses and agents list to filter out data
-   $statuses = LeadStatusOption::where('isDeleted', '=', 'No')->get();
-   $agents = User::where('role', '=', 'agent')->get();
-   $agent = null;
-   $manager = null;
-   // ignore ids of   Deposited,Not Interested,Demo id,Id created,Call back
-   $ignoredSourceIds = [1, 12, 6, 7, 8];
-   if (session('user')->role == "agent") {
-       $agent = User::find(session('user')->id);
-   }
+        // statuses and agents list to filter out data
+        $statuses = LeadStatusOption::where('isDeleted', '=', 'No')->get();
+        $agents = User::where('role', '=', 'agent')->get();
+        $agent = null;
+        $manager = null;
+        // ignore ids of   Deposited,Not Interested,Demo id,Id created,Call back
+        $ignoredSourceIds = [1, 12, 6, 7, 8];
+        if (session('user')->role == "agent") {
+            $agent = User::find(session('user')->id);
+        }
 
-   if (session('user')->role == "manager") {
-       $manager = User::find(session('user')->id);
-   }
-   // querry paramaters
-   $searchTerm = $req->query('table_search');
-   $Filterstatus = $req->query('status');
-   $FilterAgent = $req->query('agent_id');
+        if (session('user')->role == "manager") {
+            $manager = User::find(session('user')->id);
+        }
+        // querry paramaters
+        $searchTerm = $req->query('table_search');
+        $Filterstatus = $req->query('status');
+        $FilterAgent = $req->query('agent_id');
 
-   // get details of the status from status id 
-   $currentStatus = LeadStatusOption::find($Filterstatus);
-   $leads = DB::table('duplicate_leads')
-       ->join('sources', 'duplicate_leads.source_id', '=', 'sources.id')
-       ->join('users', 'duplicate_leads.agent_id', '=', 'users.id')
-       // if session has agesnt show all his assigned leads
-       ->when($agent, function ($query, $agent) {
-           $query->where(function ($query) use ($agent) {
-               $query->where('duplicate_leads.agent_id', '=', $agent->id);
-           });
-       })
-       // filter by agent
-       ->when($FilterAgent, function ($query, $FilterAgent) {
-           $query->where(function ($query) use ($FilterAgent) {
-               $query->where('duplicate_leads.agent_id', '=', $FilterAgent);
-           });
-       })
-       // filter by status
-       ->when($currentStatus, function ($query, $currentStatus) {
-           $query->where(function ($query) use ($currentStatus) {
-               $query->Where('duplicate_leads.current_status', '=', $currentStatus->name);
-           });
-       })
-       // filter by general terms
-       ->when($searchTerm, function ($query, $searchTerm) {
-           $query->where(function ($query) use ($searchTerm) {
-               $query->where('sources.name', 'like', '%' . $searchTerm . '%')
-                   ->orWhere('users.name', 'like', '%' . $searchTerm . '%')
-                   ->orWhere('duplicate_leads.number', 'like', '%' . $searchTerm . '%');
-           });
-       })
-       ->where('is_approved', '=', 'Yes')
-       ->select('duplicate_leads.*', 'sources.name as source_name', 'users.name as agent_name')
-       ->orderByDesc('duplicate_leads.date')
-       ->when($agent, function ($query, $ignoredSourceIds) {
-           $query->where(function ($query) use ($ignoredSourceIds) {
-               $query->whereNotIn('duplicate_leads.status_id', $ignoredSourceIds);
-               $query->whereNotNull('duplicate_leads.status_id');
-           });
-       })
+        // get details of the status from status id 
+        $currentStatus = LeadStatusOption::find($Filterstatus);
+        $leads = DB::table('duplicate_leads')
+            ->join('sources', 'duplicate_leads.source_id', '=', 'sources.id')
+            ->join('users', 'duplicate_leads.agent_id', '=', 'users.id')
+            // if session has agesnt show all his assigned leads
+            ->when($agent, function ($query, $agent) {
+                $query->where(function ($query) use ($agent) {
+                    $query->where('duplicate_leads.agent_id', '=', $agent->id);
+                });
+            })
+            // filter by agent
+            ->when($FilterAgent, function ($query, $FilterAgent) {
+                $query->where(function ($query) use ($FilterAgent) {
+                    $query->where('duplicate_leads.agent_id', '=', $FilterAgent);
+                });
+            })
+            // filter by status
+            ->when($currentStatus, function ($query, $currentStatus) {
+                $query->where(function ($query) use ($currentStatus) {
+                    $query->Where('duplicate_leads.current_status', '=', $currentStatus->name);
+                });
+            })
+            // filter by general terms
+            ->when($searchTerm, function ($query, $searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('sources.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('users.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('duplicate_leads.number', 'like', '%' . $searchTerm . '%');
+                });
+            })
+            ->where('is_approved', '=', 'Yes')
+            ->select('duplicate_leads.*', 'sources.name as source_name', 'users.name as agent_name')
+            ->orderByDesc('duplicate_leads.date')
+            ->when($agent, function ($query, $ignoredSourceIds) {
+                $query->where(function ($query) use ($ignoredSourceIds) {
+                    $query->whereNotIn('duplicate_leads.status_id', $ignoredSourceIds);
+                    $query->whereNotNull('duplicate_leads.status_id');
+                });
+            })
        ->paginate(45);
-   return view('Admin.Leads.duplicateLeads', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
+        return view('Admin.Leads.duplicateLeads', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
 
     }
 
@@ -319,7 +319,13 @@ class LeadsController extends Controller
             $unixTimestamp = ($DateserialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
             $date = \Carbon\Carbon::createFromTimestamp($unixTimestamp);
             $formattedDate = $date->format('d-m-Y'); // format the date in the desired format
-
+            
+            //for leads_date
+            $leads_dateDateserialNumber = $data['Date']; // This is the serial number for the date "01/01/2021"
+            $leads_dateunixTimestamp = ($leads_dateDateserialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
+            $leads_date = \Carbon\Carbon::createFromTimestamp($leads_dateunixTimestamp);
+            $leads_dateformattedDate = $leads_date->format('d-m-Y'); 
+           
             // If validation fails, add entry to errors array
             if ($validator->fails()) {
                 $errors[] = $data;
@@ -355,6 +361,7 @@ class LeadsController extends Controller
                 ->where('created_at', '>=', Carbon::now()->subDays(15))
                 ->first();
             // Add entry to results and if agent is importing than manger_id will be blank
+           
             $entry = [
                 'source_id' => $sourceId,
                 'name' => $data['Name'],
@@ -365,6 +372,7 @@ class LeadsController extends Controller
                 'agent_id' => $agentId,
                 'manager_id' => $sessionUser->role == 'agent' ? 1 : $manager->id,
                 'is_approved' => $sessionUser->role == 'agent' ? 'No' : 'Yes',
+                'leads_date' => $leads_dateformattedDate??'',
             ];
             if ($existingLead) {
                 DuplicateLead::create($entry);
