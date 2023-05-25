@@ -322,7 +322,7 @@ class LeadsController extends Controller
             $formattedDate = $date->format('d-m-Y'); // format the date in the desired format
             
             //for leads_date
-            $leads_dateDateserialNumber = $data['Date']; // This is the serial number for the date "01/01/2021"
+            $leads_dateDateserialNumber = $data['Leads Date']; // This is the serial number for the date "01/01/2021"
             $leads_dateunixTimestamp = ($leads_dateDateserialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
             $leads_date = \Carbon\Carbon::createFromTimestamp($leads_dateunixTimestamp);
             $leads_dateformattedDate = $leads_date->format('d-m-Y'); 
@@ -373,7 +373,7 @@ class LeadsController extends Controller
                 'agent_id' => $agentId,
                 'manager_id' => $sessionUser->role == 'agent' ? 1 : $manager->id,
                 'is_approved' => $sessionUser->role == 'agent' ? 'No' : 'Yes',
-                'leads_date' => $leads_dateformattedDate??'',
+                'leads_date' => $data['Leads Date']?$leads_dateformattedDate:'',
             ];
             if ($existingLead) {
                 DuplicateLead::create($entry);
