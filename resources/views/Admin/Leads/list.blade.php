@@ -1,257 +1,253 @@
 @extends('Admin.index')
 @section('content')
-    <style>
-        .custom-modal {
-            max-width: 70%;
-            width: 70%;
-            max-height: 70%;
-            height: auto;
-        }
+<style>
+    .custom-modal {
+        max-width: 70%;
+        width: 70%;
+        max-height: 70%;
+        height: auto;
+    }
 
-        @media (max-width: 580px) {
-            .custom-modal {
-                max-width: 100%;
-                width: 100%;
-            }
+    @media (max-width: 580px) {
+        .custom-modal {
+            max-width: 100%;
+            width: 100%;
         }
-    </style>
-    @php
-        function serialToDate($serialNumber)
-        {
-            $unixTimestamp = ($serialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
-            $date = \Carbon\Carbon::createFromTimestamp($unixTimestamp);
-            return $date->format('d-m-Y');
-        }
-    @endphp
-    {{-- leads upload status tables --}}
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Leads</h1>
+    }
+</style>
+@php
+    function serialToDate($serialNumber)
+    {
+        $unixTimestamp = ($serialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
+        $date = \Carbon\Carbon::createFromTimestamp($unixTimestamp);
+        return $date->format('d-m-Y');
+    }
+@endphp
+{{-- leads upload status tables --}}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Leads</h1>
+            </div>
+        </div>
+        @if (session()->has('msg-success'))
+            <div class="alert alert-success" role="alert">
+                {{ session('msg-success') }}
+            </div>
+        @elseif (session()->has('msg-error'))
+            <div class="alert alert-danger" role="alert">
+                {{ session('msg-success') }}
+            </div>
+        @endif
+        @if (
+            (session()->has('errors') && count(session('errors')) > 0) ||
+                (session()->has('skipped') && count(session('skipped')) > 0))
+            <div class="card">
+                <div class="card-body">
+                    @if (count(session('skipped')) > 0)
+                        <div class="alert alert-warning" role="alert"><span class="font-weight-bold"
+                                style="color: white">Skipped Entries</span> </div>
+                        <div class="card-body table-responsive p-0">
+                            <table class="table table-hover text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>S.No.</th>
+                                        <th>Source</th>
+                                        <th>Date</th>
+                                        <th>Name</th>
+                                        <th>Number</th>
+                                        <th>Language</th>
+                                        <th>ID Name</th>
+                                        <th>Agent</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (session('skipped') as $item)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $item['Sources'] }}</td>
+                                            <td>{{ serialToDate($item['Date']) }}</td>
+                                            <td>{{ $item['Name'] }}</td>
+                                            <td>{{ $item['Number'] }}</td>
+                                            <td>{{ $item['Language'] }}</td>
+                                            <td>{{ $item['ID NAME'] }}</td>
+                                            <td> {{ $item['Agent'] }}</td>
+                                        </tr>
+                                    @endforeach
+
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                    @if (count(session('errors')) > 0)
+                        <div class="alert alert-danger" role="alert"><span class="font-weight-bold"
+                                style="color: white">Errors Entries</span> </div>
+                        <div class="card-body table-responsive p-0">
+                            <table class="table table-hover text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>S.No.</th>
+                                        <th>Source</th>
+                                        <th>Date</th>
+                                        <th>Name</th>
+                                        <th>Number</th>
+                                        <th>Language</th>
+                                        <th>ID Name</th>
+                                        <th>Agent</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (session('errors') as $item)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $item['Sources'] }}</td>
+                                            <td>{{ serialToDate($item['Date']) }}</td>
+                                            <td>{{ $item['Name'] }}</td>
+                                            <td>{{ $item['Number'] }}</td>
+                                            <td>{{ $item['Language'] }}</td>
+                                            <td>{{ $item['ID NAME'] }}</td>
+                                            <td> {{ $item['Agent'] }}</td>
+                                        </tr>
+                                    @endforeach
+
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+
                 </div>
             </div>
-            @if (session()->has('msg-success'))
-                <div class="alert alert-success" role="alert">
-                    {{ session('msg-success') }}
-                </div>
-            @elseif (session()->has('msg-error'))
-                <div class="alert alert-danger" role="alert">
-                    {{ session('msg-success') }}
-                </div>
-            @endif
-            @if (
-                (session()->has('errors') && count(session('errors')) > 0) ||
-                    (session()->has('skipped') && count(session('skipped')) > 0))
-                <div class="card">
-                    <div class="card-body">
-                        @if (count(session('skipped')) > 0)
-                            <div class="alert alert-warning" role="alert"><span class="font-weight-bold"
-                                    style="color: white">Skipped Entries</span> </div>
-                            <div class="card-body table-responsive p-0">
-                                <table class="table table-hover text-nowrap">
-                                    <thead>
-                                        <tr>
-                                            <th>S.No.</th>
-                                            <th>Source</th>
-                                            <th>Date</th>
-                                            <th>Name</th>
-                                            <th>Number</th>
-                                            <th>Language</th>
-                                            <th>ID Name</th>
-                                            <th>Agent</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (session('skipped') as $item)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item['Sources'] }}</td>
-                                                <td>{{ serialToDate($item['Date']) }}</td>
-                                                <td>{{ $item['Name'] }}</td>
-                                                <td>{{ $item['Number'] }}</td>
-                                                <td>{{ $item['Language'] }}</td>
-                                                <td>{{ $item['ID NAME'] }}</td>
-                                                <td> {{ $item['Agent'] }}</td>
-                                            </tr>
-                                        @endforeach
-
-
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        @endif
-                        @if (count(session('errors')) > 0)
-                            <div class="alert alert-danger" role="alert"><span class="font-weight-bold"
-                                    style="color: white">Errors Entries</span> </div>
-                            <div class="card-body table-responsive p-0">
-                                <table class="table table-hover text-nowrap">
-                                    <thead>
-                                        <tr>
-                                            <th>S.No.</th>
-                                            <th>Source</th>
-                                            <th>Date</th>
-                                            <th>Name</th>
-                                            <th>Number</th>
-                                            <th>Language</th>
-                                            <th>ID Name</th>
-                                            <th>Agent</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (session('errors') as $item)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item['Sources'] }}</td>
-                                                <td>{{ serialToDate($item['Date']) }}</td>
-                                                <td>{{ $item['Name'] }}</td>
-                                                <td>{{ $item['Number'] }}</td>
-                                                <td>{{ $item['Language'] }}</td>
-                                                <td>{{ $item['ID NAME'] }}</td>
-                                                <td> {{ $item['Agent'] }}</td>
-                                            </tr>
-                                        @endforeach
-
-
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        @endif
-
+        @endif
+    </div>
+</section>
+<section class="content">
+    <div class="card">
+        <div class="card-body">
+            <div class="mb-3 d-flex justify-content-between align-items-centers row">
+                <form class="filters d-flex flex-row  col-lg-7 mt-2" action="{{ url('leads/list') }}" method="GET"
+                    id="search-form">
+                    <div class="input-group input-group-md col-3 " style="width: 150px;">
+                        <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
+                            class="form-control float-right" placeholder="Search" id="searchInput">
                     </div>
-                </div>
-            @endif
-        </div>
-    </section>
-
-
-
-
-    <section class="content">
-        <div class="card">
-            <div class="card-body">
-                <div class="mb-3 d-flex justify-content-between align-items-centers row">
-                    <form class="filters d-flex flex-row  col-lg-7 mt-2" action="{{ url('leads/list') }}" method="GET"
-                        id="search-form">
-                        <div class="input-group input-group-md col-3 " style="width: 150px;">
-                            <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
-                                class="form-control float-right" placeholder="Search" id="searchInput">
-                        </div>
+                    <div class="input-group col-3">
+                        <select name="status" id="status_id" class="form-control">
+                            <option value="">--Filter By Status--</option>
+                            @foreach ($statuses as $item)
+                                <option {{ isset($Filterstatus) && $Filterstatus == $item->id ? 'selected' : '' }}
+                                    value="{{ $item->id }}">{{ $item->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @if (session('user')->role == 'manager')
                         <div class="input-group col-3">
-                            <select name="status" id="status_id" class="form-control">
-                                <option value="">--Filter By Status--</option>
-                                @foreach ($statuses as $item)
-                                    <option {{ isset($Filterstatus) && $Filterstatus == $item->id ? 'selected' : '' }}
+                            <select name="agent_id" id="agent_id" class="form-control">
+                                <option value="">--Filter By Agent--</option>
+                                @foreach ($agents as $item)
+                                    <option {{ isset($FilterAgent) && $FilterAgent == $item->id ? 'selected' : '' }}
                                         value="{{ $item->id }}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        @if (session('user')->role == 'manager')
-                            <div class="input-group col-3">
-                                <select name="agent_id" id="agent_id" class="form-control">
-                                    <option value="">--Filter By Agent--</option>
-                                    @foreach ($agents as $item)
-                                        <option {{ isset($FilterAgent) && $FilterAgent == $item->id ? 'selected' : '' }}
-                                            value="{{ $item->id }}">{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        @endif
-                        <div class="input-group ">
-                            <button class="btn btn-success" onclick="searchData()">Filter</button>
-                        </div>
-                    </form>
-                    <div class="col-md-12 col-lg-5 d-flex justify-content-end mt-2">
-                        @if (session('user')->role === 'manager')
-                                @if(Request::is('leads/approval') && session('user')->id == 1)
-                                <button onclick="approveLeadsModal()"
-                                    title="Approvelead"
-                                    class="mass-action-buttons btn btn-danger mx-2" disabled>Approve</button>
-                                @endif
-                            <button onclick="MassModals('modal-mass-agent')" disabled
-                                class="mass-action-buttons btn btn-primary ">Reassign To</button>
-                            <button onclick="MassModals('modal-mass-status')"disabled
-                                class="mass-action-buttons btn btn-secondary mx-2">Change Status</button>
-                        @endif
-                        <a href="{{ url('leads/import') }}" class="btn btn-success">Import Leads</a>
+                    @endif
+                    <div class="input-group ">
+                        <button class="btn btn-success" onclick="searchData()">Filter</button>
                     </div>
+                </form>
+                <div class="col-md-12 col-lg-5 d-flex justify-content-end mt-2">
+                    @if (session('user')->role === 'manager')
+                            @if(Request::is('leads/approval') && session('user')->id == 1)
+                            <button onclick="approveLeadsModal()"
+                                title="Approvelead"
+                                class="mass-action-buttons btn btn-danger mx-2" disabled>Approve</button>
+                            @endif
+                        <button onclick="MassModals('modal-mass-agent')" disabled
+                            class="mass-action-buttons btn btn-primary ">Reassign To</button>
+                        <button onclick="MassModals('modal-mass-status')"disabled
+                            class="mass-action-buttons btn btn-secondary mx-2">Change Status</button>
+                    @endif
+                    <a href="{{ url('leads/import') }}" class="btn btn-success">Import Leads</a>
                 </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-body table-responsive p-0">
-                                <table class="table table-hover text-nowrap">
-                                    <thead>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body table-responsive p-0">
+                            <table class="table table-hover text-nowrap">
+                                <thead>
+                                    <tr>
+                                        @if (session('user')->role === 'manager')
+                                            <th><input type="checkbox" onchange="selectAll()" value="null"></th>
+                                        @endif
+                                        <th>S.No.</th>
+                                        <th>Source</th>
+                                        <th>Date</th>
+                                        <th>Name</th>
+                                        <th>Number</th>
+                                        <th>Language</th>
+                                        <th>ID Name</th>
+                                        <th>Agent</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($leads as $key=> $item)
+                                        @if ($item->current_status == 'Deposited' || $item->current_status == 'Not Intrested')
+                                            @continue
+                                        @endif
+
                                         <tr>
                                             @if (session('user')->role === 'manager')
-                                                <th><input type="checkbox" onchange="selectAll()" value="null"></th>
+                                                <td><input class="checkbox" type="checkbox" onchange="selectedLeads()"
+                                                        value="{{ $item->id }}"></td>
                                             @endif
-                                            <th>S.No.</th>
-                                            <th>Source</th>
-                                            <th>Date</th>
-                                            <th>Name</th>
-                                            <th>Number</th>
-                                            <th>Language</th>
-                                            <th>ID Name</th>
-                                            <th>Agent</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($leads as $key=> $item)
-                                            @if ($item->current_status == 'Deposited' || $item->current_status == 'Not Intrested')
-                                                @continue
-                                            @endif
-
-                                            <tr>
-                                                @if (session('user')->role === 'manager')
-                                                    <td><input class="checkbox" type="checkbox" onchange="selectedLeads()"
-                                                            value="{{ $item->id }}"></td>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $item->source_name }}</td>
+                                            <td>{{ $item->date }}</td>
+                                            <td>{{ $item->name }}</td>
+                                            <td>{{ $item->number }}</td>
+                                            <td>{{ $item->language }}</td>
+                                            <td>{{ $item->idName }}</td>
+                                            <td> {{ $item->agent_name }}</td>
+                                            <td> {{ $item->current_status ?? '--' }}</td>
+                                            <td>
+                                                <button
+                                                    onclick="openLeadModal({{ $item->id }},'{{ $item->idName }}')"
+                                                    title="Chnage status" class="btn btn-secondary">Change
+                                                    status</button>
+                                                @foreach ($leads_status_history as $history)
+                                                    @if ($history->lead_id == $item->id)
+                                                        <button onclick="openHistoryModal({{ $item->id }})"
+                                                            title="Change status"
+                                                            class="btn btn-success">History</button>
+                                                    @break
                                                 @endif
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item->source_name }}</td>
-                                                <td>{{ $item->date }}</td>
-                                                <td>{{ $item->name }}</td>
-                                                <td>{{ $item->number }}</td>
-                                                <td>{{ $item->language }}</td>
-                                                <td>{{ $item->idName }}</td>
-                                                <td> {{ $item->agent_name }}</td>
-                                                <td> {{ $item->current_status ?? '--' }}</td>
-                                                <td>
-                                                    <button
-                                                        onclick="openLeadModal({{ $item->id }},'{{ $item->idName }}')"
-                                                        title="Chnage status" class="btn btn-secondary">Change
-                                                        status</button>
-                                                    @foreach ($leads_status_history as $history)
-                                                        @if ($history->lead_id == $item->id)
-                                                            <button onclick="openHistoryModal({{ $item->id }})"
-                                                                title="Change status"
-                                                                class="btn btn-success">History</button>
-                                                        @break
-                                                    @endif
-                                                    @endforeach
-                                                   
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="10" class="text-center">No data</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="card-footer clearfix">
-                            {{ $leads->links('pagination::bootstrap-4') }}
-                        </div>
+                                                @endforeach
+                                                
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="10" class="text-center">No data</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer clearfix">
+                        {{ $leads->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
 </section>
 {{-- status change modal --}}
 <div class="modal fade show" id="modal-default" style=" padding-right: 17px;" aria-modal="true" role="dialog">
@@ -276,7 +272,7 @@
                             id="">
                             <option value="0" data-second-value="0">--Choose--</option>
                             @foreach ($statuses as $item)
-                                <option value="{{ $item->id }}" data-second-value="{{ $item->name }}">
+                                <option value="{{ $item->id }}" data-second-value="{{ $item->id }}">
                                     {{ $item->name }}</option>
                             @endforeach
                         </select>
@@ -333,7 +329,6 @@
         </div>
     </div>
 </div>
-
 {{-- mass status change modal --}}
 <div class="modal fade show" id="modal-mass-status" style=" padding-right: 17px;" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-dialog-centered">
@@ -354,10 +349,8 @@
                             id="">
                             <option value="0" data-second-value="0">--Choose--</option>
                             @foreach ($statuses as $item)
-                                @if ($item->name == 'Deposited')
-                                    @continue
-                                @endif
-                                <option value="{{ $item->id }}" data-second-value="{{ $item->name }}">
+                                
+                                <option value="{{ $item->id }}" data-second-value="{{ $item->id }}">
                                     {{ $item->name }}</option>
                             @endforeach
                         </select>
@@ -396,7 +389,6 @@
         </div>
     </div>
 </div>
-
 {{-- assign to agent --}}
 <div class="modal fade show" id="modal-mass-agent" style=" padding-right: 17px;" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-dialog-centered">
@@ -436,11 +428,6 @@
         </div>
     </div>
 </div>
-
-
-
-
-
 <script>
     let lead_id;
     let status;
@@ -470,19 +457,20 @@
         if (status == "0") {
             submitButton.attr('disabled', true);
         } else {
-            if (status == "Follow Up" || status == "Busy") {
-
+            // if status id = 6 ,7, 8(follow up) or for busy also
+            if (status == 6||status == 7||status == 8 || status == 11) {
                 conditionalInput.show()
             } else {
                 conditionalInput.hide()
             }
             submitButton.removeAttr('disabled');
         }
-        if (status == "Deposited") {
-            forDepostied.show()
-        } else {
-            forDepostied.hide()
-        }
+        // status id 1 is for deposit
+        // if (status == 1) {
+        //     forDepostied.show()
+        // } else {
+        //     forDepostied.hide()
+        // }
 
     }
     const submitStatusChange = (formId) => {
@@ -492,14 +480,17 @@
         let massdatePicker = $('#mass-datePicker').val();
         let amount = $('#amount').val()
         let IdName = $('#idName').val()
-        if ((status == "Follow Up" || status == "Busy") && !datePicker) {
+        // if status id = 6,7,8.( follow up ) or for busy also
+        // status id 1 is for deposit
+        if ((status == 6||status == 7||status == 8 || status == 11) && !datePicker) {
             $('.error-date').html('Please enter valid date')
-
-        } else if ((status == "Deposited") && !amount) {
-            $('.error-amount').html('Please enter amount')
-        } else if ((status == "Deposited") && !IdName) {
-            $('.error-idName').html('Please enter IdName')
-        } else {
+        } 
+        // else if ((status == 1) && !amount) {
+        //     $('.error-amount').html('Please enter amount')
+        // } else if ((status == 1) && !IdName) {
+        //     $('.error-idName').html('Please enter IdName')
+        // } 
+        else {
             $(`#${formId}`).submit();
         }
     }
@@ -507,23 +498,18 @@
         let submitButton = $('#mass-status-change-button')
         event.preventDefault();
         let massdatePicker = $('#mass-datePicker').val();
-
-
-        if ((status == "Follow Up" || status == "Busy") && !massdatePicker) {
+        if ((status == 6||status == 7||status == 8 || status == 11) && !massdatePicker) {
             $('.error-date').html('Please enter valid date')
-
         } else {
             $(`#${formId}`).submit();
         }
     }
-
     // history modal
     const openHistoryModal = (leadId) => {
         $(`#modal-history`).modal("show");
         $(`#lead_id`).val(leadId);
         searchLeadsStatus(leadId)
     }
-
     function searchLeadsStatus(lead_id) {
         const leadsStatusData = {!! json_encode($leads_status_history) !!};
         const filteredData = leadsStatusData.filter(data => data.lead_id == lead_id);
@@ -541,7 +527,6 @@
             }
         }, 500);
     }
-
     function createTable(data) {
         let table = "<table class='table '>";
         table +=
@@ -556,7 +541,6 @@
     }
     // mass selection function 
     const selectedItems = [];
-
     function selectAll() {
         const checkboxes = document.querySelectorAll('input[class="checkbox"]');
         checkboxes.forEach((checkbox) => {
@@ -564,7 +548,6 @@
         });
         selectedLeads()
     }
-
     function selectedLeads() {
         const checkboxes = document.querySelectorAll('input[class="checkbox"]');
         checkboxes.forEach((checkbox) => {
@@ -594,14 +577,11 @@
         return selectedIds;
 
     }
-    
-
     function MassModals(modalId) {
         let selectedIds = selectedLeads();
         $(`#${modalId}`).modal('show');
         $('.lead_ids').val(selectedIds);
     }
-
     const handleAgentChange = (option) => {
         agentId = $(option).find(':selected').data('second-value');
         let submitButton = $('.agent-modal-submit-button')
@@ -623,8 +603,4 @@
         }
     }
 </script>
-
-
-
-
 @endsection

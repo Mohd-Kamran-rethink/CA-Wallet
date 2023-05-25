@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Client;
 use App\Deposit;
 use App\DepositHistory;
+use App\DuplicateLead;
 use App\Lead;
 use App\LeadStatus;
 use App\LeadStatusOption;
 use App\Source;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,15 +26,16 @@ class LeadsController extends Controller
         $leads_status_history = DB::table('lead_statuses')
             ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
             ->select('lead_statuses.*', 'lead_status_options.name as status_name')
-            ->orderBy('lead_statuses.id','desc')
+            ->orderBy('lead_statuses.id', 'desc')
             ->get();
 
         // statuses and agents list to filter out data
         $statuses = LeadStatusOption::where('isDeleted', '=', 'No')->get();
         $agents = User::where('role', '=', 'agent')->get();
-
         $agent = null;
         $manager = null;
+        // ignore ids of   Deposited,Not Interested,Demo id,Id created,Call back
+        $ignoredSourceIds = [1, 12, 6, 7, 8];
         if (session('user')->role == "agent") {
             $agent = User::find(session('user')->id);
         }
@@ -47,16 +50,9 @@ class LeadsController extends Controller
 
         // get details of the status from status id 
         $currentStatus = LeadStatusOption::find($Filterstatus);
-
         $leads = DB::table('leads')
             ->join('sources', 'leads.source_id', '=', 'sources.id')
             ->join('users', 'leads.agent_id', '=', 'users.id')
-            // if session has manager show all the leads added by thi smanager
-            // ->when($manager, function ($query, $manager) {
-            //     $query->where(function ($query) use ($manager) {
-            //         $query->where('leads.manager_id', '=', $manager->id);
-            //     });
-            // })
             // if session has agesnt show all his assigned leads
             ->when($agent, function ($query, $agent) {
                 $query->where(function ($query) use ($agent) {
@@ -83,15 +79,93 @@ class LeadsController extends Controller
                         ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
                 });
             })
-            ->where('is_approved','=','Yes')
+            
+            ->when($agent, function ($query) use ($ignoredSourceIds) {
+                $query->where(function ($query) use ($ignoredSourceIds) {
+                    $query->whereNotIn('leads.status_id', $ignoredSourceIds);
+                    $query->whereNotNull('leads.status_id');
+                });
+            })
+            ->where('is_approved', '=', 'Yes')
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
             ->orderByDesc('leads.date')
-
             ->paginate(45);
-
-
         return view('Admin.Leads.list', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
     }
+    public function duplicateLeads(Request $req)
+    {
+       // seperately send lead status history and will render this in modal using jquerry
+       $leads_status_history = DB::table('lead_statuses')
+       ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
+       ->select('lead_statuses.*', 'lead_status_options.name as status_name')
+       ->orderBy('lead_statuses.id', 'desc')
+       ->get();
+
+   // statuses and agents list to filter out data
+   $statuses = LeadStatusOption::where('isDeleted', '=', 'No')->get();
+   $agents = User::where('role', '=', 'agent')->get();
+   $agent = null;
+   $manager = null;
+   // ignore ids of   Deposited,Not Interested,Demo id,Id created,Call back
+   $ignoredSourceIds = [1, 12, 6, 7, 8];
+   if (session('user')->role == "agent") {
+       $agent = User::find(session('user')->id);
+   }
+
+   if (session('user')->role == "manager") {
+       $manager = User::find(session('user')->id);
+   }
+   // querry paramaters
+   $searchTerm = $req->query('table_search');
+   $Filterstatus = $req->query('status');
+   $FilterAgent = $req->query('agent_id');
+
+   // get details of the status from status id 
+   $currentStatus = LeadStatusOption::find($Filterstatus);
+   $leads = DB::table('duplicate_leads')
+       ->join('sources', 'duplicate_leads.source_id', '=', 'sources.id')
+       ->join('users', 'duplicate_leads.agent_id', '=', 'users.id')
+       // if session has agesnt show all his assigned leads
+       ->when($agent, function ($query, $agent) {
+           $query->where(function ($query) use ($agent) {
+               $query->where('duplicate_leads.agent_id', '=', $agent->id);
+           });
+       })
+       // filter by agent
+       ->when($FilterAgent, function ($query, $FilterAgent) {
+           $query->where(function ($query) use ($FilterAgent) {
+               $query->where('duplicate_leads.agent_id', '=', $FilterAgent);
+           });
+       })
+       // filter by status
+       ->when($currentStatus, function ($query, $currentStatus) {
+           $query->where(function ($query) use ($currentStatus) {
+               $query->Where('duplicate_leads.current_status', '=', $currentStatus->name);
+           });
+       })
+       // filter by general terms
+       ->when($searchTerm, function ($query, $searchTerm) {
+           $query->where(function ($query) use ($searchTerm) {
+               $query->where('sources.name', 'like', '%' . $searchTerm . '%')
+                   ->orWhere('users.name', 'like', '%' . $searchTerm . '%')
+                   ->orWhere('duplicate_leads.number', 'like', '%' . $searchTerm . '%');
+           });
+       })
+       ->where('is_approved', '=', 'Yes')
+       ->select('duplicate_leads.*', 'sources.name as source_name', 'users.name as agent_name')
+       ->orderByDesc('duplicate_leads.date')
+       ->when($agent, function ($query, $ignoredSourceIds) {
+           $query->where(function ($query) use ($ignoredSourceIds) {
+               $query->whereNotIn('duplicate_leads.status_id', $ignoredSourceIds);
+               $query->whereNotNull('duplicate_leads.status_id');
+           });
+       })
+       ->paginate(45);
+   return view('Admin.Leads.duplicateLeads', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
+
+    }
+
+
     //leads for approval only show to default manager
     public function nonApprovedLeads(Request $req)
     {
@@ -99,16 +173,16 @@ class LeadsController extends Controller
         $leads_status_history = DB::table('lead_statuses')
             ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
             ->select('lead_statuses.*', 'lead_status_options.name as status_name')
-            ->orderBy('lead_statuses.id','desc')
+            ->orderBy('lead_statuses.id', 'desc')
             ->get();
 
         // statuses and agents list to filter out data
         $statuses = LeadStatusOption::where('isDeleted', '=', 'No')->get();
         $agents = User::where('role', '=', 'agent')->get();
 
-        
+
         $manager = null;
-        
+
 
         if (session('user')->role == "manager") {
             $manager = User::find(session('user')->id);
@@ -130,7 +204,7 @@ class LeadsController extends Controller
             //         $query->where('leads.manager_id', '=', $manager->id);
             //     });
             // })
-           
+
             // filter by agent
             ->when($FilterAgent, function ($query, $FilterAgent) {
                 $query->where(function ($query) use ($FilterAgent) {
@@ -151,7 +225,7 @@ class LeadsController extends Controller
                         ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
                 });
             })
-            ->where('is_approved','=','No')
+            ->where('is_approved', '=', 'No')
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
             ->orderByDesc('leads.date')
             ->paginate(45);
@@ -161,23 +235,21 @@ class LeadsController extends Controller
     {
         $leadIds = explode(',', $req->leadIds);
         foreach ($leadIds as $key => $value) {
-            $lead=Lead::find($value);
-            $lead->is_approved="Yes";
+            $lead = Lead::find($value);
+            $lead->is_approved = "Yes";
             $lead->update();
         }
-        return redirect()->back()->with(['msg-success'=>"Leads approved successfully"]);
+        return redirect()->back()->with(['msg-success' => "Leads approved successfully"]);
     }
     public function deleteLeads(Request $req)
     {
         $leadIds = explode(',', $req->leadIds);
         foreach ($leadIds as $key => $value) {
-            $lead=Lead::find($value);
+            $lead = Lead::find($value);
             $lead->delete();
         }
-        return redirect()->back()->with(['msg-success'=>"Leads rejected successfully"]);
+        return redirect()->back()->with(['msg-success' => "Leads rejected successfully"]);
     }
-
-
     public function importView()
     {
         return view('Admin.Leads.import');
@@ -202,8 +274,8 @@ class LeadsController extends Controller
         $addedCount = 0;
         $skippedCount = 0;
         $errorCount = 0;
-        $manager='';
-        $sessionUser=session('user');
+        $manager = '';
+        $sessionUser = session('user');
 
 
         // Define validation rules for each column
@@ -222,14 +294,11 @@ class LeadsController extends Controller
             return trim($name);
         })->toArray();
         //conditons if user is agent or manager accordingly
-        if($sessionUser->role=='agent')
-        {
-            $agents = User::where('role', '=', 'agent')->where('email','=',session('user')->email)->pluck('name', 'id')->map(function ($name) {
+        if ($sessionUser->role == 'agent') {
+            $agents = User::where('role', '=', 'agent')->where('email', '=', session('user')->email)->pluck('name', 'id')->map(function ($name) {
                 return trim($name);
             })->toArray();
-        }
-        else if($sessionUser->role=='manager')
-        {
+        } else if ($sessionUser->role == 'manager') {
             $agents = User::where('role', '=', 'agent')->pluck('name', 'id')->map(function ($name) {
                 return trim($name);
             })->toArray();
@@ -280,7 +349,11 @@ class LeadsController extends Controller
                 $skippedCount++;
                 continue;
             }
-
+            $existingLead = Lead::where('agent_id', $agentId)
+                ->where('source_id', $sourceId)
+                ->where('date', $formattedDate)
+                ->where('created_at', '>=', Carbon::now()->subDays(15))
+                ->first();
             // Add entry to results and if agent is importing than manger_id will be blank
             $entry = [
                 'source_id' => $sourceId,
@@ -290,18 +363,23 @@ class LeadsController extends Controller
                 'language' => $data['Language'],
                 'idName' => $data['ID NAME'],
                 'agent_id' => $agentId,
-                'manager_id' => $sessionUser->role=='agent'?1:$manager->id,
-                'is_approved' => $sessionUser->role=='agent'?'No':'Yes',
+                'manager_id' => $sessionUser->role == 'agent' ? 1 : $manager->id,
+                'is_approved' => $sessionUser->role == 'agent' ? 'No' : 'Yes',
             ];
-            Lead::create($entry);
+            if ($existingLead) {
+                DuplicateLead::create($entry);
+                continue;
+            } else {
+                Lead::create($entry);
+            }
 
             $entries[] = $entry;
             $existingEntries[$entryKey] = true;
             $addedCount++;
         }
-        $sessionMsg=$sessionUser->role=='agent'?"We have sent your leads to manager for approval":'Imported Successfully';
+        $sessionMsg = $sessionUser->role == 'agent' ? "We have sent your leads to manager for approval" : 'Imported Successfully';
         return  redirect('/leads')->with([
-            'msg-success' =>$sessionMsg,
+            'msg-success' => $sessionMsg,
             'added' => $addedCount,
             'skippedCount' => $skippedCount,
             'skipped' => $skipped,
@@ -309,7 +387,6 @@ class LeadsController extends Controller
             'error_count' => $errorCount,
         ]);
     }
-    
     // single status change
     public function submitStatus(Request $req)
     {
@@ -332,33 +409,34 @@ class LeadsController extends Controller
 
 
         // check if status is deposted and  client exists if not exists than create new
-        if ($statusValue->name == "Deposited") {
-            $client = Client::where('ca_id', '=', trim($clientIDName))->where('number', '=', $lead->number)->first();
+        // if ($statusValue->name == "Deposited") {
+        //     $client = Client::where('ca_id', '=', trim($clientIDName))->where('number', '=', $lead->number)->first();
 
-            if (!$client) {
-                $client = new Client();
-                $client->name = '';
-                $client->number = $lead->number;
-                $client->ca_id = $req->IdName;
-            }
-            $client->agent_id = $agent->id;
-            $client->deposit_amount = $amount;
-            $client->save();
-            $deposit = new Deposit();
-            $deposit->agent_id = $agent->id;
-            $deposit->client_id = $client->id;
-            $deposit->deposit_amount = $amount;
-            $deposit->type = 'deposit';
-            $deposit->save();
-            $depositHistory=new DepositHistory();
-            $depositHistory->deposit_id=$deposit->id;
-            $depositHistory->amount=$amount;
-            $depositHistory->type = "Deposit";
-            $depositHistory->save();
-        }
+        //     if (!$client) {
+        //         $client = new Client();
+        //         $client->name = '';
+        //         $client->number = $lead->number;
+        //         $client->ca_id = $req->IdName;
+        //     }
+        //     $client->agent_id = $agent->id;
+        //     $client->deposit_amount = $amount;
+        //     $client->save();
+        //     $deposit = new Deposit();
+        //     $deposit->agent_id = $agent->id;
+        //     $deposit->client_id = $client->id;
+        //     $deposit->deposit_amount = $amount;
+        //     $deposit->type = 'deposit';
+        //     $deposit->save();
+        //     $depositHistory=new DepositHistory();
+        //     $depositHistory->deposit_id=$deposit->id;
+        //     $depositHistory->amount=$amount;
+        //     $depositHistory->type = "Deposit";
+        //     $depositHistory->save();
+        // }
         // firstly update lead table
         $lead->remark = $remark;
         $lead->current_status = $statusValue->name;
+        $lead->status_id = $statusId;
         $lead->followup_date = $date ?? null;
         $lead->updated_at = $date ?? null;
         $lead->amount = $amount ?? null;
@@ -392,6 +470,7 @@ class LeadsController extends Controller
             $lead = Lead::find($lead_id);
             $lead->remark = $remark;
             $lead->current_status = $statusValue->name;
+            $lead->status_id = $statusId;
             $lead->followup_date = $date ?? null;
             $lead->updated_at = $date ?? null;
             $lead->amount = $amount ?? null;
@@ -430,22 +509,22 @@ class LeadsController extends Controller
         ];
         return response()->download($file, 'Sample.xlsx', $headers);
     }
-    // folllow up leads module
-    public function followUp(Request $req)
+    //folllow up for demoid status leads module
+    public function demoIdLeads(Request $req)
     {
         // seperately send lead status history and will render this in modal using jquerry
         $leads_status_history = DB::table('lead_statuses')
             ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
             ->select('lead_statuses.*', 'lead_status_options.name as status_name')
-            ->orderBy('lead_statuses.id','desc')
+            ->orderBy('lead_statuses.id', 'desc')
             ->get();
-
-        // statuses and agents list to filter out data
         $statuses = LeadStatusOption::where('isDeleted', '=', 'No')->get();
         $agents = User::where('role', '=', 'agent')->get();
-
         $agent = null;
         $manager = null;
+        // we are using statsus id 6 becuase this is will not delte only change this id is for status demoid
+        $status_id = 6;
+        $status = LeadStatusOption::find($status_id);
         if (session('user')->role == "agent") {
             $agent = User::find(session('user')->id);
         }
@@ -455,21 +534,11 @@ class LeadsController extends Controller
         }
         // querry paramaters
         $searchTerm = $req->query('table_search');
-        $Filterstatus = $req->query('status');
         $FilterAgent = $req->query('agent_id');
-
-        // get details of the status from status id 
-        $currentStatus = LeadStatusOption::find($Filterstatus);
 
         $leads = DB::table('leads')
             ->join('sources', 'leads.source_id', '=', 'sources.id')
             ->join('users', 'leads.agent_id', '=', 'users.id')
-            // if session has manager show all the leads added by thi smanager
-            // ->when($manager, function ($query, $manager) {
-            //     $query->where(function ($query) use ($manager) {
-            //         $query->where('leads.manager_id', '=', $manager->id);
-            //     });
-            // })
             // if session has agesnt show all his assigned leads
             ->when($agent, function ($query, $agent) {
                 $query->where(function ($query) use ($agent) {
@@ -482,10 +551,61 @@ class LeadsController extends Controller
                     $query->where('leads.agent_id', '=', $FilterAgent);
                 });
             })
-            // filter by status
-            ->when($currentStatus, function ($query, $currentStatus) {
-                $query->where(function ($query) use ($currentStatus) {
-                    $query->Where('leads.current_status', '=', $currentStatus->name);
+            // filter by general terms
+            ->when($searchTerm, function ($query, $searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('sources.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('users.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
+                });
+            })
+            ->whereDate('leads.followup_date', now()->toDateString())
+            ->where('leads.status_id', '=', $status_id)
+            ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
+            ->orderByDesc('leads.date')
+            ->paginate(45);
+        return view('Admin.Leads.followLeads', compact('status', 'statuses', 'leads', 'searchTerm', 'FilterAgent', 'leads_status_history', 'agents'));
+    }
+    //folllow up for createdid status leads module
+    public function createdIdLeads(Request $req)
+    {
+        // seperately send lead status history and will render this in modal using jquerry
+        $leads_status_history = DB::table('lead_statuses')
+            ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
+            ->select('lead_statuses.*', 'lead_status_options.name as status_name')
+            ->orderBy('lead_statuses.id', 'desc')
+            ->get();
+        $statuses = LeadStatusOption::where('isDeleted', '=', 'No')->get();
+        $agents = User::where('role', '=', 'agent')->get();
+        $agent = null;
+        $manager = null;
+        // we are using statsus id 6 becuase this is will not delte only change this id is for status demoid
+        $status_id = 7;
+        $status = LeadStatusOption::find($status_id);
+        if (session('user')->role == "agent") {
+            $agent = User::find(session('user')->id);
+        }
+
+        if (session('user')->role == "manager") {
+            $manager = User::find(session('user')->id);
+        }
+        // querry paramaters
+        $searchTerm = $req->query('table_search');
+        $FilterAgent = $req->query('agent_id');
+
+        $leads = DB::table('leads')
+            ->join('sources', 'leads.source_id', '=', 'sources.id')
+            ->join('users', 'leads.agent_id', '=', 'users.id')
+            // if session has agesnt show all his assigned leads
+            ->when($agent, function ($query, $agent) {
+                $query->where(function ($query) use ($agent) {
+                    $query->where('leads.agent_id', '=', $agent->id);
+                });
+            })
+            // filter by agent
+            ->when($FilterAgent, function ($query, $FilterAgent) {
+                $query->where(function ($query) use ($FilterAgent) {
+                    $query->where('leads.agent_id', '=', $FilterAgent);
                 });
             })
             // filter by general terms
@@ -497,11 +617,67 @@ class LeadsController extends Controller
                 });
             })
             ->whereDate('leads.followup_date', now()->toDateString())
+            ->where('leads.status_id', '=', $status_id)
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
             ->orderByDesc('leads.date')
             ->paginate(45);
+        return view('Admin.Leads.followLeads', compact('status', 'statuses', 'leads', 'searchTerm', 'FilterAgent', 'leads_status_history', 'agents'));
+    }
+    //folllow up for callback status leads module
+    public function callbackLeads(Request $req)
+    {
+        // seperately send lead status history and will render this in modal using jquerry
+        $leads_status_history = DB::table('lead_statuses')
+            ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
+            ->select('lead_statuses.*', 'lead_status_options.name as status_name')
+            ->orderBy('lead_statuses.id', 'desc')
+            ->get();
+        $statuses = LeadStatusOption::where('isDeleted', '=', 'No')->get();
+        $agents = User::where('role', '=', 'agent')->get();
+        $agent = null;
+        $manager = null;
+        // we are using statsus id 6 becuase this is will not delte only change this id is for status demoid
+        $status_id = 8;
+        $status = LeadStatusOption::find($status_id);
+        if (session('user')->role == "agent") {
+            $agent = User::find(session('user')->id);
+        }
 
+        if (session('user')->role == "manager") {
+            $manager = User::find(session('user')->id);
+        }
+        // querry paramaters
+        $searchTerm = $req->query('table_search');
+        $FilterAgent = $req->query('agent_id');
 
-        return view('Admin.Leads.followupList', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
+        $leads = DB::table('leads')
+            ->join('sources', 'leads.source_id', '=', 'sources.id')
+            ->join('users', 'leads.agent_id', '=', 'users.id')
+            // if session has agesnt show all his assigned leads
+            ->when($agent, function ($query, $agent) {
+                $query->where(function ($query) use ($agent) {
+                    $query->where('leads.agent_id', '=', $agent->id);
+                });
+            })
+            // filter by agent
+            ->when($FilterAgent, function ($query, $FilterAgent) {
+                $query->where(function ($query) use ($FilterAgent) {
+                    $query->where('leads.agent_id', '=', $FilterAgent);
+                });
+            })
+            // filter by general terms
+            ->when($searchTerm, function ($query, $searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('sources.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('users.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
+                });
+            })
+            ->whereDate('leads.followup_date', now()->toDateString())
+            ->where('leads.status_id', '=', $status_id)
+            ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
+            ->orderByDesc('leads.date')
+            ->paginate(45);
+        return view('Admin.Leads.followLeads', compact('status', 'statuses', 'leads', 'searchTerm', 'FilterAgent', 'leads_status_history', 'agents'));
     }
 }

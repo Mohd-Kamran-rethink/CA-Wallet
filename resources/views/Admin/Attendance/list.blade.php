@@ -80,6 +80,7 @@
                                             <th>Name</th>
                                             <th>Date</th>
                                             <th>Time</th>
+                                            <th>Break Time</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -90,6 +91,7 @@
                                                 <td>{{ $item->name }}</td>
                                                 <td>{{date('d-m-Y', strtotime($item->created_at))}}</td>
                                                 <td>{{ $item->hours }}</td>
+                                                <td>{{ $item->breaktime }}</td>
                                                 <td><button class="btn btn-success"
                                                         onclick="attendanceModal({{ $item->user_id }})">View
                                                         Activity</button></td>
