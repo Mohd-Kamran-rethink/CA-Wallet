@@ -20,6 +20,7 @@ class CreateUsersTable extends Migration
             $table->string('phone');
             $table->string('password');
             $table->string('role');
+            $table->string('franchise_id')->nullable();
             $table->enum('is_admin',['Yes','No'])->default('No');
             $table->timestamps();
         });
