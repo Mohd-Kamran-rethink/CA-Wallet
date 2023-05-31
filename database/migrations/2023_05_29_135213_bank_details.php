@@ -16,6 +16,7 @@ class BankDetails extends Migration
         Schema::create('bank_details', function (Blueprint $table) {
             $table->id();
             $table->string('holder_name')->nullable();
+            $table->string('customer_id')->nullable();
             $table->string('bank_name')->nullable();
             $table->string('account_number')->nullable();
             $table->string('ifsc')->nullable();

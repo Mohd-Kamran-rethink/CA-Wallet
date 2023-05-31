@@ -15,14 +15,18 @@ class Transactions extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->string('client_id')->nullable();
             $table->string('amount');
-            $table->string('bonus');
+            $table->string('bonus')->nullable();
             $table->string('total');
             $table->string('date');
-            $table->string('utr_no');
+            $table->string('utr_no')->nullable();
             $table->string('bank_account');
-            $table->string('deposit_banker_id');
+            $table->string('deposit_banker_id')->nullable();
             $table->string('depositer_id')->nullable();
+            // for withdrawl
+            $table->string('withdrawal_banker_id')->nullable();
+            $table->string('withdrawrer_id')->nullable();
             $table->string('cancel_note')->nullable();
             $table->enum('type',['Deposit','Withdraw']);
             $table->enum('status',['Pending','Approve','Cancel']);

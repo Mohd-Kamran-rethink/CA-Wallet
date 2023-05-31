@@ -15,7 +15,6 @@ class ClientsMigration extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
-            $table->string('agent_id');
             $table->string('name');
             $table->string('number');
             $table->string('ca_id');
