@@ -713,7 +713,7 @@ class LeadsController extends Controller
                $lead->agent_id=$agentId;
                $lead->date=$date;
                $result=$lead->save();
-               return ['msg-success'=>'Lead add successfully and sent for approval'];
+               return ['msg-success'=>'Lead added successfully and sent for approval'];
             }
             else
             {
