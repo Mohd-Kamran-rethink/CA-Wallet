@@ -30,6 +30,8 @@ class AuthController extends Controller
     public function login(Request $req)
     {
         // Get the current date
+        $allowedRoles = ['manager', 'agent'];
+       
         $date = Carbon::today();
         // Check if there is an entry for today and the current user
         
@@ -38,7 +40,7 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
         $user = User::where('email', '=', $req->email)->first();
-        if ($user) {
+        if ($user && in_array($user->role, $allowedRoles)) {
             if (Hash::check($req->password, $user->password)) {
                 session()->put('user', $user);
                 $attendanceMaster = AppMasterAttendance::where('user_id', session('user')->id)
