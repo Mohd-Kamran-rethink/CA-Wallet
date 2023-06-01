@@ -31,6 +31,9 @@
                     <h1>Leads</h1>
                 </div>
             </div>
+            <div class="" id="notification-alert" role="alert">
+
+            </div>
             @if (session()->has('msg-success'))
                 <div class="alert alert-success" role="alert">
                     {{ session('msg-success') }}
@@ -160,6 +163,10 @@
                         </div>
                     </form>
                     <div class="col-md-12 col-lg-5 d-flex justify-content-end mt-2">
+                        @if (session('user')->role === 'agent')
+                            <button onclick="addLeadsModal()" title="Add Lead" class="btn btn-primary mx-2">Add
+                                Lead</button>
+                        @endif
                         @if (session('user')->role === 'manager')
                             @if (Request::is('leads/approval') && session('user')->id == 1)
                                 <button onclick="approveLeadsModal()" title="Approvelead"
@@ -197,8 +204,6 @@
                                     </thead>
                                     <tbody>
                                         @forelse($leads as $key=> $item)
-                                            
-
                                             <tr>
                                                 @if (session('user')->role === 'manager')
                                                     <td><input class="checkbox" type="checkbox" onchange="selectedLeads()"
@@ -424,6 +429,37 @@
         </div>
     </div>
 </div>
+{{-- mannual lead add modal --}}
+<div class="modal fade show" id="modal-add-lead" style=" padding-right: 17px;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add Lead</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url('/leads/agent/mass/change') }}" method="post" id="mass-agent-form">
+                    @csrf
+                    <input type="hidden" name="leadIds" class="lead_ids">
+                    <div class="form-group">
+                        <label for="">Phone<span class="text-danger">*</span></label>
+                        <input id="lead_number" type="number" name="lead_number" class="form-control">
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer ">
+                <button onclick="submitMannualLead()" type="button"
+                    class="btn btn-success agent-modal-submit-button" id="mass-status-change-button">Submit</button>
+                <button type="button" data-dismiss="modal" aria-label="Close"
+                    class="btn btn-default">Cancel</button>
+
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     // Get the datePicker input element
     const datePicker = document.getElementsByClassName('blockpast');
@@ -614,6 +650,45 @@
         } else {
             $(`#${formId}`).submit();
         }
+    }
+
+    function addLeadsModal() {
+        let number = $('#lead_number').val('')
+        $('#modal-add-lead').modal('show');
+    }
+
+    function submitMannualLead() {
+        let number = $('#lead_number').val()
+        $.ajax({
+            url: BASE_URL +
+                "/leads/add?lead_number=" + number,
+            success: function(data) {
+                if (data.hasOwnProperty('msg-success')) {
+                    // Show success message
+                    $('#notification-alert').addClass('alert').addClass('alert-success').text(data[
+                        'msg-success']);
+                } else if (data.hasOwnProperty('msg-error')) {
+                    $('#notification-alert').addClass('alert').addClass('alert-danger').text(data[
+                        'msg-error']);
+}
+                $('#modal-add-lead').modal('hide');
+            },
+            error: function(xhr, status, error) {
+                var response = JSON.parse(xhr.responseText);
+                if (response.errors) {
+
+                    // Loop through each error and display it on the respective input field
+                    $.each(response.errors, function(key, value) {
+                        var inputElement = $('#' + key);
+                        inputElement.addClass('is-invalid');
+                        inputElement.next('.invalid-feedback').html(value[0]);
+                    });
+                } else {
+                    // Handle other error cases
+                }
+            }
+        });
+
     }
 </script>
 @endsection

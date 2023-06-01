@@ -691,4 +691,35 @@ class LeadsController extends Controller
             ->paginate(45);
         return view('Admin.Leads.followLeads', compact('status', 'statuses', 'leads', 'searchTerm', 'FilterAgent', 'leads_status_history', 'agents'));
     }
+    // mannual add
+    public function mannualAdd(Request $req)
+    {
+        $agentId =session('user')->id;
+        $date=Carbon::now()->format('Y-m-d');
+        $req->validate(['lead_number'=>'required']);
+        if($req->ajax())
+        {
+            $source=Source::where('name','=','WhatsApp')->first();
+            $existingLead = Lead::where('agent_id', $agentId)
+                ->where('source_id', $source->id)
+                ->where('number','=',$req->lead_number)
+                ->where('created_at', '>=', Carbon::now()->subDays(15))
+                ->first();
+           if(!$existingLead)
+           {
+               $lead=new Lead();
+               $lead->source_id=$source->id;
+               $lead->number=$req->lead_number;
+               $lead->agent_id=$agentId;
+               $lead->date=$date;
+               $result=$lead->save();
+               return ['msg-success'=>'Lead add successfully and sent for approval'];
+            }
+            else
+            {
+                return ['msg-error' => 'The lead with the number ' . $req->lead_number . ' is already present in the database within the last 15 days.'];
+            }
+            }
+        
+    }
 }

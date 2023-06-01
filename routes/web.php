@@ -92,6 +92,7 @@ Route::middleware('ValidateUsers')->prefix('/leads')->group(function () {
     Route::get('/approval',[LeadsController::class,'nonApprovedLeads'])->name('nonApprovedLeads');
     Route::post('/acceptapproval',[LeadsController::class,'approveLead'])->name('approveLead');
     Route::post('/delete',[LeadsController::class,'deleteLeads'])->name('deleteLeads');
+    Route::get('/add',[LeadsController::class,'mannualAdd'])->name('mannualAdd');
 });
 
 // clients for agents

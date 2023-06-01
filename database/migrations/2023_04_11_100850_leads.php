@@ -16,7 +16,7 @@ class Leads extends Migration
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
             $table->string('source_id');
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->string('number');
             $table->string('agent_id');
             $table->string('manager_id')->nullable();
