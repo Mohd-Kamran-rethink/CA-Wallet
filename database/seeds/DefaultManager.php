@@ -13,14 +13,23 @@ class DefaultManager extends Seeder
      */
     public function run()
     {
-        $Manager=new User();
-        $Manager->name="Kamran Ali";
-        $Manager->email="manager@gmail.com";
-        $Manager->phone="928277273";
-        $Manager->role="manager";
-        $Manager->is_admin="Yes";
-        $Manager->password=Hash::make("123456789");
-        $Manager->save();
+        $sources = [
+            ['name' => 'Test Manager', 'email' => 'manager@ca.com', 'phone' => '928277273', 'role' => 'manager', 'password' => '123456789'],
+            ['name' => 'Test Manager', 'email' => 'customer@ca.com', 'phone' => '928277273', 'role' => 'customer_care_manager', 'password' => '123456789'],
+        ];
+
+        foreach ($sources as $item) {
+            $manager = new User();
+            $manager->name = $item['name'];
+            $manager->email = $item['email'];
+            $manager->phone = $item['phone'];
+            $manager->role = $item['role'];
+            $manager->is_admin = "Yes";
+            $manager->password = Hash::make($item['password']);
+            $manager->save();
+        }
+        
+       
     }
 }
        
