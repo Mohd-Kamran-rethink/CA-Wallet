@@ -21,13 +21,14 @@ class Transactions extends Migration
             $table->string('total');
             $table->string('date');
             $table->string('utr_no')->nullable();
-            $table->string('bank_account');
+            $table->string('bank_account')->nullable();
             $table->string('deposit_banker_id')->nullable();
             $table->string('depositer_id')->nullable();
             // for withdrawl
             $table->string('withdrawal_banker_id')->nullable();
             $table->string('withdrawrer_id')->nullable();
             $table->string('cancel_note')->nullable();
+            $table->string('customer_bank_id')->nullable();
             $table->enum('type',['Deposit','Withdraw']);
             $table->enum('status',['Pending','Approve','Cancel']);
             $table->timestamps();
