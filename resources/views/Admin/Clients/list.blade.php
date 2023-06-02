@@ -52,11 +52,11 @@
                                                 <td>{{ $item->ca_id }}</td>
                                                 <td>{{ $item->number }}</td>
                                                 <td>
-                                                    <button onclick="openRedepositModal({{ $item->id }})"
+                                                    {{-- <button onclick="openRedepositModal({{ $item->id }})"
                                                         class="btn btn-secondary">Redeposit</button>
                                                         <a href="{{ url('clients/deposit/history/'.$item->id) }}"
                                                             title="View deposit history" class="btn btn-warning">Deposit
-                                                            History</a>
+                                                            History</a> --}}
 
 
                                                     <a href="{{ url('clients/edit/?id=' . $item->id) }}"
