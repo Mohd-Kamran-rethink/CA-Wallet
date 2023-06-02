@@ -148,7 +148,7 @@
                 @endif
                 {{-- clients --}}
                 @if ($userData->role == 'agent')
-                    {{-- <li class="nav-item ">
+                    <li class="nav-item ">
                         <a href="{{ url('/clients') }}"
                             class="nav-link {{ Request::is('clients') || Request::is('clients/add') || Request::is('clients/edit') ? 'active' : '' }}">
                             <i class="nav-icon fa fa-users"></i>
@@ -157,7 +157,7 @@
 
                             </p>
                         </a>
-                    </li> --}}
+                    </li>
                 @endif
                 <li class="nav-item ">
                     <a href="{{ url('/attendance') }}"
