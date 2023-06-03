@@ -158,6 +158,9 @@
                         <select onchange="handleStatusValues(this)" name="status" class="form-control" id="">
                             <option value="0" data-second-value="null">--Choose--</option>
                             @foreach ($statuses as $item)
+                            @if($item->name=="Deposited")
+                                @continue
+                            @endif
                                 <option value="{{ $item->id }}" data-second-value="{{ $item->id }}">
                                     {{ $item->name }}</option>
                             @endforeach

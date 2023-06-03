@@ -274,6 +274,9 @@
                             id="">
                             <option value="0" data-second-value="0">--Choose--</option>
                             @foreach ($statuses as $item)
+                                @if ($item->name == 'Deposited')
+                                    @continue
+                                @endif
                                 <option value="{{ $item->id }}" data-second-value="{{ $item->id }}">
                                     {{ $item->name }}</option>
                             @endforeach
@@ -351,6 +354,9 @@
                             id="">
                             <option value="0" data-second-value="0">--Choose--</option>
                             @foreach ($statuses as $item)
+                                @if ($item->name == 'Deposited')
+                                    @continue
+                                @endif
                                 <option value="{{ $item->id }}" data-second-value="{{ $item->id }}">
                                     {{ $item->name }}</option>
                             @endforeach
@@ -670,7 +676,7 @@
                 } else if (data.hasOwnProperty('msg-error')) {
                     $('#notification-alert').addClass('alert').addClass('alert-danger').text(data[
                         'msg-error']);
-}
+                }
                 $('#modal-add-lead').modal('hide');
             },
             error: function(xhr, status, error) {
