@@ -44,10 +44,8 @@ class ReportController extends Controller
             array_push($row, $value->name);
 
             $totalLeads = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
-                ->whereBetween(DB::raw("STR_TO_DATE(date, '%d-%m-%Y')"), [
-                    date('Y-m-d', strtotime($startDate)),
-                    date('Y-m-d', strtotime($endDate))
-                ])
+                        ->whereDate('date', '>=', date('Y-m-d', strtotime($startDate)))
+                        ->whereDate('date', '<=', date('Y-m-d', strtotime($endDate)))
                 // here 
                 ->when($created_from_date, function ($query, $created_from_date) {
                     $query->whereRaw("DATE(created_at) = ?", [$created_from_date]);
@@ -57,10 +55,8 @@ class ReportController extends Controller
                     
             $notProcessed = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
                 ->where("current_status", '=', NUll)
-                ->whereBetween(DB::raw("STR_TO_DATE(date, '%d-%m-%Y')"), [
-                    date('Y-m-d', strtotime($startDate)),
-                    date('Y-m-d', strtotime($endDate))
-                ])
+                ->whereDate('date', '>=', date('Y-m-d', strtotime($startDate)))
+                        ->whereDate('date', '<=', date('Y-m-d', strtotime($endDate)))
                 // here 
                 ->when($created_from_date, function ($query, $created_from_date) {
                     $query->whereRaw("DATE(created_at) = ?", [$created_from_date]);
@@ -70,10 +66,8 @@ class ReportController extends Controller
                 foreach ($statuses as $status) {
                     $leadsCount = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
                     ->where("current_status", '=', $status->name)
-                    ->whereBetween(DB::raw("STR_TO_DATE(date, '%d-%m-%Y')"), [
-                        date('Y-m-d', strtotime($startDate)),
-                        date('Y-m-d', strtotime($endDate))
-                    ])
+                    ->whereDate('date', '>=', date('Y-m-d', strtotime($startDate)))
+                        ->whereDate('date', '<=', date('Y-m-d', strtotime($endDate)))
                     ->when($created_from_date, function ($query, $created_from_date) {
                         $query->whereRaw("DATE(created_at) = ?", [$created_from_date]);
                     })
@@ -122,10 +116,8 @@ class ReportController extends Controller
             $row = [];
             array_push($row, $value->name);
             $totalLeads = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
-                ->whereBetween(DB::raw("STR_TO_DATE(date, '%d-%m-%Y')"), [
-                    date('Y-m-d', strtotime($startDate)),
-                    date('Y-m-d', strtotime($endDate))
-                ])
+            ->whereDate('date', '>=', date('Y-m-d', strtotime($startDate)))
+            ->whereDate('date', '<=', date('Y-m-d', strtotime($endDate)))
                 ->when($created_from_date, function ($query, $created_from_date) {
                     $query->whereRaw("DATE(created_at) = ?", [$created_from_date]);
                 })
@@ -134,10 +126,8 @@ class ReportController extends Controller
             array_push($row, $totalLeads === 0 ? '0' : ($totalLeads ?: ''));
             $notProcessed = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
                 ->where("current_status", '=', NUll)
-                ->whereBetween(DB::raw("STR_TO_DATE(date, '%d-%m-%Y')"), [
-                    date('Y-m-d', strtotime($startDate)),
-                    date('Y-m-d', strtotime($endDate))
-                ])
+                ->whereDate('date', '>=', date('Y-m-d', strtotime($startDate)))
+                ->whereDate('date', '<=', date('Y-m-d', strtotime($endDate)))
                 ->when($created_from_date, function ($query, $created_from_date) {
                     $query->whereRaw("DATE(created_at) = ?", [$created_from_date]);
                 })
@@ -146,10 +136,8 @@ class ReportController extends Controller
             foreach ($statuses as $status) {
                 $leadsCount = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
                     ->where("current_status", '=', $status->name)
-                    ->whereBetween(DB::raw("STR_TO_DATE(date, '%d-%m-%Y')"), [
-                        date('Y-m-d', strtotime($startDate)),
-                        date('Y-m-d', strtotime($endDate))
-                    ])
+                    ->whereDate('date', '>=', date('Y-m-d', strtotime($startDate)))
+                    ->whereDate('date', '<=', date('Y-m-d', strtotime($endDate)))
                     ->when($created_from_date, function ($query, $created_from_date) {
                         $query->whereRaw("DATE(created_at) = ?", [$created_from_date]);
                     })

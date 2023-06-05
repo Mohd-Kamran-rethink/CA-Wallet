@@ -166,7 +166,6 @@ class LeadsController extends Controller
 
     }
 
-
     //leads for approval only show to default manager
     public function nonApprovedLeads(Request $req)
     {
