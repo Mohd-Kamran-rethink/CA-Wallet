@@ -318,13 +318,13 @@ class LeadsController extends Controller
             $DateserialNumber = $data['Date']; // This is the serial number for the date "01/01/2021"
             $unixTimestamp = ($DateserialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
             $date = \Carbon\Carbon::createFromTimestamp($unixTimestamp);
-            $formattedDate = $date->format('d-m-Y'); // format the date in the desired format
+            $formattedDate = $date->format('Y-m-d'); // format the date in the desired format
             
             //for leads_date
             $leads_dateDateserialNumber = $data['Leads Date']; // This is the serial number for the date "01/01/2021"
             $leads_dateunixTimestamp = ($leads_dateDateserialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
             $leads_date = \Carbon\Carbon::createFromTimestamp($leads_dateunixTimestamp);
-            $leads_dateformattedDate = $leads_date->format('d-m-Y'); 
+            $leads_dateformattedDate = $leads_date->format('Y-m-d'); 
            
             // If validation fails, add entry to errors array
             if ($validator->fails()) {
