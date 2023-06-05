@@ -310,8 +310,8 @@
                     class="btn btn-success status-submit-button" id="status-submit-button" disabled>Submit</button>
                 <button type="button" data-dismiss="modal" aria-label="Close"
                     class="btn btn-default">Cancel</button>
+                </div>
 
-            </div>
         </div>
     </div>
 </div>

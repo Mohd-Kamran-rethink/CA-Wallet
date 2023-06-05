@@ -67,7 +67,7 @@ class ReportController extends Controller
                     $leadsCount = Lead::where('agent_id', '=', $value->id)->where('is_approved', '=', 'Yes')
                     ->where("current_status", '=', $status->name)
                     ->whereDate('date', '>=', date('Y-m-d', strtotime($startDate)))
-                        ->whereDate('date', '<=', date('Y-m-d', strtotime($endDate)))
+                    ->whereDate('date', '<=', date('Y-m-d', strtotime($endDate)))
                     ->when($created_from_date, function ($query, $created_from_date) {
                         $query->whereRaw("DATE(created_at) = ?", [$created_from_date]);
                     })

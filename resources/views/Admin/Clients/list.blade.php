@@ -24,11 +24,34 @@
     <section class="content">
         <div class="card">
             <div class="card-body">
-                <div class="mb-3 d-flex justify-content-between align-items-centers">
+                <div class="card-header d-flex justify-content-between px-0 mx-0">
+                    <form action="{{ url('clients') }}" method="GET" id="search-form"
+                        class="filters d-flex flex-row col-11 pl-0">
 
-                    <div>
-                        <a href="{{ url('clients/add') }}" class="btn btn-primary">Add New Client</a>
-                    </div>
+                        <div class="col-3">
+                            <label for="">Search</label>
+                            <input id="searchInput" name="saerch-input" placeholder="Search by number" type="text" class="form-control "
+                                value="{{ isset($search) ? $search : '' }}">
+                        </div>
+                        <div class="col-3">
+                            <label for="">From</label>
+                            <input name="from_date" type="date" class="form-control from_date" id="datePicker"
+                                value="{{ isset($startDate) ? $startDate : '' }}">
+                        </div>
+                        <div class="col-3">
+                            <label for="">To</label>
+                            <input name="to_date" type="date" class="form-control to_date" id="datePicker"
+                                value="{{ isset($endDate) ? $endDate : '' }}">
+                        </div>
+
+
+                        <div class="">
+                            <label for="" style="visibility: hidden;">filter</label>
+                            <button class="btn btn-success form-control" onclick="searchData()">Filter</button>
+                        </div>
+                    </form>
+
+
                 </div>
                 <div class="row">
                     <div class="col-12">
@@ -38,25 +61,22 @@
                                     <thead>
                                         <tr>
                                             <th>S.No.</th>
-                                            <th>Name</th>
-                                            <th>ID Name</th>
                                             <th>Phone</th>
-                                            <th>Actions</th>
+                                            <th>Deposited Amount</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @forelse($clients as $item)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item->name }}</td>
-                                                <td>{{ $item->ca_id }}</td>
                                                 <td>{{ $item->number }}</td>
-                                                <td>
-                                                    {{-- <button onclick="openRedepositModal({{ $item->id }})"
+                                                <td>{{ $item->total_amount ?? '--' }}</td>
+                                                {{-- <td>
+                                                    <button onclick="openRedepositModal({{ $item->id }})"
                                                         class="btn btn-secondary">Redeposit</button>
                                                         <a href="{{ url('clients/deposit/history/'.$item->id) }}"
                                                             title="View deposit history" class="btn btn-warning">Deposit
-                                                            History</a> --}}
+                                                            History</a>
 
 
                                                     <a href="{{ url('clients/edit/?id=' . $item->id) }}"
@@ -66,7 +86,7 @@
                                                     <button title="Delete this client"
                                                         onclick="manageModal({{ $item->id }})"
                                                         class="btn btn-danger"><i class="fa fa-trash"></i></button>
-                                                </td>
+                                                </td> --}}
                                             </tr>
 
 
@@ -105,7 +125,8 @@
                         <input type="hidden" id="deposit-id" name="depositId">
                         <div class="form-group mt-3">
                             <label for="">Amount <span class="text-danger">*</span></label>
-                            <input type="number" placeholder="1000" id="amount-input" name="amount" class="form-control" value="">
+                            <input type="number" placeholder="1000" id="amount-input" name="amount" class="form-control"
+                                value="">
                             <span class="text-danger error-amount"></span>
                         </div>
                     </div>
@@ -144,19 +165,29 @@
         </div>
     </div>
     <script>
+        function searchClients() {
+            event.preventDefault();
+            const url = new URL(window.location.href);
+            const searchValue = $('#searchInput').val().trim();
+            const from_date = $('.from_date').val();
+            const toDate = $('.to_date').val();
+            url.searchParams.set('search', searchValue);
+            url.searchParams.set('from_date', from_date ?? '');
+            url.searchParams.set('toDate', toDate ?? '');
+            $('#search-form').attr('action', url.toString()).submit();
+        }
+
         function openRedepositModal(id) {
             $(`#modal-redeposit`).modal("show");
             $(`#deposit-id`).val(id);
         }
-        function redeposit()
-        {
+
+        function redeposit() {
             event.preventDefault();
             let amount = $('#amount-input').val()
             if (!amount) {
                 $('.error-amount').html('Please enter amount')
-            } 
-            else
-            {
+            } else {
                 $('.error-amount').html('')
                 $('#redeposit-form').submit();
             }
