@@ -65,7 +65,7 @@
                         
                     </form>
                     <div>
-                        <a href="{{ url('managers/add') }}" class="btn btn-primary">Add New Manager</a>
+                        {{-- <a href="{{ url('managers/add') }}" class="btn btn-primary">Add New Manager</a> --}}
                     </div>
                 </div>
 
