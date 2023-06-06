@@ -78,6 +78,7 @@ Route::middleware('adminManager')->prefix('/statuses')->group(function () {
 Route::middleware('ValidateUsers')->prefix('/leads')->group(function () {
     Route::get('',[LeadsController::class,'list'])->name('list');
     Route::get('/duplicate',[LeadsController::class,'duplicateLeads'])->name('duplicateLeads');
+    Route::get('/pending',[LeadsController::class,'pendingLeads'])->name('pendingLeads');
     Route::get('/import',[LeadsController::class,'importView'])->name('importView');
     Route::post('/import',[LeadsController::class,'import'])->name('import');
     Route::post('/status/submit',[LeadsController::class,'submitStatus'])->name('submitStatus');
