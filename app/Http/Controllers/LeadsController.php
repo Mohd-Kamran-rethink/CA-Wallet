@@ -6,14 +6,11 @@ use App\Client;
 use App\Deposit;
 use App\DepositHistory;
 use App\DuplicateLead;
-use App\Language;
 use App\Lead;
 use App\LeadStatus;
 use App\LeadStatusOption;
 use App\Source;
-use App\State;
 use App\User;
-use App\Zone;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -55,7 +52,7 @@ class LeadsController extends Controller
         $currentStatus = LeadStatusOption::find($Filterstatus);
         $leads = DB::table('leads')
             ->join('sources', 'leads.source_id', '=', 'sources.id')
-            ->leftjoin('users', 'leads.agent_id', '=', 'users.id')
+            ->join('users', 'leads.agent_id', '=', 'users.id')
             // if session has agesnt show all his assigned leads
             ->when($agent, function ($query, $agent) {
                 $query->where(function ($query) use ($agent) {
@@ -82,7 +79,7 @@ class LeadsController extends Controller
                         ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
                 });
             })
-
+            
             ->when($agent, function ($query) use ($ignoredSourceIds) {
                 $query->where(function ($query) use ($ignoredSourceIds) {
                     $query->whereNotIn('leads.status_id', $ignoredSourceIds);
@@ -93,17 +90,17 @@ class LeadsController extends Controller
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
             ->orderByDesc('leads.date')
             ->paginate(45);
-
+        
         return view('Admin.Leads.list', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
     }
     public function duplicateLeads(Request $req)
     {
-        // seperately send lead status history and will render this in modal using jquerry
-        $leads_status_history = DB::table('lead_statuses')
-            ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
-            ->select('lead_statuses.*', 'lead_status_options.name as status_name')
-            ->orderBy('lead_statuses.id', 'desc')
-            ->get();
+       // seperately send lead status history and will render this in modal using jquerry
+       $leads_status_history = DB::table('lead_statuses')
+       ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
+       ->select('lead_statuses.*', 'lead_status_options.name as status_name')
+       ->orderBy('lead_statuses.id', 'desc')
+       ->get();
 
         // statuses and agents list to filter out data
         $statuses = LeadStatusOption::where('isDeleted', '=', 'No')->get();
@@ -164,8 +161,9 @@ class LeadsController extends Controller
                     $query->whereNotNull('duplicate_leads.status_id');
                 });
             })
-            ->paginate(45);
+       ->paginate(45);
         return view('Admin.Leads.duplicateLeads', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
+
     }
 
     //leads for approval only show to default manager
@@ -256,7 +254,7 @@ class LeadsController extends Controller
     {
         return view('Admin.Leads.import');
     }
-    //leads import by agent
+    //leads import by  manager
     public function import(Request $req)
     {
         $validatedData = $req->validate([
@@ -321,13 +319,13 @@ class LeadsController extends Controller
             $unixTimestamp = ($DateserialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
             $date = \Carbon\Carbon::createFromTimestamp($unixTimestamp);
             $formattedDate = $date->format('Y-m-d'); // format the date in the desired format
-
+            
             //for leads_date
             $leads_dateDateserialNumber = $data['Leads Date']; // This is the serial number for the date "01/01/2021"
             $leads_dateunixTimestamp = ($leads_dateDateserialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
             $leads_date = \Carbon\Carbon::createFromTimestamp($leads_dateunixTimestamp);
-            $leads_dateformattedDate = $leads_date->format('Y-m-d');
-
+            $leads_dateformattedDate = $leads_date->format('Y-m-d'); 
+           
             // If validation fails, add entry to errors array
             if ($validator->fails()) {
                 $errors[] = $data;
@@ -363,7 +361,7 @@ class LeadsController extends Controller
                 ->where('created_at', '>=', Carbon::now()->subDays(15))
                 ->first();
             // Add entry to results and if agent is importing than manger_id will be blank
-
+           
             $entry = [
                 'source_id' => $sourceId,
                 'name' => $data['Name'],
@@ -374,7 +372,7 @@ class LeadsController extends Controller
                 'agent_id' => $agentId,
                 'manager_id' => $sessionUser->role == 'agent' ? 1 : $manager->id,
                 'is_approved' => $sessionUser->role == 'agent' ? 'No' : 'Yes',
-                'leads_date' => $data['Leads Date'] ? $leads_dateformattedDate : '',
+                'leads_date' => $data['Leads Date']?$leads_dateformattedDate:'',
             ];
             if ($existingLead) {
                 DuplicateLead::create($entry);
@@ -388,177 +386,6 @@ class LeadsController extends Controller
             $entries[] = $entry;
             $existingEntries[$entryKey] = true;
             $addedCount++;
-        }
-        $sessionMsg = $sessionUser->role == 'agent' ? "We have sent your leads to manager for approval" : 'Imported Successfully';
-        return  redirect('/leads')->with([
-            'msg-success' => $sessionMsg,
-            'added' => $addedCount,
-            'skippedCount' => $skippedCount,
-            'skipped' => $skipped,
-            'errors' => $errors,
-            'error_count' => $errorCount,
-        ]);
-    }
-    // leads import by manager
-    public function leadsImportByManager(Request $req)
-    {
-        // validation excel rule
-        $validatedData = $req->validate([
-            'excel_file' => 'required|mimes:xlsx,xls',
-        ]);
-
-        $file = $req->file('excel_file');
-        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReaderForFile($file->path());
-        $reader->setReadDataOnly(true);
-        $spreadsheet = $reader->load($file->path());
-        $worksheet = $spreadsheet->getActiveSheet();
-        $rows = $worksheet->toArray();
-        $entries = [];
-        $existingEntries = [];
-        $errors = [];
-        $skipped = [];
-        $addedCount = 0;
-        $skippedCount = 0;
-        $errorCount = 0;
-        $manager = '';
-        $sessionUser = session('user');
-
-        // Define validation rules for each column
-        $validationRules = [
-            'Sources' => ['required'],
-            'Date' => ['required'],
-            'Name' => ['required'],
-            'Number' => ['required', 'numeric'],
-            'Language' => ['required'],
-        ];
-
-        $columnHeaders = array_shift($rows);
-        $sources = Source::pluck('name', 'id')->map(function ($name) {
-            return trim($name);
-        })->toArray();
-        $groups = [];
-        $agents = User::where('role', '=', 'agent')->get();
-        $keyValueAgents = [];
-        $assignedLeads = []; // Array to store assigned leads
-        foreach ($rows as $row) {
-
-            $data = array_combine($columnHeaders, $row);
-            $validator = Validator::make($data, $validationRules);
-
-            // date manipulation
-            $DateserialNumber = $data['Date']; // This is the serial number for the date "01/01/2021"
-            $unixTimestamp = ($DateserialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
-            $date = \Carbon\Carbon::createFromTimestamp($unixTimestamp);
-            $formattedDate = $date->format('Y-m-d'); // format the date in the desired format
-
-            //for leads_date
-            $leads_dateDateserialNumber = $data['Leads Date']; // This is the serial number for the date "01/01/2021"
-            $leads_dateunixTimestamp = ($leads_dateDateserialNumber - 25569) * 86400; // adjust for Unix epoch and convert to seconds
-            $leads_date = \Carbon\Carbon::createFromTimestamp($leads_dateunixTimestamp);
-            $leads_dateformattedDate = $leads_date->format('Y-m-d');
-
-            // If validation fails, add entry to errors array
-            if ($validator->fails()) {
-                $errors[] = $data;
-                $errorCount++;
-                continue;
-            }
-            $entryKey = $data['Date'] . $data['Name'] . $data['Number'] . $data['Language'];
-            // If entry already exists, skip it
-            if (isset($existingEntries[$entryKey])) {
-                $skipped[] = $data;
-                $skippedCount++;
-                continue;
-            }
-            $sourceId = array_search(strtolower(trim($data['Sources'])), array_map('strtolower', $sources));
-            // If source id is not found skip the entry
-            if (!$sourceId) {
-                $skipped[] = $data;
-                $skippedCount++;
-                continue;
-            }
-            $existingLead = Lead::
-                // where('agent_id', $agentId)
-                where('source_id', $sourceId)
-                ->where('date', $formattedDate)
-                ->where('created_at', '>=', Carbon::now()->subDays(15))
-                ->first();
-
-            $entry = [
-                'source_id' => $sourceId,
-                'name' => $data['Name'],
-                'date' => $formattedDate,
-                'number' => $data['Number'],
-                'language' => $data['Language'],
-                'idName' => $data['ID NAME'],
-                'zone' => $data['Zone'],
-                'state' => $data['State'],
-                'manager_id' => $sessionUser->role,
-                'agent_id'=>'',
-                'is_approved' => 'Yes',
-                'leads_date' => $data['Leads Date'] ? $leads_dateformattedDate : '',
-            ];
-            if ($existingLead) {
-                DuplicateLead::create($entry);
-                $skipped[] = $data;
-                $skippedCount++;
-                continue;
-            }
-
-            if (!isset($groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State'])) . '-' . trim(strtolower($data['Language']))])) {
-                $groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State'])) . '-' . trim(strtolower($data['Language']))] = [];
-            }
-
-            $groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State'])) . '-' . trim(strtolower($data['Language']))][] = $entry;
-            
-
-            $entries[] = $entry;
-            $existingEntries[$entryKey] = true;
-            $addedCount++;
-        }
-        foreach ($agents as $key => $value) {
-            if (!isset($keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state)) . '-' . trim(strtolower($value->language))])) {
-                $keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state)) . '-' . trim(strtolower($value->language))] = [];
-            }
-            $keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state)) . '-' . trim(strtolower($value->language))][] = $value;
-        }
-        foreach ($groups as $key => $value) {
-            $leadsWithThisGroup = $value;
-
-            if (isset($keyValueAgents[$key])) {
-                $agentsWithThisgroup = $keyValueAgents[$key];
-            }
-
-            if ($agentsWithThisgroup) {
-                $totalLeads = count($leadsWithThisGroup);
-                $totalAgents = count($agentsWithThisgroup);
-                $leadsPerUser = intval($totalLeads / $totalAgents);
-                $remainingLeads = $totalLeads % $totalAgents;
-                $leadIndex = 0;
-        
-                foreach ($agentsWithThisgroup as $agent) {
-                    $leadsAssigned = 0;
-                    $assignedLeadsCount = $leadsPerUser;
-        
-                    if ($remainingLeads > 0) {
-                        $assignedLeadsCount++;
-                        $remainingLeads--;
-                    }
-        
-                    for ($i = 0; $i < $assignedLeadsCount; $i++) {
-                        if ($leadIndex < $totalLeads) {
-                            $lead = $leadsWithThisGroup[$leadIndex];
-                            $lead["agent_id"] = $lead["language"]!=$agent->language?'null':$agent->id;
-                            $assignedLeads[] = $lead;
-                            $leadsAssigned++;
-                            $leadIndex++;
-                        }
-                    }
-                }
-            }
-        }
-        foreach ($assignedLeads as $key => $value) {
-            Lead::create($value);
         }
         $sessionMsg = $sessionUser->role == 'agent' ? "We have sent your leads to manager for approval" : 'Imported Successfully';
         return  redirect('/leads')->with([
@@ -866,27 +693,83 @@ class LeadsController extends Controller
     // mannual add
     public function mannualAdd(Request $req)
     {
-        $agentId = session('user')->id;
-        $date = Carbon::now()->format('Y-m-d');
-        $req->validate(['lead_number' => 'required']);
-        if ($req->ajax()) {
-            $source = Source::where('name', '=', 'WhatsApp')->first();
+        $agentId =session('user')->id;
+        $date=Carbon::now()->format('Y-m-d');
+        $req->validate(['lead_number'=>'required']);
+        if($req->ajax())
+        {
+            $source=Source::where('name','=','WhatsApp')->first();
             $existingLead = Lead::where('agent_id', $agentId)
                 ->where('source_id', $source->id)
-                ->where('number', '=', $req->lead_number)
+                ->where('number','=',$req->lead_number)
                 ->where('created_at', '>=', Carbon::now()->subDays(15))
                 ->first();
-            if (!$existingLead) {
-                $lead = new Lead();
-                $lead->source_id = $source->id;
-                $lead->number = $req->lead_number;
-                $lead->agent_id = $agentId;
-                $lead->date = $date;
-                $result = $lead->save();
-                return ['msg-success' => 'Lead added successfully and sent for approval'];
-            } else {
+           if(!$existingLead)
+           {
+               $lead=new Lead();
+               $lead->source_id=$source->id;
+               $lead->number=$req->lead_number;
+               $lead->agent_id=$agentId;
+               $lead->date=$date;
+               $result=$lead->save();
+               return ['msg-success'=>'Lead added successfully and sent for approval'];
+            }
+            else
+            {
                 return ['msg-error' => 'The lead with the number ' . $req->lead_number . ' is already present in the database within the last 15 days.'];
             }
+            }
+        
+    }
+    public function pendingLeads (Request $req)
+    {
+        // seperately send lead status history and will render this in modal using jquerry
+       $leads_status_history = DB::table('lead_statuses')
+       ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
+       ->select('lead_statuses.*', 'lead_status_options.name as status_name')
+       ->orderBy('lead_statuses.id', 'desc')
+       ->get();
+
+        // statuses and agents list to filter out data
+        $statuses = LeadStatusOption::where('isDeleted', '=', 'No')->get();
+        $agents = User::where('role', '=', 'agent')->get();
+        $agent = null;
+        $manager = null;
+        // ignore ids of   Deposited,Not Interested,Demo id,Id created,Call back
+        $ignoredSourceIds = [1, 12, 6, 7, 8];
+        if (session('user')->role == "agent") {
+            $agent = User::find(session('user')->id);
         }
+
+        if (session('user')->role == "manager") {
+            $manager = User::find(session('user')->id);
+        }
+        // querry paramaters
+        $searchTerm = $req->query('table_search');
+        $Filterstatus = $req->query('status');
+        $FilterAgent = $req->query('agent_id');
+
+        // get details of the status from status id 
+        $currentStatus = LeadStatusOption::find($Filterstatus);
+        $leads = DB::table('leads')
+            ->join('sources', 'leads.source_id', '=', 'sources.id')
+            ->leftjoin('users', 'leads.agent_id', '=', 'users.id')
+            
+            // filter by general terms
+            ->when($searchTerm, function ($query, $searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('sources.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('users.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
+                });
+            })
+            ->where('agent_id','=','null')
+            ->where('is_approved', '=', 'Yes')
+            ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
+            ->orderByDesc('leads.date')
+            
+       ->paginate(45);
+        return view('Admin.Leads.PendingLeads', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
+
     }
 }
