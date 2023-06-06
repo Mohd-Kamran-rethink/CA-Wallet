@@ -219,7 +219,7 @@ class LeadsController extends Controller
                     $query->Where('leads.current_status', '=', $currentStatus->name);
                 });
             })
-            // filter by general terms
+            // filter by general term
             ->when($searchTerm, function ($query, $searchTerm) {
                 $query->where(function ($query) use ($searchTerm) {
                     $query->where('sources.name', 'like', '%' . $searchTerm . '%')
