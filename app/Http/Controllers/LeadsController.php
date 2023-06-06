@@ -430,7 +430,6 @@ class LeadsController extends Controller
             'Name' => ['required'],
             'Number' => ['required', 'numeric'],
             'Language' => ['required'],
-            'ID NAME' => [],
         ];
 
         $columnHeaders = array_shift($rows);
@@ -535,8 +534,7 @@ class LeadsController extends Controller
                         $lead = $leadsWithThisGroup[$i];
                         $lead["agent_id"] = $agent->id??'';
                         $assignedLeads[] = $lead; // Add lead to the assignedLeads array
-                        
-                    }
+                      }
                 }
             }
            
