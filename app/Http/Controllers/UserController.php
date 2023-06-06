@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Language;
+use App\State;
 use App\User;
+use App\Zone;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -39,11 +42,14 @@ class UserController extends Controller
     public function AgentView(Request $req)
     {
         $id = $req->query('id');
+        $languages=Language::get();
+        $zones=Zone::get();
+        $states=State::orderBy('name','asc')->get();
         if ($id) {
             $agent = User::where("role", '=', 'agent')->find($id);
-            return view('Admin.Agents.add', compact('agent'));
+            return view('Admin.Agents.add', compact('agent','languages','states','zones'));
         } else {
-            return view('Admin.Agents.add');
+         return view('Admin.Agents.add',compact('languages','states','zones'));
         }
     }
 
@@ -69,13 +75,19 @@ class UserController extends Controller
     public function add(Request $req)
     {
 
-        $req->validate([
+        $rules=[
             'name' => 'required|unique:users,name',
             'phone' => 'required|unique:users,phone',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|same:confirmPassword',
             'confirmPassword' => 'required|'
-        ]);
+        ];
+        if (session('user')->role=='manager') {
+            $rules['language'] = 'required|not_in:0';
+            $rules['zone'] = 'required|not_in:0';
+            $rules['state'] = 'required|not_in:0';
+        }
+        $req->validate($rules);
 
         $user = new User();
         $user->name = $req->name;
@@ -83,6 +95,9 @@ class UserController extends Controller
         $user->email = $req->email;
         $user->password = Hash::make($req->password);
         $user->role = $req->role;
+        $user->language=$req->language;
+        $user->zone=$req->zone;
+        $user->state=$req->state;
         $result = $user->save();
         if ($result) {
             if ($req->role === 'manager') {
@@ -108,9 +123,12 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $currentManager->id,
             'confirmPassword' => 'required_with:password',
         ];
-
+       
         $conditionalRules = [
             'password' => 'nullable|min:8|same:confirmPassword',
+            'zone' => 'required|not_in:0',
+            'language' => 'required|not_in:0',
+            'state' => 'required|not_in:0',
         ];
 
         $req->validate(array_merge($rules, $conditionalRules));
@@ -118,6 +136,9 @@ class UserController extends Controller
         $currentManager->name = $req->name;
         $currentManager->phone = $req->phone;
         $currentManager->email = $req->email;
+        $currentManager->state = $req->state;
+        $currentManager->zone = $req->zone;
+        $currentManager->language = $req->language;
         if ($req->password) {
             $currentManager->password = Hash::make($req->password);
         }
