@@ -21,6 +21,9 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('role');
             $table->string('franchise_id')->nullable();
+            $table->string('language')->nullable();
+            $table->string('zone')->nullable();
+            $table->string('state')->nullable();
             $table->enum('is_admin',['Yes','No'])->default('No');
             $table->timestamps();
         });

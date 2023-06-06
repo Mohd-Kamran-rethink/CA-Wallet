@@ -93,6 +93,9 @@ Route::middleware('ValidateUsers')->prefix('/leads')->group(function () {
     Route::post('/acceptapproval',[LeadsController::class,'approveLead'])->name('approveLead');
     Route::post('/delete',[LeadsController::class,'deleteLeads'])->name('deleteLeads');
     Route::get('/add',[LeadsController::class,'mannualAdd'])->name('mannualAdd');
+    // leads import by manager is different
+    Route::post('/manager/import',[LeadsController::class,'leadsImportByManager'])->name('leadsImportByManager');
+
 });
 
 // clients for agents

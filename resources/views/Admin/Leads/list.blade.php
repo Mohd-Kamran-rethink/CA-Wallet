@@ -75,7 +75,7 @@
                                                 <td>{{ $item['Number'] }}</td>
                                                 <td>{{ $item['Language'] }}</td>
                                                 <td>{{ $item['ID NAME'] }}</td>
-                                                <td> {{ $item['Agent'] }}</td>
+                                                <td> {{ isset($item['Agent'])??'' }}</td>
                                             </tr>
                                         @endforeach
 
@@ -109,10 +109,10 @@
                                                 <td>{{ $item['Sources'] }}</td>
                                                 <td>{{ serialToDate($item['Date']) }}</td>
                                                 <td>{{ $item['Name'] }}</td>
-                                                <td>{{ $item['Number'] }}</td>
+                                                <td>{{ isset($item['Number'])??'' }}</td>
                                                 <td>{{ $item['Language'] }}</td>
                                                 <td>{{ $item['ID NAME'] }}</td>
-                                                <td> {{ $item['Agent'] }}</td>
+                                                <td> {{ isset($item['Agent'])??'' }}</td>
                                             </tr>
                                         @endforeach
 

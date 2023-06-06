@@ -18,7 +18,7 @@ class Leads extends Migration
             $table->string('source_id');
             $table->string('name')->nullable();
             $table->string('number');
-            $table->string('agent_id');
+            $table->string('agent_id')->nullable();
             $table->string('manager_id')->nullable();
             $table->string('date')->nullable();
             $table->string('language')->nullable();
