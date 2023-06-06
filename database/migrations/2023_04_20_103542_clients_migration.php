@@ -15,10 +15,10 @@ class ClientsMigration extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->string('agent_id')->nullable();
             $table->string('number');
-            $table->string('ca_id');
+            $table->string('ca_id')->nullable();
             $table->bigInteger('deposit_amount')->nullable();
             $table->enum('isDeleted',['Yes','No'])->default('No');
             $table->timestamps();

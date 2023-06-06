@@ -55,7 +55,7 @@
                             <p>Total Leads</p>
                         </div>
                         <div class="icon">
-                            <i class="ion ion-person-add"></i>
+                            <i class="fa fa-tasks"></i>
                         </div>
                         <a href="{{ url('/leads') }}" class="small-box-footer">More info <i
                                 class="fas fa-arrow-circle-right"></i></a>

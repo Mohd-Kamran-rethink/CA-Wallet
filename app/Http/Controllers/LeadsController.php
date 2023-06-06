@@ -28,7 +28,8 @@ class LeadsController extends Controller
         // seperately send lead status history and will render this in modal using jquerry
         $leads_status_history = DB::table('lead_statuses')
             ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
-            ->select('lead_statuses.*', 'lead_status_options.name as status_name')
+            ->leftJoin('users', 'lead_statuses.agent_id', '=', 'users.id')
+            ->select('lead_statuses.*', 'lead_status_options.name as status_name','users.name as agentName')
             ->orderBy('lead_statuses.id', 'desc')
             ->get();
 
@@ -128,25 +129,15 @@ class LeadsController extends Controller
         $currentStatus = LeadStatusOption::find($Filterstatus);
         $leads = DB::table('duplicate_leads')
             ->join('sources', 'duplicate_leads.source_id', '=', 'sources.id')
-            ->join('users', 'duplicate_leads.agent_id', '=', 'users.id')
-            // if session has agesnt show all his assigned leads
-            ->when($agent, function ($query, $agent) {
-                $query->where(function ($query) use ($agent) {
-                    $query->where('duplicate_leads.agent_id', '=', $agent->id);
-                });
-            })
+            ->leftjoin('users', 'duplicate_leads.agent_id', '=', 'users.id')
+            
             // filter by agent
             ->when($FilterAgent, function ($query, $FilterAgent) {
                 $query->where(function ($query) use ($FilterAgent) {
                     $query->where('duplicate_leads.agent_id', '=', $FilterAgent);
                 });
             })
-            // filter by status
-            ->when($currentStatus, function ($query, $currentStatus) {
-                $query->where(function ($query) use ($currentStatus) {
-                    $query->Where('duplicate_leads.current_status', '=', $currentStatus->name);
-                });
-            })
+            
             // filter by general terms
             ->when($searchTerm, function ($query, $searchTerm) {
                 $query->where(function ($query) use ($searchTerm) {
@@ -158,12 +149,7 @@ class LeadsController extends Controller
             ->where('is_approved', '=', 'Yes')
             ->select('duplicate_leads.*', 'sources.name as source_name', 'users.name as agent_name')
             ->orderByDesc('duplicate_leads.date')
-            ->when($agent, function ($query, $ignoredSourceIds) {
-                $query->where(function ($query) use ($ignoredSourceIds) {
-                    $query->whereNotIn('duplicate_leads.status_id', $ignoredSourceIds);
-                    $query->whereNotNull('duplicate_leads.status_id');
-                });
-            })
+            
             ->paginate(45);
         return view('Admin.Leads.duplicateLeads', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
     }
@@ -370,6 +356,8 @@ class LeadsController extends Controller
                 'date' => $formattedDate,
                 'number' => $data['Number'],
                 'language' => $data['Language'],
+                'state' => $data['State'],
+                'zone' => $data['Zone'],
                 'idName' => $data['ID NAME'],
                 'agent_id' => $agentId,
                 'manager_id' => $sessionUser->role == 'agent' ? 1 : $manager->id,
@@ -427,9 +415,9 @@ class LeadsController extends Controller
         $validationRules = [
             'Sources' => ['required'],
             'Date' => ['required'],
-            'Name' => ['required'],
             'Number' => ['required', 'numeric'],
-            'Language' => ['required'],
+            'State' => ['required'],
+            'Zone' => ['required'],
         ];
 
         $columnHeaders = array_shift($rows);
@@ -505,11 +493,11 @@ class LeadsController extends Controller
                 continue;
             }
 
-            if (!isset($groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State'])) . '-' . trim(strtolower($data['Language']))])) {
-                $groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State'])) . '-' . trim(strtolower($data['Language']))] = [];
+            if (!isset($groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State']))])) {
+                $groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State'])) ] = [];
             }
 
-            $groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State'])) . '-' . trim(strtolower($data['Language']))][] = $entry;
+            $groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State'])) ][] = $entry;
             
 
             $entries[] = $entry;
@@ -517,10 +505,10 @@ class LeadsController extends Controller
             $addedCount++;
         }
         foreach ($agents as $key => $value) {
-            if (!isset($keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state)) . '-' . trim(strtolower($value->language))])) {
-                $keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state)) . '-' . trim(strtolower($value->language))] = [];
+            if (!isset($keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state)) ])) {
+                $keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state)) ] = [];
             }
-            $keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state)) . '-' . trim(strtolower($value->language))][] = $value;
+            $keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state)) ][] = $value;
         }
         foreach ($groups as $key => $value) {
             $leadsWithThisGroup = $value;
@@ -529,7 +517,7 @@ class LeadsController extends Controller
                 $agentsWithThisgroup = $keyValueAgents[$key];
             }
 
-            if ($agentsWithThisgroup) {
+            if (isset($agentsWithThisgroup)) {
                 $totalLeads = count($leadsWithThisGroup);
                 $totalAgents = count($agentsWithThisgroup);
                 $leadsPerUser = intval($totalLeads / $totalAgents);
@@ -548,12 +536,18 @@ class LeadsController extends Controller
                     for ($i = 0; $i < $assignedLeadsCount; $i++) {
                         if ($leadIndex < $totalLeads) {
                             $lead = $leadsWithThisGroup[$leadIndex];
-                            $lead["agent_id"] = $lead["language"]!=$agent->language?'null':$agent->id;
+                            $lead["agent_id"] = $lead["state"]!=$agent->state?'null':$agent->id;
                             $assignedLeads[] = $lead;
                             $leadsAssigned++;
                             $leadIndex++;
                         }
                     }
+                }
+            }
+            else
+            {
+                foreach ($leadsWithThisGroup as $key => $value) {
+                    Lead::create($value);
                 }
             }
         }
@@ -631,6 +625,7 @@ class LeadsController extends Controller
         $lead_status->status_id = $statusId;
         $lead_status->remark = $remark;
         $lead_status->followup_date = $date ?? null;
+        $lead_status->agent_id = session('user')->role?session('user')->id:'';
         $lead_status->amount = $amount ?? null;
         $result = $lead_status->save();
         if ($result) {
@@ -665,6 +660,7 @@ class LeadsController extends Controller
             $lead_status->status_id = $statusId;
             $lead_status->remark = $remark;
             $lead_status->followup_date = $date ?? null;
+            $lead_status->agent_id = session('user')->role?session('user')->id:'';
             $lead_status->amount = $amount ?? null;
             $lead_status->save();
         }

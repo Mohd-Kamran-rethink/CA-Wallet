@@ -22,6 +22,8 @@ class Leads extends Migration
             $table->string('manager_id')->nullable();
             $table->string('date')->nullable();
             $table->string('language')->nullable();
+            $table->string('state')->nullable();
+            $table->string('zone')->nullable();
             $table->string('idName')->nullable();
             $table->string('current_status')->nullable();
             $table->string('status_id')->default('null');

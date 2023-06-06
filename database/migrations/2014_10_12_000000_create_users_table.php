@@ -24,6 +24,7 @@ class CreateUsersTable extends Migration
             $table->string('language')->nullable();
             $table->string('zone')->nullable();
             $table->string('state')->nullable();
+            $table->string('lead_type')->nullable();
             $table->enum('is_admin',['Yes','No'])->default('No');
             $table->timestamps();
         });

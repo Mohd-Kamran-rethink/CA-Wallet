@@ -59,6 +59,10 @@ class UserController extends Controller
     public function listAgents(Request $req)
     {
         $searchTerm = $req->query('table_search');
+        $stateFilter = $req->query('stateFilter');
+        $languageFilter = $req->query('languageFilter');
+        $states=State::get();
+        $languages=Language::get();
         $agents = User::where('role', 'agent')
             ->when($searchTerm, function ($query, $searchTerm) {
                 $query->where(function ($query) use ($searchTerm) {
@@ -67,9 +71,19 @@ class UserController extends Controller
                         ->orWhere('phone', 'like', '%' . $searchTerm . '%');
                 });
             })
+            ->when($stateFilter, function ($query, $stateFilter) {
+                $query->where(function ($query) use ($stateFilter) {
+                    $query->where('state', '=', $stateFilter);
+                 });
+            })
+            ->when($languageFilter, function ($query, $languageFilter) {
+                $query->where(function ($query) use ($languageFilter) {
+                    $query->where('language', '=', $languageFilter);
+                 });
+            })
             ->orderBy('id', 'desc')
             ->paginate(10);
-        return view('Admin.Agents.list', compact('agents','searchTerm'));
+        return view('Admin.Agents.list', compact('agents','searchTerm','states','languages','stateFilter','languageFilter'));
     }
     // common functions for manager and agents
     public function add(Request $req)
@@ -86,6 +100,7 @@ class UserController extends Controller
             $rules['language'] = 'required|not_in:0';
             $rules['zone'] = 'required|not_in:0';
             $rules['state'] = 'required|not_in:0';
+            $rules['lead_type'] = 'required|not_in:0';
         }
         $req->validate($rules);
 
@@ -98,6 +113,7 @@ class UserController extends Controller
         $user->language=$req->language;
         $user->zone=$req->zone;
         $user->state=$req->state;
+        $user->lead_type=$req->lead_type;
         $result = $user->save();
         if ($result) {
             if ($req->role === 'manager') {
@@ -129,6 +145,7 @@ class UserController extends Controller
             'zone' => 'required|not_in:0',
             'language' => 'required|not_in:0',
             'state' => 'required|not_in:0',
+            'lead_type' => 'required|not_in:0',
         ];
 
         $req->validate(array_merge($rules, $conditionalRules));
@@ -139,6 +156,7 @@ class UserController extends Controller
         $currentManager->state = $req->state;
         $currentManager->zone = $req->zone;
         $currentManager->language = $req->language;
+        $currentManager->lead_type=$req->lead_type;
         if ($req->password) {
             $currentManager->password = Hash::make($req->password);
         }

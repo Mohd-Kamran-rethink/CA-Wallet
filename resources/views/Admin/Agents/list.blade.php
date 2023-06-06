@@ -24,16 +24,36 @@
     <section class="content">
         <div class="card">
             <div class="card-body">
-                <div class="mb-3 d-flex justify-content-between align-items-centers">
-                    <form action="{{ url('managers') }}" method="GET" id="search-form">
-                        <div class="input-group input-group-sm" style="width: 150px;">
+                
+                <div class="mb-3 d-flex justify-content-between align-items-centers row">
+                    <form class="filters d-flex flex-row   mt-2" action="{{ url('leads/list') }}" method="GET"
+                        id="search-form">
+                        <div class="col-3 " style="width: 150px;">
                             <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
                                 class="form-control float-right" placeholder="Search" id="searchInput">
-                            <div class="input-group-append">
-                                <button type="submit" class="btn btn-default" onclick="searchData()" id="search-button">
-                                    <i class="fas fa-search"></i>
-                                </button>
+                        </div>
+                        <div class="col-4">
+                            <select name="stateFilter" id="stateFilter" class="form-control">
+                                <option value="">--Filter By State--</option>
+                                @foreach ($states    as $item)
+                                    <option {{ isset($stateFilter) && $stateFilter == $item->name ? 'selected' : '' }}
+                                        value="{{ $item->name }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @if (session('user')->role == 'manager')
+                            <div class="col-4">
+                                <select name="languageFilter" id="languageFilter" class="form-control">
+                                    <option value="">--Filter By Language--</option>
+                                    @foreach ($languages as $item)
+                                        <option {{ isset($languageFilter) && $languageFilter == $item->name ? 'selected' : '' }}
+                                            value="{{ $item->name }}">{{ $item->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
+                        @endif
+                        <div class="input-group ">
+                            <button class="btn btn-success" onclick="searchData()">Filter</button>
                         </div>
                     </form>
                     <div>
@@ -51,6 +71,9 @@
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Phone</th>
+                                            <th>State</th>
+                                            <th>Languages</th>
+                                            <th>Type</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -61,6 +84,9 @@
                                                 <td>{{ $item->name }}</td>
                                                 <td>{{ $item->email }}</td>
                                                 <td>{{ $item->phone }}</td>
+                                                <td>{{ $item->state }}</td>
+                                                <td>{{ $item->language }}</td>
+                                                <td>{{ $item->lead_type }}</td>
                                                 <td>
                                                     <a class="btn btn-dark" href="{{url('leads?agent_id='.$item->id)}}">View Leads</a>
                                                     <a href="{{ url('agents/edit/?id=' . $item->id) }}"
@@ -121,7 +147,11 @@
             const url = new URL(window.location.href);
 
             const searchValue = $('#searchInput').val().trim();
+            const stateFilter = $('#stateFilter').val().trim();
+            const languageFilter = $('#languageFilter').val().trim();
             url.searchParams.set('search', searchValue);
+            url.searchParams.set('stateFilter', stateFilter);
+            url.searchParams.set('languageFilter', languageFilter);
             $('#search-form').attr('action', url.toString()).submit();
         }
     </script>
