@@ -524,20 +524,38 @@ class LeadsController extends Controller
         }
         foreach ($groups as $key => $value) {
             $leadsWithThisGroup = $value;
+
             if (isset($keyValueAgents[$key])) {
                 $agentsWithThisgroup = $keyValueAgents[$key];
             }
+
             if ($agentsWithThisgroup) {
-                $leadsPerUser = intval(count($leadsWithThisGroup) / count($agentsWithThisgroup));
-                foreach ($agentsWithThisgroup as $key=> $agent) {
-                    for ($i=$leadsPerUser*$key ;$i< $leadsPerUser*($key+1);$i++) {
-                        $lead = $leadsWithThisGroup[$i];
-                        $lead["agent_id"] = $agent->id??'';
-                        $assignedLeads[] = $lead; // Add lead to the assignedLeads array
-                      }
+                $totalLeads = count($leadsWithThisGroup);
+                $totalAgents = count($agentsWithThisgroup);
+                $leadsPerUser = intval($totalLeads / $totalAgents);
+                $remainingLeads = $totalLeads % $totalAgents;
+                $leadIndex = 0;
+        
+                foreach ($agentsWithThisgroup as $agent) {
+                    $leadsAssigned = 0;
+                    $assignedLeadsCount = $leadsPerUser;
+        
+                    if ($remainingLeads > 0) {
+                        $assignedLeadsCount++;
+                        $remainingLeads--;
+                    }
+        
+                    for ($i = 0; $i < $assignedLeadsCount; $i++) {
+                        if ($leadIndex < $totalLeads) {
+                            $lead = $leadsWithThisGroup[$leadIndex];
+                            $lead["agent_id"] = $lead["language"]!=$agent->language?'null':$agent->id;
+                            $assignedLeads[] = $lead;
+                            $leadsAssigned++;
+                            $leadIndex++;
+                        }
+                    }
                 }
             }
-           
         }
         foreach ($assignedLeads as $key => $value) {
             Lead::create($value);
