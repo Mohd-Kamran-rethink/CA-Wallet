@@ -91,17 +91,6 @@
                         </p>
                     </a>
                 </li>
-                {{-- pending leads --}}
-                <li class="nav-item ">
-                    <a href="{{ url('/leads/pending') }}"
-                        class="nav-link {{ Request::is('leads/pending')? 'active' : '' }}">
-                        <i class="nav-icon  fa fa-clone"></i>
-                        <p>
-                           Pending Leads
-
-                        </p>
-                    </a>
-                </li>
                 @endif
                 {{-- followup  --}}
                 <li
