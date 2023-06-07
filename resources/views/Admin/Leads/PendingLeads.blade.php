@@ -138,26 +138,8 @@
                             <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
                                 class="form-control float-right" placeholder="Search" id="searchInput">
                         </div>
-                        <div class="input-group col-3">
-                            <select name="status" id="status_id" class="form-control">
-                                <option value="">--Filter By Status--</option>
-                                @foreach ($statuses as $item)
-                                    <option {{ isset($Filterstatus) && $Filterstatus == $item->id ? 'selected' : '' }}
-                                        value="{{ $item->id }}">{{ $item->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        @if (session('user')->role == 'manager')
-                            <div class="input-group col-3">
-                                <select name="agent_id" id="agent_id" class="form-control">
-                                    <option value="">--Filter By Agent--</option>
-                                    @foreach ($agents as $item)
-                                        <option {{ isset($FilterAgent) && $FilterAgent == $item->id ? 'selected' : '' }}
-                                            value="{{ $item->id }}">{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        @endif
+                        
+                        
                         <div class="input-group ">
                             <button class="btn btn-success" onclick="searchData()">Filter</button>
                         </div>
@@ -461,11 +443,7 @@
         event.preventDefault();
         const url = new URL(window.location.href);
         const searchValue = $('#searchInput').val().trim();
-        const status_id = $('#status_id').val();
-        const filter_agent = $('#agent_id').val();
         url.searchParams.set('search', searchValue);
-        url.searchParams.set('status', status_id ?? '');
-        url.searchParams.set('agent', filter_agent ?? '');
         $('#search-form').attr('action', url.toString()).submit();
     }
     const openLeadModal = (leadId, idName) => {
