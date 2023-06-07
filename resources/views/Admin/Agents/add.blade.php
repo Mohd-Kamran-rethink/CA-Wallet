@@ -108,13 +108,28 @@
                             </div>
                             <div class="col-xs-12 col-md-4">
                                 <div class="form-group">
-                                    <label>Type <span style="color:red">*</span></label>
+                                    <label>Lead Type <span style="color:red">*</span></label>
                                     <select class="form-control" name="lead_type" id="">
                                         <option value="0">--Choose--</option>
                                             <option {{isset($agent)&&$agent->lead_type=="Whats App"?'selected':''}} value="Whats App">Whats App</option>
                                             <option {{isset($agent)&&$agent->lead_type=="Call"?'selected':''}} value="Call">Call</option>
                                         </select>
                                     @error('lead_type')
+                                        <span class="text-danger">
+                                            {{ $message }}
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-4">
+                                <div class="form-group">
+                                    <label>Agent Type <span style="color:red">*</span></label>
+                                    <select class="form-control" name="agent_type" id="">
+                                        <option value="0">--Choose--</option>
+                                            <option {{isset($agent)&&$agent->agent_type=="Retention"?'selected':''}} value="Retention">Retention</option>
+                                            <option {{isset($agent)&&$agent->lead_type=="Normal"?'selected':''}} value="Normal">Normal</option>
+                                        </select>
+                                    @error('agent_type')
                                         <span class="text-danger">
                                             {{ $message }}
                                         </span>

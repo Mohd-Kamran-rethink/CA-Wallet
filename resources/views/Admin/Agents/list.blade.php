@@ -74,7 +74,8 @@
                                             <th>State</th>
                                             <th>Zone</th>
                                             <th>Languages</th>
-                                            <th>Type</th>
+                                            <th>Lead Type</th>
+                                            <th>Agent Type</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -89,6 +90,7 @@
                                                 <td>{{ $item->zone }}</td>
                                                 <td>{{ $item->language }}</td>
                                                 <td>{{ $item->lead_type }}</td>
+                                                <td>{{ $item->agent_type }}</td>
                                                 <td>
                                                     <a class="btn btn-dark" href="{{url('leads?agent_id='.$item->id)}}">View Leads</a>
                                                     <a href="{{ url('agents/edit/?id=' . $item->id) }}"
