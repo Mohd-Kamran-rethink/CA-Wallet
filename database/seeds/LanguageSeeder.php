@@ -13,7 +13,8 @@ class LanguageSeeder extends Seeder
     public function run()
     {
         $languages=[
-            ['name'=>'Primary'],
+            ['name'=>'Hindi'],
+            ['name'=>'English'],
             ['name'=>'Bengali'],
             ['name'=>'Telugu'],
             ['name'=>'Marathi'],
@@ -23,7 +24,6 @@ class LanguageSeeder extends Seeder
             ['name'=>'Kannada'],
             ['name'=>'Odia'],
             ['name'=>'Malayalam'],
-            ['name'=>'Multaniple'],
         ];
         foreach ($languages as $key => $value) {
             Language::create($value);

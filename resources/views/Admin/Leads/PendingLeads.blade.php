@@ -167,7 +167,7 @@
                         @if (session('user')->role === 'manager')
                            
                             <button onclick="MassModals('modal-mass-agent')" disabled
-                                class="mass-action-buttons btn btn-primary ">Reassign To</button>
+                                class="mass-action-buttons btn btn-primary ">Assign To</button>
                            
                         @endif
                         

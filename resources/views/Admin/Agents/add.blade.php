@@ -64,7 +64,7 @@
                                     <select class="form-control" name="language" id="">
                                         <option value="0">--Choose--</option>
                                         @foreach ($languages as $item)
-                                            <option {{isset($agent)&&$item->name==$agent->language?'selected':''}} value="{{ $item->name }}">{{ $item->name }}</option>
+                                            <option  {{isset($agent)&&$item->name==$agent->language?'selected':''}} value="{{ $item->name }}">{{ $item->name }}</option>
                                         @endforeach
                                     </select>
                                     @error('language')

@@ -106,8 +106,8 @@ class AuthController extends Controller
            $attendance->action='logout';
            $attendance->time=Carbon::now('Asia/Kolkata')->toTimeString();
            $attendance->save();
-           session()->remove('user');
         }
+        session()->remove('user');
         return redirect('/');
     }
 }
