@@ -536,7 +536,7 @@ class LeadsController extends Controller
                 'zone' => $data['Zone'],
                 'state' => $data['State'],
                 'manager_id' => $sessionUser->role,
-                'agent_id'=>'',
+                'agent_id'=>'null',
                 'is_approved' => 'Yes',
                 'leads_date' => $data['Leads Date'] ? $leads_dateformattedDate : '',
             ];
