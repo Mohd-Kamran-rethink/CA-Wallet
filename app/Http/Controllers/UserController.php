@@ -88,6 +88,7 @@ class UserController extends Controller
     // common functions for manager and agents
     public function add(Request $req)
     {
+        
 
         $rules=[
             'name' => 'required|unique:users,name',
@@ -96,11 +97,13 @@ class UserController extends Controller
             'password' => 'required|min:8|same:confirmPassword',
             'confirmPassword' => 'required|'
         ];
-        if (session('user')->role=='manager') {
+       
+        if (session('user')->role=='manager' && $req->role=='agent') {
             $rules['language'] = 'required|not_in:0';
             $rules['zone'] = 'required|not_in:0';
             $rules['state'] = 'required|not_in:0';
             $rules['lead_type'] = 'required|not_in:0';
+            $rules['agent_type'] = 'required|not_in:0';
         }
         $req->validate($rules);
 
@@ -114,6 +117,7 @@ class UserController extends Controller
         $user->zone=$req->zone;
         $user->state=$req->state;
         $user->lead_type=$req->lead_type;
+        $user->agent_type=$req->agent_type;
         $result = $user->save();
         if ($result) {
             if ($req->role === 'manager') {

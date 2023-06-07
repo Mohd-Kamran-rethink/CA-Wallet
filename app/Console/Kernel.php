@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Commands\MyCronJob::class,
     ];
 
     /**
@@ -24,7 +24,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('command:statusBackToNormal')
+        ->everyMinute();
+        $schedule->command('command:retentionleads')
+             ->everyMinute();
+            
     }
 
     /**

@@ -31,6 +31,7 @@ class Leads extends Migration
             $table->string('followup_date')->nullable();
             $table->string('transfered_language')->nullable();
             $table->string('amount')->nullable();
+            $table->string('lead_type')->nullable();
             $table->string('leads_date')->nullable();
             $table->enum('is_approved',['No','Yes']);
             $table->timestamps();

@@ -476,7 +476,7 @@ class LeadsController extends Controller
             return trim($name);
         })->toArray();
         $groups = [];
-        $agents = User::where('role', '=', 'agent')->get();
+        $agents = User::where('role', '=', 'agent')->where('agent_type','=','Normal')->get();
         $keyValueAgents = [];
         $assignedLeads = []; // Array to store assigned leads
         foreach ($rows as $row) {

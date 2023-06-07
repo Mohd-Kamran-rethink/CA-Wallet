@@ -6,6 +6,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeadsController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RetentionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SourceController;
@@ -96,9 +97,11 @@ Route::middleware('ValidateUsers')->prefix('/leads')->group(function () {
     Route::get('/add',[LeadsController::class,'mannualAdd'])->name('mannualAdd');
     // leads import by manager is different
     Route::post('/manager/import',[LeadsController::class,'leadsImportByManager'])->name('leadsImportByManager');
-
 });
-
+// retention calls
+Route::middleware('ValidateUsers')->prefix('/retention')->group(function () {
+    Route::get('/',[RetentionController::class,'list'])->name('list');
+});
 // clients for agents
 Route::middleware('ValidateAgent')->prefix('/clients')->group(function () {
     Route::get('',[ClientController::class,'list'])->name('list');
