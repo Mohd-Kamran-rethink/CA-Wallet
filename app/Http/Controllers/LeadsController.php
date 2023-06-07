@@ -153,7 +153,57 @@ class LeadsController extends Controller
             ->paginate(45);
         return view('Admin.Leads.duplicateLeads', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
     }
+    // pending leads
+    public function pendingLeads(Request $req)
+    {
+        // seperately send lead status history and will render this in modal using jquerry
+        $leads_status_history = DB::table('lead_statuses')
+            ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
+            ->select('lead_statuses.*', 'lead_status_options.name as status_name')
+            ->orderBy('lead_statuses.id', 'desc')
+            ->get();
 
+        // statuses and agents list to filter out data
+        $statuses = LeadStatusOption::where('isDeleted', '=', 'No')->get();
+        $agents = User::where('role', '=', 'agent')->get();
+        $agent = null;
+        $manager = null;
+        // ignore ids of   Deposited,Not Interested,Demo id,Id created,Call back
+        $ignoredSourceIds = [1, 12, 6, 7, 8];
+        if (session('user')->role == "agent") {
+            $agent = User::find(session('user')->id);
+        }
+
+        if (session('user')->role == "manager") {
+            $manager = User::find(session('user')->id);
+        }
+        // querry paramaters
+        $searchTerm = $req->query('table_search');
+        $Filterstatus = $req->query('status');
+        $FilterAgent = $req->query('agent_id');
+
+        // get details of the status from status id 
+        $currentStatus = LeadStatusOption::find($Filterstatus);
+        $leads = DB::table('leads')
+            ->join('sources', 'leads.source_id', '=', 'sources.id')
+            ->leftjoin('users', 'leads.agent_id', '=', 'users.id')
+            // filter by general terms
+            ->where('leads.agent_id','=','null')
+            ->when($searchTerm, function ($query, $searchTerm) {
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->where('sources.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('users.name', 'like', '%' . $searchTerm . '%')
+                        ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
+                });
+            })
+            
+            ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
+            ->orderByDesc('leads.date')
+            
+            ->paginate(45);
+        return view('Admin.Leads.PendingLeads', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
+   
+    }
     //leads for approval only show to default manager
     public function nonApprovedLeads(Request $req)
     {

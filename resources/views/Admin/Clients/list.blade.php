@@ -62,7 +62,6 @@
                                         <tr>
                                             <th>S.No.</th>
                                             <th>Phone</th>
-                                            <th>Deposited Amount</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -70,7 +69,6 @@
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->number }}</td>
-                                                <td>{{ $item->total_amount ?? '--' }}</td>
                                                 {{-- <td>
                                                     <button onclick="openRedepositModal({{ $item->id }})"
                                                         class="btn btn-secondary">Redeposit</button>

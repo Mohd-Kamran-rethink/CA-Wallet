@@ -91,12 +91,23 @@
                         </p>
                     </a>
                 </li>
+                {{-- pending leads --}}
+                <li class="nav-item ">
+                    <a href="{{ url('/leads/pending') }}"
+                        class="nav-link {{ Request::is('leads/pending')? 'active' : '' }}">
+                        <i class="nav-icon  fa fa-clone"></i>
+                        <p>
+                           Pending Leads
+
+                        </p>
+                    </a>
+                </li>
                 @endif
                 {{-- followup  --}}
                 <li
-                    class="nav-item {{ Request::is('leads/demoid') || Request::is('leads/callback') ? 'menu-is-opening menu-open' : '' }}">
+                    class="nav-item {{ Request::is('leads/demoid') || Request::is('leads/callback') || Request::is('leads/idcreated') ? 'menu-is-opening menu-open' : '' }}">
                     <a href="#"
-                        class="nav-link {{ Request::is('leads/demoid') || Request::is('leads/callback') ? 'active' : '' }}">
+                        class="nav-link {{ Request::is('leads/demoid') || Request::is('leads/callback')|| Request::is('leads/idcreated') ? 'active' : '' }}">
                         <i class="nav-icon fa fa-th"></i>
                         <p>
                             Follow Up
@@ -104,7 +115,7 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview"
-                        style="display: {{ Request::is('leads/demoid') || Request::is('leads/callback') ? 'block' : 'none' }}">
+                        style="display: {{ Request::is('leads/demoid') || Request::is('leads/callback')|| Request::is('leads/idcreated') ? 'block' : 'none' }}">
                         <li class="nav-item">
                             <a href="{{ url('leads/demoid') }}"
                                 class="nav-link {{ Request::is('leads/demoid') ? 'active' : '' }}">
@@ -116,7 +127,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="{{ url('/leads/idcreated') }}"
-                                class="nav-link {{ Request::is('reports/leads') ? 'active' : '' }}">
+                                class="nav-link {{ Request::is('leads/idcreated') ? 'active' : '' }}">
                                 <i class="nav-icon fa fa-table"></i>
                                 <p>
                                     ID Created
@@ -125,7 +136,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="{{ url('leads/callback') }}"
-                                class="nav-link {{ Request::is('reports/leads') ? 'active' : '' }}">
+                                class="nav-link {{ Request::is('leads/callback') ? 'active' : '' }}">
                                 <i class="nav-icon fa fa-table"></i>
                                 <p>
                                     Call back

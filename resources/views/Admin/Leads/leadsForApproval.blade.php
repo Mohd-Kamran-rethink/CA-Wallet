@@ -82,7 +82,7 @@
                                             <th>Name</th>
                                             <th>Number</th>
                                             <th>Language</th>
-                                            <th>ID Name</th>
+                                            <th>State</th>
                                             <th>Agent</th>
                                             <th>Actions</th>
                                         </tr>
@@ -104,7 +104,7 @@
                                                 <td>{{ $item->name }}</td>
                                                 <td>{{ $item->number }}</td>
                                                 <td>{{ $item->language }}</td>
-                                                <td>{{ $item->idName }}</td>
+                                                <td>{{ $item->state }}</td>
                                                 <td> {{ $item->agent_name }}</td>
                                                 <td>
                                                     @if (Request::is('leads/approval') && session('user')->id == 1)

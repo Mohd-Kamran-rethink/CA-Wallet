@@ -61,6 +61,7 @@
                                             <th>Name</th>
                                             <th>Number</th>
                                             <th>Language</th>
+                                            <th>State</th>
                                             <th>Agent</th>
                                         </tr>
                                     </thead>
@@ -73,6 +74,7 @@
                                                 <td>{{ $item['Name']??'' }}</td>
                                                 <td>{{ $item['Number'] }}</td>
                                                 <td>{{ $item['Language'] }}</td>
+                                                <td>{{ $item['State'] }}</td>
                                                 <td> {{ isset($item['Agent'])??'' }}</td>
                                             </tr>
                                         @endforeach
@@ -96,6 +98,7 @@
                                             <th>Name</th>
                                             <th>Number</th>
                                             <th>Language</th>
+                                            <th>State</th>
                                             <th>Agent</th>
                                         </tr>
                                     </thead>
@@ -108,6 +111,7 @@
                                                 <td>{{ $item['Name'] }}</td>
                                                 <td>{{ isset($item['Number'])??'' }}</td>
                                                 <td>{{ $item['Language'] }}</td>
+                                                <td>{{ $item['State'] }}</td>
                                                 <td> {{ isset($item['Agent'])??'' }}</td>
                                             </tr>
                                         @endforeach
