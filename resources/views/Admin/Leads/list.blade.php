@@ -61,7 +61,6 @@
                                             <th>Name</th>
                                             <th>Number</th>
                                             <th>Language</th>
-                                            <th>ID Name</th>
                                             <th>Agent</th>
                                         </tr>
                                     </thead>
@@ -71,10 +70,9 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item['Sources'] }}</td>
                                                 <td>{{ serialToDate($item['Date']) }}</td>
-                                                <td>{{ $item['Name'] }}</td>
+                                                <td>{{ $item['Name']??'' }}</td>
                                                 <td>{{ $item['Number'] }}</td>
                                                 <td>{{ $item['Language'] }}</td>
-                                                <td>{{ $item['ID NAME'] }}</td>
                                                 <td> {{ isset($item['Agent'])??'' }}</td>
                                             </tr>
                                         @endforeach
@@ -98,7 +96,6 @@
                                             <th>Name</th>
                                             <th>Number</th>
                                             <th>Language</th>
-                                            <th>ID Name</th>
                                             <th>Agent</th>
                                         </tr>
                                     </thead>
@@ -111,7 +108,6 @@
                                                 <td>{{ $item['Name'] }}</td>
                                                 <td>{{ isset($item['Number'])??'' }}</td>
                                                 <td>{{ $item['Language'] }}</td>
-                                                <td>{{ $item['ID NAME'] }}</td>
                                                 <td> {{ isset($item['Agent'])??'' }}</td>
                                             </tr>
                                         @endforeach
@@ -197,7 +193,6 @@
                                             <th>Number</th>
                                             <th>Language</th>
                                             <th>State</th>
-                                            <th>ID Name</th>
                                             <th>Agent</th>
                                             <th>Status</th>
                                             <th>Actions</th>
@@ -217,7 +212,6 @@
                                                 <td>{{ $item->number }}</td>
                                                 <td>{{ $item->language }}</td>
                                                 <td>{{ $item->state }}</td>
-                                                <td>{{ $item->idName }}</td>
                                                 <td> {{ $item->agent_name }}</td>
                                                 <td> {{ $item->current_status ?? 'Open' }}</td>
                                                 <td>

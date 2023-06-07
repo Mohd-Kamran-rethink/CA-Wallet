@@ -272,9 +272,8 @@ class LeadsController extends Controller
             'Date' => ['required'],
             'Name' => ['required'],
             'Number' => ['required', 'numeric'],
-            'Language' => [],
-            'ID NAME' => [],
-            'Agent' => ['required'],
+            'State' => ['required'],
+            'Zone' => ['required'],
         ];
 
         $columnHeaders = array_shift($rows);
@@ -322,7 +321,7 @@ class LeadsController extends Controller
             }
 
 
-            $entryKey = $data['Date'] . $data['Name'] . $data['Number'] . $data['Agent'];
+            $entryKey = $data['Date'] . $data['Name'] . $data['Number'];
 
             // If entry already exists, skip it
             if (isset($existingEntries[$entryKey])) {
@@ -334,9 +333,9 @@ class LeadsController extends Controller
             // Search for the agent name in the $agents array and sources
             // $agentId = array_search(trim($data['Agent']), $agents);
             // $sourceId = array_search(trim($data['Sources']), $sources);
-            $agentId = array_search(strtolower(trim($data['Agent'])), array_map('strtolower', $agents));
+            $agentId = array_search(strtolower(trim(session('user')->name)), array_map('strtolower', $agents));
             $sourceId = array_search(strtolower(trim($data['Sources'])), array_map('strtolower', $sources));
-
+            
             // If agent or source id is not found skip the entry
             if (!$agentId || !$sourceId) {
                 $skipped[] = $data;
@@ -358,7 +357,7 @@ class LeadsController extends Controller
                 'language' => $data['Language'],
                 'state' => $data['State'],
                 'zone' => $data['Zone'],
-                'idName' => $data['ID NAME'],
+                'idName' => $data['ID NAME']??'',
                 'agent_id' => $agentId,
                 'manager_id' => $sessionUser->role == 'agent' ? 1 : $manager->id,
                 'is_approved' => $sessionUser->role == 'agent' ? 'No' : 'Yes',
@@ -414,6 +413,7 @@ class LeadsController extends Controller
         // Define validation rules for each column
         $validationRules = [
             'Sources' => ['required'],
+            'Name' => ['required'],
             'Date' => ['required'],
             'Number' => ['required', 'numeric'],
             'State' => ['required'],
@@ -474,11 +474,11 @@ class LeadsController extends Controller
 
             $entry = [
                 'source_id' => $sourceId,
-                'name' => $data['Name'],
+                'name' => $data['Name']??'',
                 'date' => $formattedDate,
                 'number' => $data['Number'],
                 'language' => $data['Language'],
-                'idName' => $data['ID NAME'],
+                'idName' => $data['ID NAME']??'',
                 'zone' => $data['Zone'],
                 'state' => $data['State'],
                 'manager_id' => $sessionUser->role,
