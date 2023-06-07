@@ -519,7 +519,10 @@ class LeadsController extends Controller
                 // where('agent_id', $agentId)
                 where('source_id', $sourceId)
                 ->where('date', $formattedDate)
+                ->where('language','=',$data['Language'])
+                ->where('state','=',$data['State'])
                 ->where('created_at', '>=', Carbon::now()->subDays(15))
+                ->where('number', '=', $data['Number'])
                 ->first();
 
             $entry = [

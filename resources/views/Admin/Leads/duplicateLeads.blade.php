@@ -101,7 +101,7 @@
                                                 <td>{{ $item->name }}</td>
                                                 <td>{{ $item->number }}</td>
                                                 <td>{{ $item->language }}</td>
-                                                <td>{{ $item->state }}</td>
+                                                <td>{{ $item->state??'' }}</td>
                                                 <td> {{ $item->agent_name }}</td>
                                                 
                                                 
