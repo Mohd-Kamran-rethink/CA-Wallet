@@ -502,7 +502,7 @@ class LeadsController extends Controller
                 $errorCount++;
                 continue;
             }
-            $entryKey = $data['Date'] . $data['Name'] . $data['Number'] . $data['Language'];
+            $entryKey = $data['Date'] . $data['Name'] . $data['Number'] . $data['State']. $data['Language'];
             // If entry already exists, skip it
             if (isset($existingEntries[$entryKey])) {
                 $skipped[] = $data;
@@ -589,7 +589,7 @@ class LeadsController extends Controller
                     for ($i = 0; $i < $assignedLeadsCount; $i++) {
                         if ($leadIndex < $totalLeads) {
                             $lead = $leadsWithThisGroup[$leadIndex];
-                            $lead["agent_id"] = $agent->id;
+                            $lead["agent_id"] =$lead["state"]==$agent->state&&$lead["zone"]==$agent->zone?$agent->id:'null';
                             $assignedLeads[] = $lead;
                             $leadsAssigned++;
                             $leadIndex++;
