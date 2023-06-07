@@ -172,7 +172,6 @@
                                             <th>Number</th>
                                             <th>Language</th>
                                             <th>State</th>
-                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -189,7 +188,6 @@
                                                 <td>{{ $item->number }}</td>
                                                 <td>{{ $item->language }}</td>
                                                 <td>{{ $item->state }}</td>
-                                                <td> {{ $item->current_status ?? 'Open' }}</td>
                                                 
                                         </tr>
                                     @empty

@@ -72,6 +72,7 @@
                                             <th>Email</th>
                                             <th>Phone</th>
                                             <th>State</th>
+                                            <th>Zone</th>
                                             <th>Languages</th>
                                             <th>Type</th>
                                             <th>Actions</th>
@@ -85,6 +86,7 @@
                                                 <td>{{ $item->email }}</td>
                                                 <td>{{ $item->phone }}</td>
                                                 <td>{{ $item->state }}</td>
+                                                <td>{{ $item->zone }}</td>
                                                 <td>{{ $item->language }}</td>
                                                 <td>{{ $item->lead_type }}</td>
                                                 <td>
