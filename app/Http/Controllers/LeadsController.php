@@ -570,7 +570,6 @@ class LeadsController extends Controller
             if (isset($keyValueAgents[$key])) {
                 $agentsWithThisgroup = $keyValueAgents[$key];
             }
-
             if (isset($agentsWithThisgroup)) {
                 $totalLeads = count($leadsWithThisGroup);
                 $totalAgents = count($agentsWithThisgroup);
@@ -590,7 +589,7 @@ class LeadsController extends Controller
                     for ($i = 0; $i < $assignedLeadsCount; $i++) {
                         if ($leadIndex < $totalLeads) {
                             $lead = $leadsWithThisGroup[$leadIndex];
-                            $lead["agent_id"] = $lead["state"]!=$agent->state?'null':$agent->id;
+                            $lead["agent_id"] = $agent->id;
                             $assignedLeads[] = $lead;
                             $leadsAssigned++;
                             $leadIndex++;
