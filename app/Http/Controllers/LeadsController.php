@@ -25,6 +25,7 @@ class LeadsController extends Controller
 
     public function list(Request $req)
     {
+        $languages=Language::get();
         // seperately send lead status history and will render this in modal using jquerry
         $leads_status_history = DB::table('lead_statuses')
             ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
@@ -95,7 +96,7 @@ class LeadsController extends Controller
             ->orderByDesc('leads.date')
             ->paginate(45);
 
-        return view('Admin.Leads.list', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
+        return view('Admin.Leads.list', compact('languages','leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
     }
     public function duplicateLeads(Request $req)
     {
@@ -671,7 +672,9 @@ class LeadsController extends Controller
         $lead->updated_at = $date ?? null;
         $lead->amount = $amount ?? null;
         $lead->idName = $req->IdName ?? null;
+        $lead->transfered_language = $req->transfered_language ?? null;
         $lead->update();
+        
         // create lead status entery 
         $lead_status = new  LeadStatus();
         $lead_status->lead_id = $lead_id;
@@ -679,6 +682,8 @@ class LeadsController extends Controller
         $lead_status->remark = $remark;
         $lead_status->followup_date = $date ?? null;
         $lead_status->agent_id = session('user')->role?session('user')->id:'';
+        $lead_status->transfered_language = $req->transfered_language ?? null;
+        
         $lead_status->amount = $amount ?? null;
         $result = $lead_status->save();
         if ($result) {

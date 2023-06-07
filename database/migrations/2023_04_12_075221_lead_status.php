@@ -20,6 +20,7 @@ class LeadStatus extends Migration
             $table->string('followup_date')->nullable();
             $table->string('amount')->nullable();
             $table->string('agent_id')->nullable();
+            $table->string('transfered_language')->nullable();
             $table->string('lead_id');
             $table->timestamps();
         });

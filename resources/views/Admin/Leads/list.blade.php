@@ -299,6 +299,19 @@
                         <input name="date" type="date" class="form-control blockpast" id="datePicker">
                         <span class="text-danger error-date"></span>
                     </div>
+                    {{-- leads tranfere language drop down --}}
+                    <div class="form-group  conditional-transfered" style="display: none">
+                        <label for="">Language</label>
+                        <select name="transfered_language"  class="form-control" id="language_transfered">
+                            <option value="0">--Choose--</option>
+                            @foreach ($languages as $item)
+                            <option value="{{$item->name}}">{{$item->name}}</option>
+                            @endforeach
+                                
+                        </select>
+                        <span class="text-danger error-date"></span>
+                    </div>
+
                     <div class="form-group">
                         <label for="">Remark</label>
                         <textarea rows="3" type="text" class="form-control" name="remark" id="remark"></textarea>
@@ -512,6 +525,10 @@
                 conditionalInput.show()
             } else {
                 conditionalInput.hide()
+            }
+            if(status==5)
+            {
+                $('.conditional-transfered').show()
             }
             submitButton.removeAttr('disabled');
         }
