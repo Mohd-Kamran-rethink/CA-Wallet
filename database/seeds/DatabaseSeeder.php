@@ -15,9 +15,9 @@ class DatabaseSeeder extends Seeder
             DefaultManager::class,
             SourcesSeeder::class,
             LeadStatusOptionSeeder::class,
-            LanguageSeeder::class,
             StateSeeder::class,
             ZoneSeeder::class,
+            LanguageSeeder::class,
         ]);
     }
 }
