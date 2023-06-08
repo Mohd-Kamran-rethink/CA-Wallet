@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Database\Seeder;
-
+use Database\Seeders\ZoneSeeder;
+use Database\Seeders\LanguageSeeder;
+use Database\Seeders\StateSeeder;
 class DatabaseSeeder extends Seeder
 {
     /**
