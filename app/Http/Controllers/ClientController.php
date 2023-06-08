@@ -32,7 +32,7 @@ class ClientController extends Controller
         $requestNumber=NumberRequest::where('agent_id',$currentUser->id)->first();
         $clients = Client::select('clients.id', 'clients.number')
             ->join('transactions', 'clients.id', '=', 'transactions.client_id')
-            ->groupBy('clients.id', 'clients.number',)
+            ->groupBy('clients.id', 'clients.number')
             ->where('transactions.type', '=', 'Deposit')
             ->where('transactions.status', '=', 'Approve')
             ->where('agent_id','=',$currentUser->id)
