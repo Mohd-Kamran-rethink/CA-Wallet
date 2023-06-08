@@ -151,6 +151,7 @@ class UserController extends Controller
             'language' => 'required|not_in:0',
             'state' => 'required|not_in:0',
             'lead_type' => 'required|not_in:0',
+            'agent_type' => 'required|not_in:0',
         ];
 
         $req->validate(array_merge($rules, $conditionalRules));
@@ -162,6 +163,7 @@ class UserController extends Controller
         $currentManager->zone = $req->zone;
         $currentManager->language = $req->language;
         $currentManager->lead_type=$req->lead_type;
+        $currentManager->agent_type=$req->agent_type;
         if ($req->password) {
             $currentManager->password = Hash::make($req->password);
         }
