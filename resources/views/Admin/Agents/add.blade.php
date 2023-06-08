@@ -127,7 +127,7 @@
                                     <select class="form-control" name="agent_type" id="">
                                         <option value="0">--Choose--</option>
                                             <option {{isset($agent)&&$agent->agent_type=="Retention"?'selected':''}} value="Retention">Retention</option>
-                                            <option {{isset($agent)&&$agent->lead_type=="Normal"?'selected':''}} value="Normal">Normal</option>
+                                            <option {{isset($agent)&&$agent->agent_type=="Normal"?'selected':''}} value="Normal">Normal</option>
                                         </select>
                                     @error('agent_type')
                                         <span class="text-danger">
