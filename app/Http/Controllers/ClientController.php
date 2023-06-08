@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Client;
 use App\Deposit;
 use App\DepositHistory;
+use App\NumberRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,11 +29,13 @@ class ClientController extends Controller
             $endDate = Carbon::createFromFormat('Y-m-d H:i:s', $endDate . ' 23:59:59');
         }
         $currentUser = session('user');
+        $requestNumber=NumberRequest::where('agent_id',$currentUser->id)->first();
         $clients = Client::select('clients.id', 'clients.number')
             ->join('transactions', 'clients.id', '=', 'transactions.client_id')
-            ->groupBy('clients.id', 'clients.number')
+            ->groupBy('clients.id', 'clients.number',)
             ->where('transactions.type', '=', 'Deposit')
             ->where('transactions.status', '=', 'Approve')
+            ->where('agent_id','=',$currentUser->id)
             ->whereBetween('transactions.created_at', [$startDate, $endDate])
             ->when($search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
@@ -43,7 +46,7 @@ class ClientController extends Controller
             ->paginate();
         $startDate = $startDate->toDateString();
         $endDate = $endDate->toDateString();
-        return view('Admin.Clients.list', compact('search', 'clients', 'startDate', 'endDate'));
+        return view('Admin.Clients.list', compact('requestNumber','search', 'clients', 'startDate', 'endDate'));
     }
     public function addView(Request $req)
     {
@@ -141,5 +144,30 @@ class ClientController extends Controller
         } else {
             return redirect()->back()->with(['msg-error' => 'Sorry you dont have data for this client']);
         }
+    }
+   
+    public function AcceptrequestNumber(Request $req)
+    {
+        $msg='';
+        $request=NumberRequest::where('agent_id','=',$req->agent_id)->first();
+        $request->approved=$req->status;
+        $request->update();
+        if($req->status=="Yes")
+        {
+            $msg="Request has been approved successfully";
+        }
+        else
+        {
+            $msg="Request has been reject";
+        }
+        
+        return redirect('/agents/number/requests')->with(['msg-success'=>$msg]);
+    }
+    public function numberRequest(Request $req)
+    {
+        $request=new NumberRequest();
+        $request->agent_id=session('user')->id;
+        $request->save();
+        return redirect('/clients')->with(['msg-success'=>"Request has been sent"]);
     }
 }

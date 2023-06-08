@@ -22,7 +22,7 @@
                         <div class="small-box bg-info">
                             <div class="inner">
                                 <h3>{{ $managers->count() }}</h3>
-                                <p>All Managers</p>
+                                <p>Total Managers</p>
                             </div>
                             <div class="icon">
                                 <i class="fa fa-users"></i>
@@ -37,7 +37,7 @@
                         <div class="small-box bg-success">
                             <div class="inner">
                                 <h3>{{ $agents->count() }}</h3>
-                                <p>All Agents</p>
+                                <p>Total Agents</p>
                             </div>
                             <div class="icon">
                                 <i class="fa fa-users"></i>
@@ -61,6 +61,51 @@
                                 class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
+                {{-- for managers only  --}}
+                @if (session('user')->role == 'manager')
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-secondary">
+                            <div class="inner">
+                                <h3>{{ $DuplicateleadsCounts ?? 0 }}</h3>
+                                <p>Duplicate Leads</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fa fa-tasks"></i>
+                            </div>
+                            <a href="{{ url('/leads') }}" class="small-box-footer">More info <i
+                                    class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-6">
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3>{{ $Pendingleads??0 }}</h3>
+                                <p>Pending Leads</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fa fa-tasks"></i>
+                            </div>
+                            <a href="{{ url('/leads') }}" class="small-box-footer">More info <i
+                                    class="fas fa-arrow-circle-right"></i></a>
+                        </div>
+                    </div>
+                @endif
+                @if(session('user')->role=='agent')
+                <div class="col-lg-3 col-6">
+                    <div class="small-box bg-success">
+                        <div class="inner">
+                            <h3>{{ $clientsCount??0 }}</h3>
+                            <p>Clients</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-users"></i>
+                        </div>
+                        <a href="{{ url('/clients') }}" class="small-box-footer">More info <i
+                                class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                </div>
+                
+                @endif
             </div>
         </div>
     </section>

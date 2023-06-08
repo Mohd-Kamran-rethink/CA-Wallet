@@ -53,6 +53,8 @@ Route::middleware('ValidateManager')->prefix('/agents')->group(function () {
     Route::get('/edit',[UserController::class,'AgentView'])->name('AgentView');
     Route::post('/edit',[UserController::class,'edit'])->name('edit');
     Route::post('/delete',[UserController::class,'delete'])->name('delete');
+    Route::get('number/requests',[UserController::class,'numberRequests'])->name('numberRequests');
+
 });
 
 // Sources
@@ -112,7 +114,9 @@ Route::middleware('ValidateAgent')->prefix('/clients')->group(function () {
     Route::post('/delete',[ClientController::class,'delete'])->name('delete');
     Route::post('/redeposit',[ClientController::class,'redeposit'])->name('redeposit');
     Route::get('/deposit/history/{id}',[ClientController::class,'depositHistory'])->name('depositHistory');
+    Route::post('numberRequests',[ClientController::class,'numberRequest'])->name('numberRequest');
 });
+Route::post('clients/request',[ClientController::class,'AcceptrequestNumber'])->name('AcceptrequestNumber');
 
 // attendance management
 Route::middleware('ValidateUsers')->prefix('/attendance')->group(function () {

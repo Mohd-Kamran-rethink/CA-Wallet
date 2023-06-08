@@ -18,95 +18,75 @@
             @endif
         </div>
     </section>
-
-
-
     <section class="content">
         <div class="card">
             <div class="card-body">
                 <div class="card-header d-flex justify-content-between px-0 mx-0">
                     <form action="{{ url('clients') }}" method="GET" id="search-form"
                         class="filters d-flex flex-row col-11 pl-0">
-
                         <div class="col-3">
                             <label for="">Search</label>
-                            <input id="searchInput" name="saerch-input" placeholder="Search by number" type="text" class="form-control "
-                                value="{{ isset($search) ? $search : '' }}">
+                            <input id="searchInput" name="saerch-input" placeholder="Search by number" type="text"
+                                class="form-control " value="{{ isset($search) ? $search : '' }}">
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="">From</label>
                             <input name="from_date" type="date" class="form-control from_date" id="datePicker"
                                 value="{{ isset($startDate) ? $startDate : '' }}">
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
                             <label for="">To</label>
                             <input name="to_date" type="date" class="form-control to_date" id="datePicker"
                                 value="{{ isset($endDate) ? $endDate : '' }}">
                         </div>
-
-
-                        <div class="">
+                        <div class="col-1">
                             <label for="" style="visibility: hidden;">filter</label>
                             <button class="btn btn-success form-control" onclick="searchData()">Filter</button>
                         </div>
-                    </form>
-
-
+                        <div class="col-2">
+                            <label for="" style="visibility: hidden;">filter</label>
+                            <button {{isset($requestNumber)?"disabled":''}} onclick="RequestNumberModal()" type="button" title="Request Number"
+                                class="btn btn-secondary">Request
+                                Numbers</button>
+                        </div>
                 </div>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-body table-responsive p-0">
-                                <table class="table table-hover text-nowrap">
-                                    <thead>
+                </form>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body table-responsive p-0">
+                            <table class="table table-hover text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>S.No.</th>
+                                        <th>Phone</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($clients as $item)
                                         <tr>
-                                            <th>S.No.</th>
-                                            <th>Phone</th>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ !isset($requestNumber) || $requestNumber->approved == 'No' ? str_repeat('*', strlen($item->number) - 3) . substr($item->number, -3) : $item->number }}
+                                            </td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($clients as $item)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item->number }}</td>
-                                                {{-- <td>
-                                                    <button onclick="openRedepositModal({{ $item->id }})"
-                                                        class="btn btn-secondary">Redeposit</button>
-                                                        <a href="{{ url('clients/deposit/history/'.$item->id) }}"
-                                                            title="View deposit history" class="btn btn-warning">Deposit
-                                                            History</a>
-
-
-                                                    <a href="{{ url('clients/edit/?id=' . $item->id) }}"
-                                                        title="Edit this client" class="btn btn-primary"><i
-                                                            class="fa fa-pen"></i></a>
-
-                                                    <button title="Delete this client"
-                                                        onclick="manageModal({{ $item->id }})"
-                                                        class="btn btn-danger"><i class="fa fa-trash"></i></button>
-                                                </td> --}}
-                                            </tr>
-
-
-                                        @empty
-                                            <tr>
-                                                <td colspan="10" class="text-center">No data</td>
-                                            </tr>
-                                        @endforelse
-
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="card-footer clearfix">
-                                {{ $clients->links('pagination::bootstrap-4') }}
-                            </div>
+                                    @empty
+                                        <tr>
+                                            <td colspan="10" class="text-center">No data</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer clearfix">
+                            {{ $clients->links('pagination::bootstrap-4') }}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        </div>
     </section>
-
     {{-- redepostit modal --}}
     <div class="modal fade show" id="modal-redeposit" style=" padding-right: 17px;" aria-modal="true" role="dialog">
         <div class="modal-dialog modal-dialog-centered custom-modal" style="">
@@ -137,25 +117,24 @@
             </div>
         </div>
     </div>
-
     {{-- delete client modal --}}
-    <div class="modal fade show" id="modal-default" style=" padding-right: 17px;" aria-modal="true" role="dialog">
+    <div class="modal fade show" id="request-number" style=" padding-right: 17px;" aria-modal="true" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Delete user</h4>
+                    <h4 class="modal-title">Request to see clients numbers</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <form action="{{ url('/clients/delete') }}" method="POST">
+                <form action="{{ url('clients/numberRequests') }}" method="POST">
                     @csrf
-                    <input type="hidden" name="deleteId" id="deleteInput">
+                    <input type="hidden" name="agent_id" id="agent_id">
                     <div class="modal-body">
-                        <h4>Are you sure you want to delete this client?</h4>
+                        <h4>Are you sure you want to request to reveal numbers?</h4>
                     </div>
                     <div class="modal-footer ">
-                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <button type="submit" class="btn btn-danger">Yes</button>
                         <button type="button" data-dismiss="modal" aria-label="Close"
                             class="btn btn-default">Cancel</button>
                 </form>
@@ -189,6 +168,10 @@
                 $('.error-amount').html('')
                 $('#redeposit-form').submit();
             }
+        }
+
+        function RequestNumberModal() {
+            $(`#request-number`).modal("show");
         }
     </script>
 @endsection

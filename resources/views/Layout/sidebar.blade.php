@@ -34,8 +34,9 @@
                                 <i class="nav-icon fas fa-users"></i>
                                 <p>
                                     Agents
-
                                 </p>
+                                <span class="badge badge-info right">{{$agentsCount??0}}</span>
+
                             </a>
                         </li>
                         @if ($userData->is_admin == 'Yes')
@@ -45,8 +46,9 @@
                                     <i class="nav-icon fas fa-users"></i>
                                     <p>
                                         Managers
-
                                     </p>
+                                    <span class="badge badge-info right">{{$managersCount??0}}</span>
+                                    
                                 </a>
                             </li>
 
@@ -78,8 +80,11 @@
                             <i class="nav-icon fa fa-tasks"></i>
                             <p>
                                 Leads
-
                             </p>
+                            <span class="badge badge-info right">{{$leadsCount??0}}</span>
+                                    
+                            
+
                         </a>
                     </li>
                     {{-- retention --}}
@@ -102,8 +107,10 @@
                                 <i class="nav-icon  fa fa-clone"></i>
                                 <p>
                                     Duplicate Leads
-
                                 </p>
+                                <span class="badge badge-info right">{{$DuplicateleadsCounts??0}}</span>
+                             
+                                
                             </a>
                         </li>
                         {{-- pending leads --}}
@@ -113,9 +120,9 @@
                                 <i class="nav-icon  fa fa-clone"></i>
                                 <p>
                                     Pending Leads
-
                                 </p>
-                            </a>
+                                <span class="badge badge-info right">{{$Pendingleads??0}}</span>
+                             </a>
                         </li>
                     @endif
                     {{-- followup  --}}
@@ -138,6 +145,8 @@
                                     <p>
                                         Demo Id
                                     </p>
+                                    <span class="badge badge-info right">{{$DemoIdleads??0}}</span>
+                                    
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -147,6 +156,8 @@
                                     <p>
                                         ID Created
                                     </p>
+                                    <span class="badge badge-info right">{{$idCreatedleads??0}}</span>
+                                    
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -156,6 +167,8 @@
                                     <p>
                                         Call back
                                     </p>
+                                    <span class="badge badge-info right">{{$Callbackleads??0}}</span>
+                                    
                                 </a>
                             </li>
                         </ul>
@@ -167,8 +180,11 @@
                                 <i class="nav-icon fa fa-th"></i>
                                 <p>
                                     Leads For Approval
-
                                 </p>
+                                <span class="badge badge-info right">{{$NonApproveleads??0}}</span>
+                                    
+                                
+
                             </a>
                         </li>
                     @endif
@@ -180,10 +196,24 @@
                                 <i class="nav-icon fa fa-users"></i>
                                 <p>
                                     My Clients
-
                                 </p>
+                                <span class="badge badge-info right">{{isset($clientsCount)?$clientsCount:0}}</span>
+                                
+                                
+
                             </a>
                         </li>
+                    @endif
+                    @if(session('user')->role=='manager')
+                    <li class="nav-item ">
+                        <a href="{{ url('/agents/number/requests') }}"
+                            class="nav-link {{ Request::is('agents/number/requests') ? 'active' : '' }}">
+                            <i class="nav-icon fa fa-plus"></i>
+                            <p>
+                               Number Requests
+                            </p>
+                        </a>
+                    </li>
                     @endif
                     <li class="nav-item ">
                         <a href="{{ url('/attendance') }}"

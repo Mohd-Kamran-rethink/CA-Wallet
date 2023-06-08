@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Language;
+use App\NumberRequest;
 use App\State;
 use App\User;
 use App\Zone;
@@ -197,6 +198,14 @@ class UserController extends Controller
                 return redirect('/agents')->with(['msg-error'=>'Something went wrong could not delete manager.']);   
             }
         }
+    }
+    public function numberRequests()
+    {
+        $requests = NumberRequest::join('users', 'number_requests.agent_id', '=', 'users.id')
+        ->where('number_requests.approved','=','No')
+                    ->select('number_requests.*','users.name','users.id as userID','users.phone','users.email')
+                    ->get();
+        return view('Admin.NumberRequests.index',compact('requests'));
     }
 }
 
