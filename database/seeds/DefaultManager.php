@@ -14,8 +14,9 @@ class DefaultManager extends Seeder
     public function run()
     {
         $sources = [
-            ['name' => 'Test Manager', 'email' => 'manager@ca.com', 'phone' => '928277273', 'role' => 'manager', 'password' => '123456789'],
-            ['name' => 'Test Manager', 'email' => 'customer@ca.com', 'phone' => '928277273', 'role' => 'customer_care_manager', 'password' => '123456789'],
+            ['name' => 'CA Super Manager', 'email' => 'manager@ca.com', 'phone' => '928277273', 'role' => 'manager', 'password' => '123456789'],
+            ['name' => 'Customer Super Manager', 'email' => 'customer@ca.com', 'phone' => '928277273', 'role' => 'customer_care_manager', 'password' => '123456789'],
+            ['name' => 'Expense Super Manager', 'email' => 'expense@ca.com', 'phone' => '928277273', 'role' => 'expense_manager', 'password' => '123456789'],
         ];
 
         foreach ($sources as $item) {
