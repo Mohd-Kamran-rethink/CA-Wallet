@@ -14,9 +14,10 @@ class DefaultManager extends Seeder
     public function run()
     {
         $sources = [
-            ['name' => 'CA Super Manager', 'email' => 'manager@ca.com', 'phone' => '928277273', 'role' => 'manager', 'password' => '123456789'],
-            ['name' => 'Customer Super Manager', 'email' => 'customer@ca.com', 'phone' => '928277273', 'role' => 'customer_care_manager', 'password' => '123456789'],
-            ['name' => 'Expense Super Manager', 'email' => 'expense@ca.com', 'phone' => '928277273', 'role' => 'expense_manager', 'password' => '123456789'],
+            ['name' => 'CA Super Manager', 'email' => 'supermanager@ca.com', 'phone' => '928277273', 'role' => 'super_manager', 'password' => '123456789'],
+            ['name' => 'CA Normal Manager', 'email' => 'manager@ca.com', 'phone' => '928277273', 'role' => 'manager', 'password' => '123456789'],
+            ['name' => 'CA Normal Manager', 'email' => 'customer@ca.com', 'phone' => '928277273', 'role' => 'customer_care_manager', 'password' => '123456789'],
+            ['name' => 'Expense Normal Manager', 'email' => 'expense@ca.com', 'phone' => '928277273', 'role' => 'expense_manager', 'password' => '123456789'],
         ];
 
         foreach ($sources as $item) {
@@ -25,7 +26,7 @@ class DefaultManager extends Seeder
             $manager->email = $item['email'];
             $manager->phone = $item['phone'];
             $manager->role = $item['role'];
-            $manager->is_admin = "Yes";
+            $manager->is_admin = "No";
             $manager->password = Hash::make($item['password']);
             $manager->save();
         }
