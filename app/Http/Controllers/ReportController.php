@@ -36,7 +36,7 @@ class ReportController extends Controller
 
         $currentUser = session('user');
         $statuses = LeadStatusOption::get();
-
+        $totalLeads=[];
         $data = [];
         foreach ($agents as $key => $value) {
             # code...

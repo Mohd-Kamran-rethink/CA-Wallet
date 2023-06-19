@@ -17,6 +17,7 @@ class ClientsMigration extends Migration
             $table->id();
             $table->string('name')->nullable();
             $table->string('agent_id')->nullable();
+            $table->string('exchange_id')->nullable();
             $table->string('number');
             $table->string('ca_id')->nullable();
             $table->bigInteger('deposit_amount')->nullable();

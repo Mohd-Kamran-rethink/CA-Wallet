@@ -249,7 +249,7 @@
                                         </p>
                                     </a>
                                 </li>
-                                <li class="nav-item ">
+                                {{-- <li class="nav-item ">
                                     <a href="{{ url('/reports/deposits') }}"
                                         class="nav-link {{ Request::is('reports/deposits') ? 'active' : '' }}">
                                         <i class="nav-icon fa fa-table"></i>
@@ -258,11 +258,21 @@
                                             Deposits
                                         </p>
                                     </a>
-                                </li>
+                                </li> --}}
 
                             </ul>
                         </li>
                     @endif
+                    {{-- show only active bank only show --}}
+                    <li class="nav-item ">
+                        <a href="{{ url('/banks') }}"
+                            class="nav-link {{ Request::is('banks') ? 'active' : '' }}">
+                            <i class="nav-icon fa fa-building"></i>
+                            <p>
+                                Banks
+                            </p>
+                        </a>
+                    </li>
                 </ul>
             @endif
 

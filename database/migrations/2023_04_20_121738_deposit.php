@@ -13,12 +13,17 @@ class Deposit extends Migration
      */
     public function up()
     {
-        Schema::create('deposits', function (Blueprint $table) {
+        Schema::create('transaction_histories', function (Blueprint $table) {
             $table->id();
-            $table->string('agent_id');
-            $table->string('client_id');
-            $table->bigInteger('deposit_amount');
-            $table->enum('type',['deposit','redeposit'])->default('deposit');
+            $table->string('agent_id')->nullable();
+            $table->string('exchange_id')->nullable();
+            $table->string('bank_id')->nullable();
+            $table->string('transaction_id')->nullable();
+            $table->string('client_id')->nullable();
+            $table->string('amount')->default(0);
+            $table->string('bonus')->nullable();
+            $table->string('opening_balance')->nullable();
+            $table->enum('type',['deposit','redeposit','withdraw','withdraw_revert','deposit_revert'])->default('deposit');
             $table->timestamps();
         });
     }

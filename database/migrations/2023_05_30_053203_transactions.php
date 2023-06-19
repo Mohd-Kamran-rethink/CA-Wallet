@@ -18,7 +18,7 @@ class Transactions extends Migration
             $table->string('client_id')->nullable();
             $table->string('amount');
             $table->string('bonus')->nullable();
-            $table->string('total');
+            $table->string('total')->nullable();
             $table->string('date');
             $table->string('utr_no')->nullable();
             $table->string('bank_account')->nullable();
@@ -31,6 +31,9 @@ class Transactions extends Migration
             $table->string('customer_bank_id')->nullable();
             $table->enum('type',['Deposit','Withdraw']);
             $table->enum('status',['Pending','Approve','Cancel']);
+            // exchanges
+            $table->string('exchange_id')->nullable();
+
             $table->timestamps();
         });
     }

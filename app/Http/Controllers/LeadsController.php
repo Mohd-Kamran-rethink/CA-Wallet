@@ -526,6 +526,8 @@ class LeadsController extends Controller
                 ->where('number', '=', $data['Number'])
                 ->first();
 
+            
+            
             $entry = [
                 'source_id' => $sourceId,
                 'name' => $data['Name']??'',
@@ -546,6 +548,7 @@ class LeadsController extends Controller
                 $skippedCount++;
                 continue;
             }
+            
 
             if (!isset($groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State']))])) {
                 $groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State'])) ] = [];
@@ -636,33 +639,11 @@ class LeadsController extends Controller
 
         // get status full details from status id
         $statusValue = LeadStatusOption::find($statusId);
-
-
-        // check if status is deposted and  client exists if not exists than create new
-        // if ($statusValue->name == "Deposited") {
-        //     $client = Client::where('ca_id', '=', trim($clientIDName))->where('number', '=', $lead->number)->first();
-
-        //     if (!$client) {
-        //         $client = new Client();
-        //         $client->name = '';
-        //         $client->number = $lead->number;
-        //         $client->ca_id = $req->IdName;
-        //     }
-        //     $client->agent_id = $agent->id;
-        //     $client->deposit_amount = $amount;
-        //     $client->save();
-        //     $deposit = new Deposit();
-        //     $deposit->agent_id = $agent->id;
-        //     $deposit->client_id = $client->id;
-        //     $deposit->deposit_amount = $amount;
-        //     $deposit->type = 'deposit';
-        //     $deposit->save();
-        //     $depositHistory=new DepositHistory();
-        //     $depositHistory->deposit_id=$deposit->id;
-        //     $depositHistory->amount=$amount;
-        //     $depositHistory->type = "Deposit";
-        //     $depositHistory->save();
-        // }
+        if($statusValue->id==5 && $req->transfered_language )
+        {
+            $languageAgent=User::where('language','=',$req->transfered_language)->inRandomOrder()->first();
+            $lead->agent_id=$languageAgent->id??'null';
+        }
         // firstly update lead table
         $lead->remark = $remark;
         $lead->current_status = $statusValue->name;

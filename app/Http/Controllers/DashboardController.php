@@ -65,7 +65,7 @@ class DashboardController extends Controller
             ->orderByDesc('leads.date')
             ->get()->count();
         $clientsCount = Client::where('agent_id', '=', session('user')->id)->get()->count();
-        
-        return view('Admin.Dashboard.index', compact('clientsCount','Pendingleads', 'DuplicateleadsCounts', "agents", 'managers', 'leads', 'lastEntry'));
+
+        return view('Admin.Dashboard.index', compact('clientsCount', 'Pendingleads', 'DuplicateleadsCounts', "agents", 'managers', 'leads', 'lastEntry'));
     }
 }
