@@ -19,11 +19,12 @@ class Deposit extends Migration
             $table->string('exchange_id')->nullable();
             $table->string('bank_id')->nullable();
             $table->string('transaction_id')->nullable();
+            $table->string('expense_id')->nullable();
             $table->string('client_id')->nullable();
             $table->string('amount')->default(0);
             $table->string('bonus')->nullable();
             $table->string('opening_balance')->nullable();
-            $table->enum('type',['deposit','redeposit','withdraw','withdraw_revert','deposit_revert'])->default('deposit');
+            $table->enum('type',['deposit','redeposit','withdraw','withdraw_revert','deposit_revert',])->default('deposit');
             $table->timestamps();
         });
     }

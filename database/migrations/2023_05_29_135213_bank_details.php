@@ -24,6 +24,8 @@ class BankDetails extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('amount')->nullable();
+            $table->string('provider_id')->nullable();
+            $table->string('type')->nullable();
             $table->enum('is_active',['Yes','No'])->default('Yes');
             $table->timestamps();
         });
