@@ -206,6 +206,15 @@
                     @endif
                     @if(session('user')->role=='manager')
                     <li class="nav-item ">
+                        <a href="{{ url('/phone-numbers') }}"
+                            class="nav-link {{ Request::is('phone-numbers') ? 'active' : '' }}">
+                            <i class="nav-icon fa fa-phone"></i>
+                            <p>
+                               Phone Numbers
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item ">
                         <a href="{{ url('/agents/number/requests') }}"
                             class="nav-link {{ Request::is('agents/number/requests') ? 'active' : '' }}">
                             <i class="nav-icon fa fa-plus"></i>

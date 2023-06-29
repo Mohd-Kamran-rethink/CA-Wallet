@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Language;
 use App\NumberRequest;
+use App\PhoneAgent;
+use App\PhoneNumber;
 use App\State;
 use App\User;
 use App\Zone;
@@ -38,32 +40,32 @@ class UserController extends Controller
             })
             ->orderBy('id', 'desc')
             ->paginate(10);
-        return view('Admin.Manager.list', compact('managers','searchTerm'));
+        return view('Admin.Manager.list', compact('managers', 'searchTerm'));
     }
     public function AgentView(Request $req)
     {
         $id = $req->query('id');
-        $languages=Language::get();
-        $zones=Zone::get();
-        $states=State::orderBy('name','asc')->get();
+        $languages = Language::get();
+        $zones = Zone::get();
+        $states = State::orderBy('name', 'asc')->get();
         if ($id) {
             $agent = User::where("role", '=', 'agent')->find($id);
-            return view('Admin.Agents.add', compact('agent','languages','states','zones'));
+            return view('Admin.Agents.add', compact('agent', 'languages', 'states', 'zones'));
         } else {
-         return view('Admin.Agents.add',compact('languages','states','zones'));
+            return view('Admin.Agents.add', compact('languages', 'states', 'zones'));
         }
     }
 
-        
-        
+
+
 
     public function listAgents(Request $req)
     {
         $searchTerm = $req->query('table_search');
         $stateFilter = $req->query('stateFilter');
         $languageFilter = $req->query('languageFilter');
-        $states=State::get();
-        $languages=Language::get();
+        $states = State::get();
+        $languages = Language::get();
         $agents = User::where('role', 'agent')
             ->when($searchTerm, function ($query, $searchTerm) {
                 $query->where(function ($query) use ($searchTerm) {
@@ -75,31 +77,31 @@ class UserController extends Controller
             ->when($stateFilter, function ($query, $stateFilter) {
                 $query->where(function ($query) use ($stateFilter) {
                     $query->where('state', '=', $stateFilter);
-                 });
+                });
             })
             ->when($languageFilter, function ($query, $languageFilter) {
                 $query->where(function ($query) use ($languageFilter) {
                     $query->where('language', '=', $languageFilter);
-                 });
+                });
             })
             ->orderBy('id', 'desc')
             ->paginate(10);
-        return view('Admin.Agents.list', compact('agents','searchTerm','states','languages','stateFilter','languageFilter'));
+        return view('Admin.Agents.list', compact('agents', 'searchTerm', 'states', 'languages', 'stateFilter', 'languageFilter'));
     }
     // common functions for manager and agents
     public function add(Request $req)
     {
-        
 
-        $rules=[
+
+        $rules = [
             'name' => 'required|unique:users,name',
             'phone' => 'required|unique:users,phone',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|same:confirmPassword',
             'confirmPassword' => 'required|'
         ];
-       
-        if (session('user')->role=='manager' && $req->role=='agent') {
+
+        if (session('user')->role == 'manager' && $req->role == 'agent') {
             $rules['language'] = 'required|not_in:0';
             $rules['zone'] = 'required|not_in:0';
             $rules['state'] = 'required|not_in:0';
@@ -114,23 +116,23 @@ class UserController extends Controller
         $user->email = $req->email;
         $user->password = Hash::make($req->password);
         $user->role = $req->role;
-        $user->language=$req->language;
-        $user->zone=$req->zone;
-        $user->state=$req->state;
-        $user->lead_type=$req->lead_type;
-        $user->agent_type=$req->agent_type;
+        $user->language = $req->language;
+        $user->zone = $req->zone;
+        $user->state = $req->state;
+        $user->lead_type = $req->lead_type;
+        $user->agent_type = $req->agent_type;
         $result = $user->save();
         if ($result) {
             if ($req->role === 'manager') {
                 return redirect('/managers')->with(['msg-success' => 'Manager has been added.']);
             } else {
-                return redirect('/agents')->with(['msg-success'=>'Agent has been added.']);   
+                return redirect('/agents')->with(['msg-success' => 'Agent has been added.']);
             }
         } else {
             if ($req->role === 'manager') {
                 return redirect('/managers')->with(['msg-error' => 'Something went wrong could not add manager.']);
             } else {
-                return redirect('/agents')->with(['msg-error'=>'Something went wrong could not add manager.']);   
+                return redirect('/agents')->with(['msg-error' => 'Something went wrong could not add manager.']);
             }
         }
     }
@@ -144,7 +146,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $currentManager->id,
             'confirmPassword' => 'required_with:password',
         ];
-       
+
         $conditionalRules = [
             'password' => 'nullable|min:8|same:confirmPassword',
             'zone' => 'required|not_in:0',
@@ -162,8 +164,8 @@ class UserController extends Controller
         $currentManager->state = $req->state;
         $currentManager->zone = $req->zone;
         $currentManager->language = $req->language;
-        $currentManager->lead_type=$req->lead_type;
-        $currentManager->agent_type=$req->agent_type;
+        $currentManager->lead_type = $req->lead_type;
+        $currentManager->agent_type = $req->agent_type;
         if ($req->password) {
             $currentManager->password = Hash::make($req->password);
         }
@@ -172,13 +174,13 @@ class UserController extends Controller
             if ($req->role === 'manager') {
                 return redirect('/managers')->with(['msg-success' => 'Manager has been updated.']);
             } else {
-                return redirect('/agents')->with(['msg-success'=>'Agent has been added.']);   
+                return redirect('/agents')->with(['msg-success' => 'Agent has been added.']);
             }
         } else {
             if ($req->role === 'manager') {
                 return redirect('/managers')->with(['msg-error' => 'Something went wrong could not update manager.']);
             } else {
-                return redirect('/agents')->with(['msg-error'=>'Something went wrong could not update manager.']);   
+                return redirect('/agents')->with(['msg-error' => 'Something went wrong could not update manager.']);
             }
         }
     }
@@ -191,28 +193,76 @@ class UserController extends Controller
             if ($req->role === 'manager') {
                 return redirect('/managers')->with(['msg-success' => 'Manager has been deleted.']);
             } else {
-                return redirect('/agents')->with(['msg-success'=>'Agent has been deleted.']);   
+                return redirect('/agents')->with(['msg-success' => 'Agent has been deleted.']);
             }
         } else {
             if ($req->role === 'manager') {
                 return redirect('/managers')->with(['msg-error' => 'Something went wrong could not delete manager.']);
             } else {
-                return redirect('/agents')->with(['msg-error'=>'Something went wrong could not delete manager.']);   
+                return redirect('/agents')->with(['msg-error' => 'Something went wrong could not delete manager.']);
             }
         }
     }
     public function numberRequests()
     {
         $requests = NumberRequest::join('users', 'number_requests.agent_id', '=', 'users.id')
-        ->where('number_requests.approved','=','No')
-                    ->select('number_requests.*','users.name','users.id as userID','users.phone','users.email')
-                    ->get();
-        return view('Admin.NumberRequests.index',compact('requests'));
+            ->where('number_requests.approved', '=', 'No')
+            ->select('number_requests.*', 'users.name', 'users.id as userID', 'users.phone', 'users.email')
+            ->get();
+        return view('Admin.NumberRequests.index', compact('requests'));
+    }
+
+    // assign numbers
+    public function assignNumberForm(Request $req)
+    {
+        $id = $req->query('id');
+        $numbers = PhoneNumber::where('status', '=', 'active')->get();
+        $agent = User::find($id);
+        return view('Admin.Agents.numberAssign', compact('numbers', 'agent'));
+    }
+    public function assignNumber(Request $req)
+    {
+        $req->validate(['numbers' => 'required|not_in:0', "userId" => 'required']);
+
+        // Check if the combination already exists with status = 'active'
+        $existingEntry = PhoneAgent::where('agent_id', $req->userId)
+            ->where('number_id', $req->numbers)
+            ->where('platform', $req->platform)
+            ->where('status', 'active')
+            ->first();
+
+        if ($existingEntry) {
+            return redirect('/agents')->with(['msg-error' => 'Already assigned']);
+        } else {
+            $phoneAgent = new PhoneAgent();
+            $phoneAgent->agent_id = $req->userId;
+            $phoneAgent->number_id = $req->numbers;
+            $phoneAgent->platform = $req->platform;
+            $result = $phoneAgent->save();
+        }
+        if ($result) {
+            return redirect('/agents')->with(['msg-success' => 'Numbers assigned succesfully']);
+        } else {
+            return redirect('/agents')->with(['msg-error' => 'Sothething went Wrong']);
+        }
+    }
+    function reassign(Request $req) {
+        $number=PhoneNumber::find($req->id);
+        $agent=User::find($req->agent);
+        $platform=$req->platform;
+        $phoneAgent=PhoneAgent::where('number','=',$number->id)->where('platform','=',$platform)->where('status','=','active')->first();
+        if($phoneAgent)
+        {
+            
+            $phoneAgent->status='inactive';
+            $phoneAgent->update();
+        }
+        $newPhoneAgent=new PhoneAgent();
+        $newPhoneAgent->agent_id = $agent->id;
+        $newPhoneAgent->number_id = $number->id;
+        $newPhoneAgent->platform = $platform;
+        $newPhoneAgent->status ='active';
+        $newPhoneAgent->save();
+        
     }
 }
-
-        
-        
-
-    
-    

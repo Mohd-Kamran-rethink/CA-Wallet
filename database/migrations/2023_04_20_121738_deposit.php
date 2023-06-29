@@ -23,6 +23,7 @@ class Deposit extends Migration
             $table->string('client_id')->nullable();
             $table->string('amount')->default(0);
             $table->string('bonus')->nullable();
+            $table->string('current_balance')->nullable();
             $table->string('opening_balance')->nullable();
             $table->enum('type',['deposit','redeposit','withdraw','withdraw_revert','deposit_revert',])->default('deposit');
             $table->timestamps();

@@ -10,6 +10,7 @@ use App\Language;
 use App\Lead;
 use App\LeadStatus;
 use App\LeadStatusOption;
+use App\PhoneAgent as AppPhoneAgent;
 use App\Source;
 use App\State;
 use App\User;
@@ -18,7 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use PhoneAgent;
 
 class LeadsController extends Controller
 {
@@ -26,6 +27,8 @@ class LeadsController extends Controller
     public function list(Request $req)
     {
         $languages=Language::get();
+        $sources=Source::get();
+        $phoneNumber=AppPhoneAgent::leftJoin('phone_numbers','phone_agents.number_id','phone_numbers.id')->where('agent_id','=',session('user')->id)->where('phone_agents.status','=','active')->select('phone_numbers.*','phone_agents.platform as platformNew')->get();
         // seperately send lead status history and will render this in modal using jquerry
         $leads_status_history = DB::table('lead_statuses')
             ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
@@ -96,7 +99,7 @@ class LeadsController extends Controller
             ->orderByDesc('leads.date')
             ->paginate(45);
 
-        return view('Admin.Leads.list', compact('languages','leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
+        return view('Admin.Leads.list', compact('phoneNumber','sources','languages','leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
     }
     public function duplicateLeads(Request $req)
     {
@@ -902,22 +905,35 @@ class LeadsController extends Controller
     {
         $agentId = session('user')->id;
         $date = Carbon::now()->format('Y-m-d');
-        $req->validate(['lead_number' => 'required']);
+        $req->validate(['lead_number' => 'required','status_id'=>'required','']);
         if ($req->ajax()) {
-            $source = Source::where('name', '=', 'WhatsApp')->first();
+            $source = Source::find($req->source_id);
             $existingLead = Lead::where('agent_id', $agentId)
                 ->where('source_id', $source->id)
                 ->where('number', '=', $req->lead_number)
                 ->where('created_at', '>=', Carbon::now()->subDays(15))
                 ->first();
+            $status=LeadStatusOption::where('id','=',$req->status_id)->first();
             if (!$existingLead) {
                 $lead = new Lead();
                 $lead->source_id = $source->id;
                 $lead->number = $req->lead_number;
                 $lead->agent_id = $agentId;
                 $lead->date = $date;
+                $lead->status_id = $status->id;
+                $lead->current_status = $status->name;
+                $lead->is_approved = 'Yes';
                 $result = $lead->save();
-                return ['msg-success' => 'Lead added successfully and sent for approval'];
+                if($result)
+                {
+                    $leadHistory=new LeadStatus();
+                    $leadHistory->status_id=$status->id;
+                    $leadHistory->agent_id=session('user')->id;
+                    $leadHistory->lead_id=$lead->id;
+                    $leadHistory->save();
+
+                }
+                return ['msg-success' => 'Lead added successfully '];
             } else {
                 return ['msg-error' => 'The lead with the number ' . $req->lead_number . ' is already present in the database within the last 15 days.'];
             }

@@ -6,6 +6,7 @@ use App\Http\Controllers\BankController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeadsController;
+use App\Http\Controllers\PhoneNumberController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RetentionController;
 use App\Http\Controllers\UserController;
@@ -55,8 +56,10 @@ Route::middleware('ValidateManager')->prefix('/agents')->group(function () {
     Route::post('/edit',[UserController::class,'edit'])->name('edit');
     Route::post('/delete',[UserController::class,'delete'])->name('delete');
     Route::get('number/requests',[UserController::class,'numberRequests'])->name('numberRequests');
-
+    Route::get('assign-numbers',[UserController::class,'assignNumberForm'])->name('assignNumberForm');
+    Route::post('assign-numbers',[UserController::class,'assignNumber'])->name('assignNumber');
 });
+
 
 // Sources
 Route::middleware('adminManager')->prefix('/sources')->group(function () {
@@ -100,6 +103,7 @@ Route::middleware('ValidateUsers')->prefix('/leads')->group(function () {
     Route::get('/add',[LeadsController::class,'mannualAdd'])->name('mannualAdd');
     // leads import by manager is different
     Route::post('/manager/import',[LeadsController::class,'leadsImportByManager'])->name('leadsImportByManager');
+
 });
 // retention calls
 Route::middleware('ValidateUsers')->prefix('/retention')->group(function () {
@@ -136,5 +140,17 @@ Route::middleware('ValidateManager')->prefix('/reports')->group(function () {
 });
 
 Route::get('/banks', [BankController::class, 'listActiveBanks'])->name('listActiveBanks');
+
+// phone number module
+Route::middleware('ValidateManager')->prefix('/phone-numbers')->group(function () {
+    Route::get('', [PhoneNumberController::class, 'list'])->name('list');
+    Route::get('add', [PhoneNumberController::class, 'addForm'])->name('addForm');
+    Route::post('add', [PhoneNumberController::class, 'add'])->name('add');
+    Route::get('edit', [PhoneNumberController::class, 'addForm'])->name('addForm');
+    Route::post('edit', [PhoneNumberController::class, 'edit'])->name('edit');
+    Route::post('change-status', [PhoneNumberController::class, 'statusChange'])->name('statusChange');
+    Route::post('reassign', [PhoneNumberController::class, 'reassign'])->name('reassign');
+    Route::get('history', [PhoneNumberController::class, 'history'])->name('history');
+});
 
    

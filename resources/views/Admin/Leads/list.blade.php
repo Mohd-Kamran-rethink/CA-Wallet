@@ -71,11 +71,11 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item['Sources'] }}</td>
                                                 <td>{{ serialToDate($item['Date']) }}</td>
-                                                <td>{{ $item['Name']??'' }}</td>
+                                                <td>{{ $item['Name'] ?? '' }}</td>
                                                 <td>{{ $item['Number'] }}</td>
                                                 <td>{{ $item['Language'] }}</td>
                                                 <td>{{ $item['State'] }}</td>
-                                                <td> {{ isset($item['Agent'])??'' }}</td>
+                                                <td> {{ isset($item['Agent']) ?? '' }}</td>
                                             </tr>
                                         @endforeach
 
@@ -109,10 +109,10 @@
                                                 <td>{{ $item['Sources'] }}</td>
                                                 <td>{{ serialToDate($item['Date']) }}</td>
                                                 <td>{{ $item['Name'] }}</td>
-                                                <td>{{ isset($item['Number'])??'' }}</td>
+                                                <td>{{ isset($item['Number']) ?? '' }}</td>
                                                 <td>{{ $item['Language'] }}</td>
                                                 <td>{{ $item['State'] }}</td>
-                                                <td> {{ isset($item['Agent'])??'' }}</td>
+                                                <td> {{ isset($item['Agent']) ?? '' }}</td>
                                             </tr>
                                         @endforeach
 
@@ -302,12 +302,12 @@
                     {{-- leads tranfere language drop down --}}
                     <div class="form-group  conditional-transfered" style="display: none">
                         <label for="">Language</label>
-                        <select name="transfered_language"  class="form-control" id="language_transfered">
+                        <select name="transfered_language" class="form-control" id="language_transfered">
                             <option value="0">--Choose--</option>
                             @foreach ($languages as $item)
-                            <option value="{{$item->name}}">{{$item->name}}</option>
+                                <option value="{{ $item->name }}">{{ $item->name }}</option>
                             @endforeach
-                                
+
                         </select>
                         <span class="text-danger error-date"></span>
                     </div>
@@ -323,7 +323,7 @@
                     class="btn btn-success status-submit-button" id="status-submit-button" disabled>Submit</button>
                 <button type="button" data-dismiss="modal" aria-label="Close"
                     class="btn btn-default">Cancel</button>
-                </div>
+            </div>
 
         </div>
     </div>
@@ -459,9 +459,41 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ url('/leads/agent/mass/change') }}" method="post" id="mass-agent-form">
+                <form action="{{ url('/leads/agent/mannual/add') }}" method="post" id="mass-agent-form">
                     @csrf
                     <input type="hidden" name="leadIds" class="lead_ids">
+                    <div class="form-group">
+                        <label for="">Source<span class="text-danger">*</span></label>
+                        <select id="Mansource_id" type="number" name="Mansource_id" class="form-control">
+                            <option value="0">--Choose--</option>
+                            @foreach ($sources as $item)
+                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            @endforeach
+
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Agent Phone<span class="text-danger">*</span></label>
+                        <select id="AgentPhone" type="number" name="AgentPhone" class="form-control">
+                            <option value="0">--Choose--</option>
+                            @foreach ($phoneNumber as $item)
+                                <option value="{{ $item->id }}">{{ $item->number }}-{{$item->platformNew}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="">Status<span class="text-danger">*</span></label>
+                        <select id="man_status" type="number" name="man_status" class="form-control">
+                            <option value="0">--Choose--</option>
+                            @foreach ($statuses as $item)
+                            @if ($item->name == 'Deposited')
+                                    @continue
+                                @endif
+                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            @endforeach
+
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="">Phone<span class="text-danger">*</span></label>
                         <input id="lead_number" type="number" name="lead_number" class="form-control">
@@ -526,8 +558,7 @@
             } else {
                 conditionalInput.hide()
             }
-            if(status==5)
-            {
+            if (status == 5) {
                 $('.conditional-transfered').show()
             }
             submitButton.removeAttr('disabled');
@@ -682,14 +713,18 @@
 
     function submitMannualLead() {
         let number = $('#lead_number').val()
+        let Mansource_id = $('#Mansource_id').val()
+        let AgentPhone = $('#AgentPhone').val()
+        let man_status = $('#man_status').val()
         $.ajax({
             url: BASE_URL +
-                "/leads/add?lead_number=" + number,
+                "/leads/add?lead_number=" + number+'&source_id='+Mansource_id+'&agent_id='+AgentPhone+'&status_id='+man_status,
             success: function(data) {
                 if (data.hasOwnProperty('msg-success')) {
                     // Show success message
                     $('#notification-alert').addClass('alert').addClass('alert-success').text(data[
                         'msg-success']);
+                        location.reload();
                 } else if (data.hasOwnProperty('msg-error')) {
                     $('#notification-alert').addClass('alert').addClass('alert-danger').text(data[
                         'msg-error']);
