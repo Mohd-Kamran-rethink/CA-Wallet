@@ -922,6 +922,7 @@ class LeadsController extends Controller
                 $lead->date = $date;
                 $lead->status_id = $status->id;
                 $lead->current_status = $status->name;
+                $lead->name = $req->client_name;
                 $lead->is_approved = 'Yes';
                 $result = $lead->save();
                 if($result)

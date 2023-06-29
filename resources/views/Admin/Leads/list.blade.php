@@ -467,7 +467,9 @@
                         <select id="Mansource_id" type="number" name="Mansource_id" class="form-control">
                             <option value="0">--Choose--</option>
                             @foreach ($sources as $item)
+                            @if($item->name=="Wati"||$item->name=="WhatsApp")
                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endif
                             @endforeach
 
                         </select>
@@ -483,7 +485,7 @@
                     </div>
                     <div class="form-group">
                         <label for="">Status<span class="text-danger">*</span></label>
-                        <select id="man_status" type="number" name="man_status" class="form-control">
+                        <select id="man_status" onchange="handleMannualStatusChange(this.value)" type="number" name="man_status" class="form-control">
                             <option value="0">--Choose--</option>
                             @foreach ($statuses as $item)
                             @if ($item->name == 'Deposited')
@@ -497,6 +499,14 @@
                     <div class="form-group">
                         <label for="">Phone<span class="text-danger">*</span></label>
                         <input id="lead_number" type="number" name="lead_number" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Name<span class="text-danger">*</span></label>
+                        <input id="client_name" type="text" name="client_name" class="form-control">
+                    </div>
+                    <div class="form-group" style="display: none" id="id-created">
+                        <label for="">Client ID<span class="text-danger">*</span></label>
+                        <input id="client_id" type="text" name="client_id" class="form-control">
                     </div>
 
                 </form>
@@ -716,9 +726,10 @@
         let Mansource_id = $('#Mansource_id').val()
         let AgentPhone = $('#AgentPhone').val()
         let man_status = $('#man_status').val()
+        let client_name = $('#client_name').val()
         $.ajax({
             url: BASE_URL +
-                "/leads/add?lead_number=" + number+'&source_id='+Mansource_id+'&agent_id='+AgentPhone+'&status_id='+man_status,
+                "/leads/add?lead_number=" + number+'&source_id='+Mansource_id+'&agent_id='+AgentPhone+'&status_id='+man_status+'&client_name='+client_name,
             success: function(data) {
                 if (data.hasOwnProperty('msg-success')) {
                     // Show success message
@@ -747,6 +758,18 @@
             }
         });
 
+    }
+
+    function handleMannualStatusChange(value)
+    {
+        if(value==7)
+        {
+            $('#id-created').show()
+        }
+        else
+        {
+            $('#id-created').hide()
+        }
     }
 </script>
 @endsection
