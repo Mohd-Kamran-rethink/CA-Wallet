@@ -189,13 +189,13 @@
                         </li>
                     @endif
                     {{-- clients --}}
-                    @if ($userData->role == 'agent')
+                    
                         <li class="nav-item ">
                             <a href="{{ url('/clients') }}"
                                 class="nav-link {{ Request::is('clients') || Request::is('clients/add') || Request::is('clients/edit') ? 'active' : '' }}">
                                 <i class="nav-icon fa fa-users"></i>
                                 <p>
-                                    My Clients
+                                    Clients
                                 </p>
                                 <span class="badge badge-info right">{{isset($clientsCount)?$clientsCount:0}}</span>
                                 
@@ -203,7 +203,6 @@
 
                             </a>
                         </li>
-                    @endif
                     @if(session('user')->role=='manager')
                     <li class="nav-item ">
                         <a href="{{ url('/phone-numbers') }}"

@@ -909,7 +909,6 @@ class LeadsController extends Controller
         if ($req->ajax()) {
             $source = Source::find($req->source_id);
             $existingLead = Lead::where('agent_id', $agentId)
-                ->where('source_id', $source->id)
                 ->where('number', '=', $req->lead_number)
                 ->where('created_at', '>=', Carbon::now()->subDays(15))
                 ->first();

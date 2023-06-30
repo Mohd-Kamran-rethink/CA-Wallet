@@ -146,7 +146,12 @@ class SettingDataProvider extends ServiceProvider
                 ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
                 ->orderByDesc('leads.date')
                 ->get()->count();
-            $clientsCount=Client::where('agent_id','=',session('user')->id)->get()->count();
+            $clientsCount=Client::when($agent, function ($query, $agent) {
+                $query->where(function ($query) use ($agent) {
+                    $query->where('agent_id', '=', $agent->id);
+                });
+            })
+            ->get()->count();
             
             // couts end
             $view->with([

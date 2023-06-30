@@ -67,7 +67,8 @@
                                     @forelse($clients as $item)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ !isset($requestNumber) || $requestNumber->approved == 'No' ? str_repeat('*', strlen($item->number) - 3) . substr($item->number, -3) : $item->number }}
+                                            <td>
+                                                {{ !isset($requestNumber) || $requestNumber->approved == 'No' ? (session('user')->role == "manager" ? $item->number : str_repeat('*', strlen($item->number) - 3) . substr($item->number, -3)) : $item->number }}
                                             </td>
                                         </tr>
                                     @empty

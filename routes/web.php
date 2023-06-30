@@ -110,8 +110,8 @@ Route::middleware('ValidateUsers')->prefix('/retention')->group(function () {
     Route::get('/',[RetentionController::class,'list'])->name('list');
 });
 // clients for agents
+Route::get('clients',[ClientController::class,'list'])->name('list')->middleware('ValidateUsers');
 Route::middleware('ValidateAgent')->prefix('/clients')->group(function () {
-    Route::get('',[ClientController::class,'list'])->name('list');
     Route::get('/add',[ClientController::class,'addView'])->name('addView');
     Route::post('/add',[ClientController::class,'add'])->name('add');
     Route::get('/edit',[ClientController::class,'addView'])->name('addView');

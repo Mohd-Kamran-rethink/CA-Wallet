@@ -30,20 +30,33 @@ class ClientController extends Controller
         }
         $currentUser = session('user');
         $requestNumber=NumberRequest::where('agent_id',$currentUser->id)->first();
+        if($currentUser->role=="agent")
+        {
         $clients = Client::select('clients.id', 'clients.number')
-            ->join('transactions', 'clients.id', '=', 'transactions.client_id')
-            ->groupBy('clients.id', 'clients.number')
-            ->where('transactions.type', '=', 'Deposit')
-            ->where('transactions.status', '=', 'Approve')
+            // ->lefjoin('transactions', 'clients.id', '=', 'transactions.client_id')
+            // ->groupBy('clients.id', 'clients.number')
+            // ->where('transactions.type', '=', 'Deposit')
+            // ->where('transactions.status', '=', 'Approve')
             ->where('agent_id','=',$currentUser->id)
-            ->whereBetween('transactions.created_at', [$startDate, $endDate])
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->when($search, function ($query, $search) {
                 $query->where(function ($query) use ($search) {
                     $query->Where('clients.number', '=', $search);
                 });
             })
-            ->selectRaw('SUM(transactions.amount) as total_amount')
+            // ->selectRaw('SUM(transactions.amount) as total_amount')
             ->paginate();
+        }
+        elseif($currentUser->role=="manager")
+        {
+            $clients=Client::select('clients.id', 'clients.number')->whereBetween('created_at', [$startDate, $endDate])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($query) use ($search) {
+                    $query->Where('clients.number', '=', $search);
+                });
+            })->paginate();
+
+        }
         $startDate = $startDate->toDateString();
         $endDate = $endDate->toDateString();
         return view('Admin.Clients.list', compact('requestNumber','search', 'clients', 'startDate', 'endDate'));
