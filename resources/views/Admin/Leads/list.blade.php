@@ -729,7 +729,7 @@
         let client_name = $('#client_name').val()
         $.ajax({
             url: BASE_URL +
-                "/leads/add?lead_number=" + number+'&source_id='+Mansource_id+'&agent_id='+AgentPhone+'&status_id='+man_status+'&client_name='+client_name,
+                "/leads/add?lead_number=" + number+'&Mansource_id='+Mansource_id+'&AgentPhone='+AgentPhone+'&man_status='+man_status+'&client_name='+client_name,
             success: function(data) {
                 if (data.hasOwnProperty('msg-success')) {
                     // Show success message

@@ -11,6 +11,7 @@ use App\Lead;
 use App\LeadStatus;
 use App\LeadStatusOption;
 use App\PhoneAgent as AppPhoneAgent;
+use App\PhoneNumber;
 use App\Source;
 use App\State;
 use App\User;
@@ -905,19 +906,22 @@ class LeadsController extends Controller
     {
         $agentId = session('user')->id;
         $date = Carbon::now()->format('Y-m-d');
-        $req->validate(['lead_number' => 'required','status_id'=>'required','']);
+        $req->validate(['lead_number' => 'required','Mansource_id'=>'required|not_in:0','AgentPhone'=>'required|not_in:0','man_status'=>'required|not_in:0','client_name'=>'required']);
         if ($req->ajax()) {
-            $source = Source::find($req->source_id);
+            $source = Source::find($req->Mansource_id);
             $existingLead = Lead::where('agent_id', $agentId)
                 ->where('number', '=', $req->lead_number)
                 ->where('created_at', '>=', Carbon::now()->subDays(15))
                 ->first();
-            $status=LeadStatusOption::where('id','=',$req->status_id)->first();
+            $status=LeadStatusOption::where('id','=',$req->man_status)->first();
+            $PhoneAgentHistory=AppPhoneAgent::find($req->AgentPhone);
+            $phoneNumber=PhoneNumber::find($PhoneAgentHistory->number_id);
             if (!$existingLead) {
                 $lead = new Lead();
                 $lead->source_id = $source->id;
                 $lead->number = $req->lead_number;
                 $lead->agent_id = $agentId;
+                $lead->source_number = $phoneNumber->id;
                 $lead->date = $date;
                 $lead->status_id = $status->id;
                 $lead->current_status = $status->name;
