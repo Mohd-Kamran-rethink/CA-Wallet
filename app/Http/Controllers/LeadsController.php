@@ -29,7 +29,12 @@ class LeadsController extends Controller
     {
         $languages=Language::get();
         $sources=Source::get();
-        $phoneNumber=AppPhoneAgent::leftJoin('phone_numbers','phone_agents.number_id','phone_numbers.id')->where('agent_id','=',session('user')->id)->where('phone_agents.status','=','active')->select('phone_numbers.*','phone_agents.platform as platformNew')->get();
+        $phoneNumber=AppPhoneAgent::leftJoin('phone_numbers','phone_agents.number_id','phone_numbers.id')
+                                    ->where('agent_id','=',session('user')->id)
+                                    ->where('phone_agents.status','=','active')
+                                    ->where('phone_numbers.status', '=', 'active')
+                                    ->select('phone_numbers.*','phone_agents.platform as platformNew')
+                                    ->get();
         // seperately send lead status history and will render this in modal using jquerry
         $leads_status_history = DB::table('lead_statuses')
             ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
