@@ -189,7 +189,7 @@
                         </li>
                     @endif
                     {{-- clients --}}
-                    
+                    @if(!session('user')->role=='manager')
                         <li class="nav-item ">
                             <a href="{{ url('/clients') }}"
                                 class="nav-link {{ Request::is('clients') || Request::is('clients/add') || Request::is('clients/edit') ? 'active' : '' }}">
@@ -203,6 +203,7 @@
 
                             </a>
                         </li>
+                    @endif
                     @if(session('user')->role=='manager')
                     <li class="nav-item ">
                         <a href="{{ url('/phone-numbers') }}"
