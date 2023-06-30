@@ -919,8 +919,8 @@ class LeadsController extends Controller
                 ->where('created_at', '>=', Carbon::now()->subDays(15))
                 ->first();
             $status=LeadStatusOption::where('id','=',$req->man_status)->first();
-            $PhoneAgentHistory=AppPhoneAgent::find($req->AgentPhone);
-            $phoneNumber=PhoneNumber::find($PhoneAgentHistory->number_id);
+            // $PhoneAgentHistory=AppPhoneAgent::find($req->AgentPhone);
+            $phoneNumber=PhoneNumber::find($req->AgentPhone);
             if (!$existingLead) {
                 $lead = new Lead();
                 $lead->source_id = $source->id;
@@ -944,6 +944,19 @@ class LeadsController extends Controller
                 }
                 return ['msg-success' => 'Lead added successfully '];
             } else {
+                // $duplicateLead=new DuplicateLead();
+                // $duplicateLead->source_id = $source->id;
+                // $duplicateLead->number = $req->lead_number;
+                // $duplicateLead->agent_id = $agentId;
+                // $duplicateLead->source_number = $phoneNumber->id;
+                // $duplicateLead->date = $date;
+                // $duplicateLead->status_id = $status->id;
+                // $duplicateLead->current_status = $status->name;
+                // $duplicateLead->name = $req->client_name;
+                // $duplicateLead->is_approved = 'Yes';
+                // $result = $duplicateLead->save();
+
+
                 return ['msg-error' => 'The lead with the number ' . $req->lead_number . ' is already present in the database within the last 15 days.'];
             }
         }

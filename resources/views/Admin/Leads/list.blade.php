@@ -177,7 +177,7 @@
                             <button onclick="MassModals('modal-mass-status')"disabled
                                 class="mass-action-buttons btn btn-secondary mx-2">Change Status</button>
                         @endif
-                        <a href="{{ url('leads/import') }}" class="btn btn-success">Import Leads</a>
+                        {{-- <a href="{{ url('leads/import') }}" class="btn btn-success">Import Leads</a> --}}
                     </div>
                 </div>
                 <div class="row">
