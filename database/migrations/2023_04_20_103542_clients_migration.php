@@ -21,6 +21,7 @@ class ClientsMigration extends Migration
             $table->string('number');
             $table->string('ca_id')->nullable();
             $table->bigInteger('deposit_amount')->nullable();
+            $table->string('date')->nullable();
             $table->enum('is_number_reveal',['Yes','No'])->default('No');
             $table->enum('isDeleted',['Yes','No'])->default('No');
             $table->timestamps();

@@ -467,10 +467,8 @@
                         <select id="Mansource_id" type="number" name="Mansource_id" class="form-control">
                             <option value="0">--Choose--</option>
                             @foreach ($sources as $item)
-                            @if($item->name=="Wati"||$item->name=="WhatsApp")
-                                <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                @endif
-                            @endforeach
+                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            @endforeach    
 
                         </select>
                     </div>

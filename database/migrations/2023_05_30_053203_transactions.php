@@ -30,7 +30,7 @@ class Transactions extends Migration
             $table->string('cancel_note')->nullable();
             $table->string('customer_bank_id')->nullable();
             $table->enum('type',['Deposit','Withdraw']);
-            $table->enum('status',['Pending','Approve','Cancel']);
+            $table->enum('status',['Pending','Approve','Cancel','Revert']);
             // exchanges
             $table->string('exchange_id')->nullable();
 
