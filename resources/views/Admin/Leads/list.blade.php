@@ -499,7 +499,7 @@
                         <input id="lead_number" type="number" name="lead_number" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="">Name<span class="text-danger">*</span></label>
+                        <label for="">Name</label>
                         <input id="client_name" type="text" name="client_name" class="form-control">
                     </div>
                     <div class="form-group" style="display: none" id="id-created">
