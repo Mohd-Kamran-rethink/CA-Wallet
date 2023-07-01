@@ -16,6 +16,7 @@ class Sources extends Migration
         Schema::create('sources', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->string('show_in_mannual_lead');
             $table->timestamps();
         });
     }

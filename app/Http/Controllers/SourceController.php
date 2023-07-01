@@ -33,6 +33,7 @@ class SourceController extends Controller
         $req->validate([ 'name' => 'required|unique:sources,name',]);
         $source=new Source();
         $source->name=$req->name;
+        $source->show_in_mannual_lead=$req->show_in_mannual??'';
         $result=$source->save();
         if ($result) {
                 return redirect('/sources')->with(['msg-success' => 'Source has been added.']);
@@ -52,9 +53,10 @@ class SourceController extends Controller
     }
     public function edit(Request $req)
     {
-        $req->validate([ 'name' => 'required|unique:sources,name',]);
+        $req->validate([ 'name' => 'required|unique:sources,name,'. $req->sourceId,]);
         $source=Source::find($req->sourceId);
         $source->name=$req->name;
+        $source->show_in_mannual_lead=$req->show_in_mannual??'';
         $result=$source->update();
         if ($result) {
             return redirect('/sources')->with(['msg-success' => 'Source has been updated.']);

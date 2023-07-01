@@ -30,8 +30,16 @@
                                     @enderror
                             </div>
                         </div>
-                       
                     </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-4">
+                            <input {{isset($source)&&$source->show_in_mannual_lead?'checked':''}}  type="checkbox" name="show_in_mannual">
+                            
+                            <label>Show in mannual lead</label>
+                    </div>
+                    </div>
+                       
+                       
                     <div class="row mt-2">
                         <div class="col-12">
                             <button type="submit" class="btn btn-info">Save</button>
