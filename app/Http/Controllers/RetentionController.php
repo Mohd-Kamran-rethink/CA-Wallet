@@ -37,7 +37,7 @@ class RetentionController extends Controller
                 ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
                 ->paginate(10);
         }
-        else if(session('user')->role == 'agent' && session('user')->agent_type == 'Retention')
+        else if(session('user')->role == 'agent')
         {
             $leads = DB::table('leads')
                 ->join('sources', 'leads.source_id', '=', 'sources.id')
