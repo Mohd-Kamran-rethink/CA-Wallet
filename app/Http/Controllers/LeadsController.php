@@ -64,6 +64,7 @@ class LeadsController extends Controller
 
         // get details of the status from status id 
         $currentStatus = LeadStatusOption::find($Filterstatus);
+
         $leads = DB::table('leads')
             ->join('sources', 'leads.source_id', '=', 'sources.id')
             ->leftjoin('users', 'leads.agent_id', '=', 'users.id')
@@ -924,7 +925,7 @@ class LeadsController extends Controller
         $req->validate($rules);
         $phoneNumber=null;
         $status=null;
-        $statusID=null;
+        $statusID='';
         $phoneNumberID=null;
         $statusname=null;
         
