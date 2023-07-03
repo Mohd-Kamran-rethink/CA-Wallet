@@ -947,7 +947,7 @@ class LeadsController extends Controller
                 $lead->source_id = $source->id??'';
                 $lead->number = str_replace('+91', '', $req->lead_number);
                 $lead->agent_id = $agentId??'';
-                $lead->source_number = $phoneNumber->id??'';
+                $lead->source_number = $phoneNumber->id?$phoneNumber->id:'';
                 $lead->date = $date;
                 $lead->status_id = $status->id??'';
                 $lead->current_status = $status->name??'';
