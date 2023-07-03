@@ -956,9 +956,9 @@ class LeadsController extends Controller
                 $result = $lead->save();
                 if ($result) {
                     $leadHistory = new LeadStatus();
-                    $leadHistory->status_id = $status->id;
+                    $leadHistory->status_id = $status->id??'';
                     $leadHistory->agent_id = session('user')->id;
-                    $leadHistory->lead_id = $lead->id;
+                    $leadHistory->lead_id = $lead->id??'';
                     $leadHistory->save();
                 }
                 return ['msg-success' => 'Lead added successfully '];
