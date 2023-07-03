@@ -936,13 +936,13 @@ class LeadsController extends Controller
             $phoneNumber = PhoneNumber::find($req->AgentPhone);
             if (!$existingLead) {
                 $lead = new Lead();
-                $lead->source_id = $source->id;
+                $lead->source_id = $source->id??'';
                 $lead->number = str_replace('+91', '', $req->lead_number);
-                $lead->agent_id = $agentId;
-                $lead->source_number = $phoneNumber->id;
+                $lead->agent_id = $agentId??'';
+                $lead->source_number = $phoneNumber->id??'';
                 $lead->date = $date;
-                $lead->status_id = $status->id;
-                $lead->current_status = $status->name;
+                $lead->status_id = $status->id??'';
+                $lead->current_status = $status->name??'';
                 $lead->name = $req->client_name ?? '';
                 $lead->is_approved = 'Yes';
                 $result = $lead->save();
