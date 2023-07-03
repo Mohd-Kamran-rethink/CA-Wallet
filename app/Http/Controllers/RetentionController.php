@@ -14,6 +14,7 @@ class RetentionController extends Controller
     {
         // querry paramaters
         $searchTerm = $req->query('table_search');
+        $leads=[];
         $statuses = LeadStatusOption::where('isDeleted', '=', 'No')->get();
         $leads_status_history = DB::table('lead_statuses')
             ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
