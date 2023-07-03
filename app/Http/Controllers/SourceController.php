@@ -33,6 +33,9 @@ class SourceController extends Controller
         $req->validate([ 'name' => 'required|unique:sources,name',]);
         $source=new Source();
         $source->name=$req->name;
+        $source->statusID=$req->statusID??'';
+        $source->clientPhone=$req->clientPhone??'';
+        $source->agentPhone=$req->agentPhone??'';
         $source->show_in_mannual_lead=$req->show_in_mannual??'';
         $result=$source->save();
         if ($result) {
@@ -56,6 +59,9 @@ class SourceController extends Controller
         $req->validate([ 'name' => 'required|unique:sources,name,'. $req->sourceId,]);
         $source=Source::find($req->sourceId);
         $source->name=$req->name;
+        $source->statusID=$req->statusID??'';
+        $source->clientPhone=$req->clientPhone??'';
+        $source->agentPhone=$req->agentPhone??'';
         $source->show_in_mannual_lead=$req->show_in_mannual??'';
         $result=$source->update();
         if ($result) {

@@ -464,18 +464,18 @@
                     <input type="hidden" name="leadIds" class="lead_ids">
                     <div class="form-group">
                         <label for="">Source<span class="text-danger">*</span></label>
-                        <select id="Mansource_id" type="number" name="Mansource_id" class="form-control">
+                        <select onchange="HandleMandatoryFields(this)" id="Mansource_id" type="number" name="Mansource_id" class="form-control">
                             <option value="0">--Choose--</option>
                             @foreach ($sources as $item)
                             @if($item->show_in_mannual_lead)
-                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                <option value="{{ $item->id }}" data-extra="{{ $item }}">{{ $item->name }}</option>
                             @endif    
                             @endforeach    
 
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="">Agent Phone<span class="text-danger">*</span></label>
+                        <label for="">Agent Phone<span id="agent-phone-danger" class="text-danger">*</span></label>
                         <select id="AgentPhone" type="number" name="AgentPhone" class="form-control">
                             <option value="0">--Choose--</option>
                             @foreach ($phoneNumber as $item)
@@ -484,7 +484,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="">Status<span class="text-danger">*</span></label>
+                        <label for="">Status<span class="text-danger" id="status-danger-label">*</span></label>
                         <select id="man_status" onchange="handleMannualStatusChange(this.value)" type="number" name="man_status" class="form-control">
                             <option value="0">--Choose--</option>
                             @foreach ($statuses as $item)
@@ -618,7 +618,7 @@
         $(`#lead_id`).val(leadId);
         searchLeadsStatus(leadId)
     }
-
+    
     function searchLeadsStatus(lead_id) {
         const leadsStatusData = {!! json_encode($leads_status_history) !!};
         const filteredData = leadsStatusData.filter(data => data.lead_id == lead_id);
@@ -753,7 +753,7 @@
                         inputElement.next('.invalid-feedback').html(value[0]);
                     });
                 } else {
-                    // Handle other error cases
+                    
                 }
             }
         });
@@ -770,6 +770,33 @@
         {
             $('#id-created').hide()
         }
+    }
+    function HandleMandatoryFields (selectElement)
+    {
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+        var itemId = selectedOption.value; // Get the value of the selected option (item ID)
+        var itemName = selectedOption.text; // Get the text of the selected option (item name)
+        var extraData = selectedOption.dataset.extra; // 
+        var jsonData = JSON.parse(extraData);
+        console.log(jsonData)
+        if(jsonData.agentPhone)
+        {
+            $('#agent-phone-danger').show()
+         }
+        else
+        {
+            $('#agent-phone-danger').hide()
+        }
+        if(jsonData.statusID)
+        {
+            $('#status-danger-label').show()
+         }
+        else
+        {
+            $('#status-danger-label').hide()
+        }
+
+
     }
 </script>
 @endsection

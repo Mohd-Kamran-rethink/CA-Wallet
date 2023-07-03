@@ -17,6 +17,9 @@ class Sources extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('show_in_mannual_lead');
+            $table->string('agentPhone')->nullable();
+            $table->string('clientPhone')->nullable();
+            $table->string('statusID')->nullable();
             $table->timestamps();
         });
     }

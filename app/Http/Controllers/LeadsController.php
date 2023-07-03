@@ -27,19 +27,19 @@ class LeadsController extends Controller
 
     public function list(Request $req)
     {
-        $languages=Language::get();
-        $sources=Source::get();
-        $phoneNumber=AppPhoneAgent::leftJoin('phone_numbers','phone_agents.number_id','phone_numbers.id')
-                                    ->where('agent_id','=',session('user')->id)
-                                    ->where('phone_agents.status','=','active')
-                                    ->where('phone_numbers.status', '=', 'active')
-                                    ->select('phone_numbers.*','phone_agents.platform as platformNew')
-                                    ->get();
+        $languages = Language::get();
+        $sources = Source::get();
+        $phoneNumber = AppPhoneAgent::leftJoin('phone_numbers', 'phone_agents.number_id', 'phone_numbers.id')
+            ->where('agent_id', '=', session('user')->id)
+            ->where('phone_agents.status', '=', 'active')
+            ->where('phone_numbers.status', '=', 'active')
+            ->select('phone_numbers.*', 'phone_agents.platform as platformNew')
+            ->get();
         // seperately send lead status history and will render this in modal using jquerry
         $leads_status_history = DB::table('lead_statuses')
             ->join('lead_status_options', 'lead_statuses.status_id', '=', 'lead_status_options.id')
             ->leftJoin('users', 'lead_statuses.agent_id', '=', 'users.id')
-            ->select('lead_statuses.*', 'lead_status_options.name as status_name','users.name as agentName')
+            ->select('lead_statuses.*', 'lead_status_options.name as status_name', 'users.name as agentName')
             ->orderBy('lead_statuses.id', 'desc')
             ->get();
 
@@ -105,7 +105,7 @@ class LeadsController extends Controller
             ->orderByDesc('leads.date')
             ->paginate(45);
 
-        return view('Admin.Leads.list', compact('phoneNumber','sources','languages','leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
+        return view('Admin.Leads.list', compact('phoneNumber', 'sources', 'languages', 'leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
     }
     public function duplicateLeads(Request $req)
     {
@@ -140,14 +140,14 @@ class LeadsController extends Controller
         $leads = DB::table('duplicate_leads')
             ->join('sources', 'duplicate_leads.source_id', '=', 'sources.id')
             ->leftjoin('users', 'duplicate_leads.agent_id', '=', 'users.id')
-            
+
             // filter by agent
             ->when($FilterAgent, function ($query, $FilterAgent) {
                 $query->where(function ($query) use ($FilterAgent) {
                     $query->where('duplicate_leads.agent_id', '=', $FilterAgent);
                 });
             })
-            
+
             // filter by general terms
             ->when($searchTerm, function ($query, $searchTerm) {
                 $query->where(function ($query) use ($searchTerm) {
@@ -159,7 +159,7 @@ class LeadsController extends Controller
             ->where('is_approved', '=', 'Yes')
             ->select('duplicate_leads.*', 'sources.name as source_name', 'users.name as agent_name')
             ->orderByDesc('duplicate_leads.date')
-            
+
             ->paginate(45);
         return view('Admin.Leads.duplicateLeads', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
     }
@@ -198,7 +198,7 @@ class LeadsController extends Controller
             ->join('sources', 'leads.source_id', '=', 'sources.id')
             ->leftjoin('users', 'leads.agent_id', '=', 'users.id')
             // filter by general terms
-            ->where('leads.agent_id','=','null')
+            ->where('leads.agent_id', '=', 'null')
             ->when($searchTerm, function ($query, $searchTerm) {
                 $query->where(function ($query) use ($searchTerm) {
                     $query->where('sources.name', 'like', '%' . $searchTerm . '%')
@@ -206,13 +206,12 @@ class LeadsController extends Controller
                         ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
                 });
             })
-            
+
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
             ->orderByDesc('leads.date')
-            
+
             ->paginate(45);
         return view('Admin.Leads.PendingLeads', compact('leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
-   
     }
     //leads for approval only show to default manager
     public function nonApprovedLeads(Request $req)
@@ -395,7 +394,7 @@ class LeadsController extends Controller
             // $sourceId = array_search(trim($data['Sources']), $sources);
             $agentId = array_search(strtolower(trim(session('user')->name)), array_map('strtolower', $agents));
             $sourceId = array_search(strtolower(trim($data['Sources'])), array_map('strtolower', $sources));
-            
+
             // If agent or source id is not found skip the entry
             if (!$agentId || !$sourceId) {
                 $skipped[] = $data;
@@ -417,7 +416,7 @@ class LeadsController extends Controller
                 'language' => $data['Language'],
                 'state' => $data['State'],
                 'zone' => $data['Zone'],
-                'idName' => $data['ID NAME']??'',
+                'idName' => $data['ID NAME'] ?? '',
                 'agent_id' => $agentId,
                 'manager_id' => $sessionUser->role == 'agent' ? 1 : $manager->id,
                 'is_approved' => $sessionUser->role == 'agent' ? 'No' : 'Yes',
@@ -485,7 +484,7 @@ class LeadsController extends Controller
             return trim($name);
         })->toArray();
         $groups = [];
-        $agents = User::where('role', '=', 'agent')->where('agent_type','=','Normal')->get();
+        $agents = User::where('role', '=', 'agent')->where('agent_type', '=', 'Normal')->get();
         $keyValueAgents = [];
         $assignedLeads = []; // Array to store assigned leads
         foreach ($rows as $row) {
@@ -511,7 +510,7 @@ class LeadsController extends Controller
                 $errorCount++;
                 continue;
             }
-            $entryKey = $data['Date'] . $data['Name'] . $data['Number'] . $data['State']. $data['Language'];
+            $entryKey = $data['Date'] . $data['Name'] . $data['Number'] . $data['State'] . $data['Language'];
             // If entry already exists, skip it
             if (isset($existingEntries[$entryKey])) {
                 $skipped[] = $data;
@@ -529,25 +528,25 @@ class LeadsController extends Controller
                 // where('agent_id', $agentId)
                 where('source_id', $sourceId)
                 ->where('date', $formattedDate)
-                ->where('language','=',$data['Language'])
-                ->where('state','=',$data['State'])
+                ->where('language', '=', $data['Language'])
+                ->where('state', '=', $data['State'])
                 ->where('created_at', '>=', Carbon::now()->subDays(15))
                 ->where('number', '=', $data['Number'])
                 ->first();
 
-            
-            
+
+
             $entry = [
                 'source_id' => $sourceId,
-                'name' => $data['Name']??'',
+                'name' => $data['Name'] ?? '',
                 'date' => $formattedDate,
                 'number' => $data['Number'],
                 'language' => $data['Language'],
-                'idName' => $data['ID NAME']??'',
+                'idName' => $data['ID NAME'] ?? '',
                 'zone' => $data['Zone'],
                 'state' => $data['State'],
                 'manager_id' => $sessionUser->role,
-                'agent_id'=>'null',
+                'agent_id' => 'null',
                 'is_approved' => 'Yes',
                 'leads_date' => $data['Leads Date'] ? $leads_dateformattedDate : '',
             ];
@@ -557,24 +556,24 @@ class LeadsController extends Controller
                 $skippedCount++;
                 continue;
             }
-            
+
 
             if (!isset($groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State']))])) {
-                $groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State'])) ] = [];
+                $groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State']))] = [];
             }
 
-            $groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State'])) ][] = $entry;
-            
+            $groups[trim(strtolower($data['Zone'])) . '-' . trim(strtolower($data['State']))][] = $entry;
+
 
             $entries[] = $entry;
             $existingEntries[$entryKey] = true;
             $addedCount++;
         }
         foreach ($agents as $key => $value) {
-            if (!isset($keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state)) ])) {
-                $keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state)) ] = [];
+            if (!isset($keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state))])) {
+                $keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state))] = [];
             }
-            $keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state)) ][] = $value;
+            $keyValueAgents[trim(strtolower($value->zone)) . '-' . trim(strtolower($value->state))][] = $value;
         }
         foreach ($groups as $key => $value) {
             $leadsWithThisGroup = $value;
@@ -588,29 +587,27 @@ class LeadsController extends Controller
                 $leadsPerUser = intval($totalLeads / $totalAgents);
                 $remainingLeads = $totalLeads % $totalAgents;
                 $leadIndex = 0;
-        
+
                 foreach ($agentsWithThisgroup as $agent) {
                     $leadsAssigned = 0;
                     $assignedLeadsCount = $leadsPerUser;
-        
+
                     if ($remainingLeads > 0) {
                         $assignedLeadsCount++;
                         $remainingLeads--;
                     }
-        
+
                     for ($i = 0; $i < $assignedLeadsCount; $i++) {
                         if ($leadIndex < $totalLeads) {
                             $lead = $leadsWithThisGroup[$leadIndex];
-                            $lead["agent_id"] =$lead["state"]==$agent->state&&$lead["zone"]==$agent->zone?$agent->id:'null';
+                            $lead["agent_id"] = $lead["state"] == $agent->state && $lead["zone"] == $agent->zone ? $agent->id : 'null';
                             $assignedLeads[] = $lead;
                             $leadsAssigned++;
                             $leadIndex++;
                         }
                     }
                 }
-            }
-            else
-            {
+            } else {
                 foreach ($leadsWithThisGroup as $key => $value) {
                     Lead::create($value);
                 }
@@ -648,10 +645,9 @@ class LeadsController extends Controller
 
         // get status full details from status id
         $statusValue = LeadStatusOption::find($statusId);
-        if($statusValue->id==5 && $req->transfered_language )
-        {
-            $languageAgent=User::where('language','=',$req->transfered_language)->inRandomOrder()->first();
-            $lead->agent_id=$languageAgent->id??'null';
+        if ($statusValue->id == 5 && $req->transfered_language) {
+            $languageAgent = User::where('language', '=', $req->transfered_language)->inRandomOrder()->first();
+            $lead->agent_id = $languageAgent->id ?? 'null';
         }
         // firstly update lead table
         $lead->remark = $remark;
@@ -663,16 +659,16 @@ class LeadsController extends Controller
         $lead->idName = $req->IdName ?? null;
         $lead->transfered_language = $req->transfered_language ?? null;
         $lead->update();
-        
+
         // create lead status entery 
         $lead_status = new  LeadStatus();
         $lead_status->lead_id = $lead_id;
         $lead_status->status_id = $statusId;
         $lead_status->remark = $remark;
         $lead_status->followup_date = $date ?? null;
-        $lead_status->agent_id = session('user')->role?session('user')->id:'';
+        $lead_status->agent_id = session('user')->role ? session('user')->id : '';
         $lead_status->transfered_language = $req->transfered_language ?? null;
-        
+
         $lead_status->amount = $amount ?? null;
         $result = $lead_status->save();
         if ($result) {
@@ -707,7 +703,7 @@ class LeadsController extends Controller
             $lead_status->status_id = $statusId;
             $lead_status->remark = $remark;
             $lead_status->followup_date = $date ?? null;
-            $lead_status->agent_id = session('user')->role?session('user')->id:'';
+            $lead_status->agent_id = session('user')->role ? session('user')->id : '';
             $lead_status->amount = $amount ?? null;
             $lead_status->save();
         }
@@ -911,36 +907,51 @@ class LeadsController extends Controller
     {
         $agentId = session('user')->id;
         $date = Carbon::now()->format('Y-m-d');
-        $req->validate(['lead_number' => 'required','Mansource_id'=>'required|not_in:0','AgentPhone'=>'required|not_in:0','man_status'=>'required|not_in:0']);
+        $source=Source::find($req->Mansource_id);
+       
+        $rules = [
+            'lead_number' => 'required',
+            'Mansource_id' => 'required|not_in:0'
+        ];
+        if($source->agentPhone)
+        {
+            $rules['AgentPhone'] = 'required|not_in:0';
+        }
+        if($source->statusID)
+        {
+            $rules['man_status'] = 'required|not_in:0';
+        }
+        $req->validate($rules);
+
+        
+        // 'AgentPhone' => 'required|not_in:0', 'man_status' => 'required|not_in:0'
         if ($req->ajax()) {
             $source = Source::find($req->Mansource_id);
             $existingLead = Lead::where('agent_id', $agentId)
                 ->where('number', '=', $req->lead_number)
                 ->where('created_at', '>=', Carbon::now()->subDays(15))
                 ->first();
-            $status=LeadStatusOption::where('id','=',$req->man_status)->first();
+            $status = LeadStatusOption::where('id', '=', $req->man_status)->first();
             // $PhoneAgentHistory=AppPhoneAgent::find($req->AgentPhone);
-            $phoneNumber=PhoneNumber::find($req->AgentPhone);
+            $phoneNumber = PhoneNumber::find($req->AgentPhone);
             if (!$existingLead) {
                 $lead = new Lead();
                 $lead->source_id = $source->id;
-                $lead->number = str_replace('+91', '',$req->lead_number);
+                $lead->number = str_replace('+91', '', $req->lead_number);
                 $lead->agent_id = $agentId;
                 $lead->source_number = $phoneNumber->id;
                 $lead->date = $date;
                 $lead->status_id = $status->id;
                 $lead->current_status = $status->name;
-                $lead->name = $req->client_name??'';
+                $lead->name = $req->client_name ?? '';
                 $lead->is_approved = 'Yes';
                 $result = $lead->save();
-                if($result)
-                {
-                    $leadHistory=new LeadStatus();
-                    $leadHistory->status_id=$status->id;
-                    $leadHistory->agent_id=session('user')->id;
-                    $leadHistory->lead_id=$lead->id;
+                if ($result) {
+                    $leadHistory = new LeadStatus();
+                    $leadHistory->status_id = $status->id;
+                    $leadHistory->agent_id = session('user')->id;
+                    $leadHistory->lead_id = $lead->id;
                     $leadHistory->save();
-
                 }
                 return ['msg-success' => 'Lead added successfully '];
             } else {
