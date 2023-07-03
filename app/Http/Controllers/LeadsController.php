@@ -924,6 +924,9 @@ class LeadsController extends Controller
         $req->validate($rules);
         $phoneNumber=null;
         $status=null;
+        $statusID=null;
+        $phoneNumberID=null;
+        $statusname=null;
         
         if ($req->ajax()) {
             $source = Source::find($req->Mansource_id);
@@ -934,11 +937,14 @@ class LeadsController extends Controller
                 if($req->man_status)
                 {
                     $status = LeadStatusOption::find($req->man_status);
+                    $statusID-=$status->id;
+                    $statusname-=$status->name;
                 }
                 if($req->AgentPhone)
                 {
                     // $PhoneAgentHistory=AppPhoneAgent::find($req->AgentPhone);
                     $phoneNumber = PhoneNumber::find($req->AgentPhone);
+                    $phoneNumberID-=$phoneNumber->id
                 }
 
 
@@ -947,16 +953,16 @@ class LeadsController extends Controller
                 $lead->source_id = $source->id??'';
                 $lead->number = str_replace('+91', '', $req->lead_number);
                 $lead->agent_id = $agentId??'';
-                $lead->source_number = $phoneNumber->id?$phoneNumber->id:'';
+                $lead->source_number = $phoneNumberID;
                 $lead->date = $date;
-                $lead->status_id = $status->id??'';
-                $lead->current_status = $status->name??'';
+                $lead->status_id = $statusID;
+                $lead->current_status = $statusname;
                 $lead->name = $req->client_name ?? '';
                 $lead->is_approved = 'Yes';
                 $result = $lead->save();
                 if ($result) {
                     $leadHistory = new LeadStatus();
-                    $leadHistory->status_id = $status->id??'';
+                    $leadHistory->status_id = $statusID;
                     $leadHistory->agent_id = session('user')->id;
                     $leadHistory->lead_id = $lead->id??'';
                     $leadHistory->save();
