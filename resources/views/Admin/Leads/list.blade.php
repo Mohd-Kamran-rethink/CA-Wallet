@@ -745,7 +745,8 @@
             error: function(xhr, status, error) {
                 var response = JSON.parse(xhr.responseText);
                 if (response.errors) {
-
+                    $('.invalid-feedback').empty();
+                    $('.is-invalid').removeClass('is-invalid')
                     // Loop through each error and display it on the respective input field
                     $.each(response.errors, function(key, value) {
                         var inputElement = $('#' + key);
