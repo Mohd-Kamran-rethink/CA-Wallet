@@ -938,14 +938,14 @@ class LeadsController extends Controller
                 if($req->man_status)
                 {
                     $status = LeadStatusOption::find($req->man_status);
-                    $statusID-=$status->id;
+                    $statusID=$status->id;
                     $statusname=$status->name;
                 }
                 if($req->AgentPhone)
                 {
                     // $PhoneAgentHistory=AppPhoneAgent::find($req->AgentPhone);
                     $phoneNumber = PhoneNumber::find($req->AgentPhone);
-                    $phoneNumberID-=$phoneNumber->id;
+                    $phoneNumberID=$phoneNumber->id;
                 }
 
 
