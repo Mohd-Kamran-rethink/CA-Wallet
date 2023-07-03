@@ -922,7 +922,8 @@ class LeadsController extends Controller
             $rules['man_status'] = 'required|not_in:0';
         }
         $req->validate($rules);
-
+        $phoneNumber=null;
+        $status=null;
         
         if ($req->ajax()) {
             $source = Source::find($req->Mansource_id);
@@ -930,9 +931,17 @@ class LeadsController extends Controller
                 ->where('number', '=', $req->lead_number)
                 ->where('created_at', '>=', Carbon::now()->subDays(15))
                 ->first();
-            $status = LeadStatusOption::find($req->man_status);
-            // $PhoneAgentHistory=AppPhoneAgent::find($req->AgentPhone);
-            $phoneNumber = PhoneNumber::find($req->AgentPhone);
+                if($req->man_status)
+                {
+                    $status = LeadStatusOption::find($req->man_status);
+                }
+                if($req->AgentPhone)
+                {
+                    // $PhoneAgentHistory=AppPhoneAgent::find($req->AgentPhone);
+                    $phoneNumber = PhoneNumber::find($req->AgentPhone);
+                }
+
+
             if (!$existingLead) {
                 $lead = new Lead();
                 $lead->source_id = $source->id??'';
