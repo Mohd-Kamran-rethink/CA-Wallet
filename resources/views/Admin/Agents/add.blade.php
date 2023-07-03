@@ -77,7 +77,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-xs-12 col-md-4">
+                            {{-- <div class="col-xs-12 col-md-4">
                                 <div class="form-group">
                                     <label>Zones <span style="color:red">*</span></label>
                                     <select class="form-control" name="zone" id="">
@@ -93,8 +93,8 @@
                                         </span>
                                     @enderror
                                 </div>
-                            </div>
-                            <div class="col-xs-12 col-md-4">
+                            </div> --}}
+                            {{-- <div class="col-xs-12 col-md-4">
                                 <div class="form-group">
                                     <label>States <span style="color:red">*</span></label>
                                     <select class="form-control" name="state" id="">
@@ -110,8 +110,8 @@
                                         </span>
                                     @enderror
                                 </div>
-                            </div>
-                            <div class="col-xs-12 col-md-4">
+                            </div> --}}
+                            {{-- <div class="col-xs-12 col-md-4">
                                 <div class="form-group">
                                     <label>Lead Type <span style="color:red">*</span></label>
                                     <select class="form-control" name="lead_type" id="">
@@ -127,7 +127,7 @@
                                         </span>
                                     @enderror
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="col-xs-12 col-md-4">
                                 <div class="form-group">
                                     <label>Agent Type <span style="color:red">*</span></label>

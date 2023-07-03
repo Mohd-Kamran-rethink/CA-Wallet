@@ -103,9 +103,6 @@ class UserController extends Controller
 
         if (session('user')->role == 'manager' && $req->role == 'agent') {
             $rules['language'] = 'required|not_in:0';
-            $rules['zone'] = 'required|not_in:0';
-            $rules['state'] = 'required|not_in:0';
-            $rules['lead_type'] = 'required|not_in:0';
             $rules['agent_type'] = 'required|not_in:0';
         }
         $req->validate($rules);
@@ -117,9 +114,9 @@ class UserController extends Controller
         $user->password = Hash::make($req->password);
         $user->role = $req->role;
         $user->language = $req->language;
-        $user->zone = $req->zone;
-        $user->state = $req->state;
-        $user->lead_type = $req->lead_type;
+        $user->zone = $req->zone??'';
+        $user->state = $req->state??'';
+        $user->lead_type = $req->lead_type??'';
         $user->agent_type = $req->agent_type;
         $result = $user->save();
         if ($result) {
@@ -149,10 +146,7 @@ class UserController extends Controller
 
         $conditionalRules = [
             'password' => 'nullable|min:8|same:confirmPassword',
-            'zone' => 'required|not_in:0',
             'language' => 'required|not_in:0',
-            'state' => 'required|not_in:0',
-            'lead_type' => 'required|not_in:0',
             'agent_type' => 'required|not_in:0',
         ];
 
@@ -161,10 +155,10 @@ class UserController extends Controller
         $currentManager->name = $req->name;
         $currentManager->phone = $req->phone;
         $currentManager->email = $req->email;
-        $currentManager->state = $req->state;
-        $currentManager->zone = $req->zone;
+        $currentManager->state = $req->state??'';
+        $currentManager->zone = $req->zone??'';
         $currentManager->language = $req->language;
-        $currentManager->lead_type = $req->lead_type;
+        $currentManager->lead_type = $req->lead_type??'';
         $currentManager->agent_type = $req->agent_type;
         if ($req->password) {
             $currentManager->password = Hash::make($req->password);

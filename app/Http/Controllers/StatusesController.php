@@ -15,8 +15,8 @@ class StatusesController extends Controller
                 $query->where('name', 'like', '%' . $searchTerm . '%');
             });
         })
-        ->where("isDeleted","=","No")
-        ->paginate(10);
+            ->where("isDeleted", "=", "No")
+            ->paginate(10);
         return view('Admin.Statuses.list', compact('statuses'));
     }
     public function addView(Request $req)
@@ -62,7 +62,7 @@ class StatusesController extends Controller
     public function delete(Request $req)
     {
         $status = LeadStatusOption::find($req->deleteId);
-        $status->isDeleted="Yes";
+        $status->isDeleted = "Yes";
         $result = $status->update();
         if ($result) {
             return redirect('/statuses')->with(['msg-success' => 'Status has been deleted.']);
