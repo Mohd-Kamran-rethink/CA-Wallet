@@ -960,7 +960,7 @@ class LeadsController extends Controller
                 $lead->name = $req->client_name ?? '';
                 $lead->is_approved = 'Yes';
                 $result = $lead->save();
-                if ($result) {
+                if ($result && $statusID!=null) {
                     $leadHistory = new LeadStatus();
                     $leadHistory->status_id = $statusID;
                     $leadHistory->agent_id = session('user')->id;
