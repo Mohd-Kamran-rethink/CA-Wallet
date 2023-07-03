@@ -50,6 +50,8 @@
                                             <th>S.No.</th>
                                             <th>Name</th>
                                             <th>Show in lead add</th>
+                                            <th>Agent Phone Mandatory</th>
+                                            <th>Status Mandatory</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -59,6 +61,8 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->name }}</td>
                                                 <td>{{ $item->show_in_mannual_lead?"Yes":"No" }}</td>
+                                                <td>{{ $item->agentPhone?"Yes":"No" }}</td>
+                                                <td>{{ $item->statusID?"Yes":"No" }}</td>
                                                 <td>
                                                     <a href="{{ url('sources/edit/?id=' . $item->id) }}"
                                                         title="Edit this source" class="btn btn-primary"><i
