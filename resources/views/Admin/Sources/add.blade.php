@@ -38,10 +38,10 @@
                             <input {{ isset($source) && $source->agentPhone ? 'checked' : '' }} class="pt-1" type="checkbox" name="agentPhone">
                             <label for="">Agent Phone</label>
                         </div>
-                        <div class="col-2">
+                        {{-- <div class="col-2">
                             <input {{ isset($source) && $source->clientPhone ? 'checked' : '' }} class="pt-1" type="checkbox" name="clientPhone">
                             <label for="">Client Phone</label>
-                        </div>
+                        </div> --}}
                         <div class="col-2">
                             <input {{ isset($source) && $source->statusID ? 'checked' : '' }} class="pt-1" type="checkbox" name="statusID">
                             <label for="">Status</label>
