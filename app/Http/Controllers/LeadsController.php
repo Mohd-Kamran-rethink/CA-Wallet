@@ -924,14 +924,13 @@ class LeadsController extends Controller
         $req->validate($rules);
 
         
-        // 'AgentPhone' => 'required|not_in:0', 'man_status' => 'required|not_in:0'
         if ($req->ajax()) {
             $source = Source::find($req->Mansource_id);
             $existingLead = Lead::where('agent_id', $agentId)
                 ->where('number', '=', $req->lead_number)
                 ->where('created_at', '>=', Carbon::now()->subDays(15))
                 ->first();
-            $status = LeadStatusOption::where('id', '=', $req->man_status)->first();
+            $status = LeadStatusOption::find($req->man_status);
             // $PhoneAgentHistory=AppPhoneAgent::find($req->AgentPhone);
             $phoneNumber = PhoneNumber::find($req->AgentPhone);
             if (!$existingLead) {
