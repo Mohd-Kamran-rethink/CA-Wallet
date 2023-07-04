@@ -73,7 +73,6 @@
                                             <th>Email</th>
                                             <th>Phone</th>
                                             <th>Languages</th>
-                                            <th>Lead Type</th>
                                             <th>Agent Type</th>
                                             <th>Actions</th>
                                         </tr>
@@ -90,7 +89,6 @@
                                                         {{ $language }},
                                                     @endforeach
                                                 </td>
-                                                <td>{{ $item['lead_type'] }}</td>
                                                 <td>{{ $item['agent_type'] }}</td>
                                                 <td>
                                                     <a class="btn btn-dark"
