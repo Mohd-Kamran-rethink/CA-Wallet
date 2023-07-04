@@ -72,7 +72,6 @@
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Phone</th>
-                                            <th>State</th>
                                             <th>Languages</th>
                                             <th>Lead Type</th>
                                             <th>Agent Type</th>
@@ -86,7 +85,6 @@
                                                 <td>{{ $item['name'] }}</td>
                                                 <td>{{ $item['email'] }}</td>
                                                 <td>{{ $item['phone'] }}</td>
-                                                <td>{{ $item['state'] }}</td>
                                                 <td>
                                                     @foreach ($item['languages'] as $language)
                                                         {{ $language }},
