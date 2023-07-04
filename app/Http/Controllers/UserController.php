@@ -82,7 +82,7 @@ class UserController extends Controller
             })
             ->when($languageFilter, function ($query, $languageFilter) {
                 $query->where(function ($query) use ($languageFilter) {
-                    $query->where('language', '=', $languageFilter);
+                    $query->whereRaw("FIND_IN_SET(?, language) > 0", [$languageFilter]);
                 });
             })
             ->orderBy('users.id', 'desc')

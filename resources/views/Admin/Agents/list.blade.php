@@ -47,8 +47,8 @@
                                     <option value="">--Filter By Language--</option>
                                     @foreach ($languages as $item)
                                         <option
-                                            {{ isset($languageFilter) && $languageFilter == $item->name ? 'selected' : '' }}
-                                            value="{{ $item->name }}">{{ $item->name }}</option>
+                                            {{ isset($languageFilter) && $languageFilter == $item->id ? 'selected' : '' }}
+                                            value="{{ $item->id }}">{{ $item->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
