@@ -12,6 +12,7 @@ use App\Zone;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -67,7 +68,7 @@ class UserController extends Controller
         $states = State::get();
         $languages = Language::get();
         $agents = User::where('role', 'agent')
-            ->when($searchTerm, function ($query, $searchTerm) {
+                ->when($searchTerm, function ($query, $searchTerm) {
                 $query->where(function ($query) use ($searchTerm) {
                     $query->where('name', 'like', '%' . $searchTerm . '%')
                         ->orWhere('email', 'like', '%' . $searchTerm . '%')
@@ -84,9 +85,20 @@ class UserController extends Controller
                     $query->where('language', '=', $languageFilter);
                 });
             })
-            ->orderBy('id', 'desc')
+            ->orderBy('users.id', 'desc')
+            ->select('users.*')
             ->paginate(10);
-        return view('Admin.Agents.list', compact('agents', 'searchTerm', 'states', 'languages', 'stateFilter', 'languageFilter'));
+            $agentsWithLanguages = [];
+            foreach ($agents as $agent) {
+                $agentData = $agent->toArray();
+                $agentData['languages'] = DB::table('languages')
+                    ->whereIn('id', explode(',', $agent->language))
+                    ->pluck('name')
+                    ->toArray();
+                $agentsWithLanguages[] = $agentData;
+            }
+            
+        return view('Admin.Agents.list', compact('agentsWithLanguages','agents', 'searchTerm', 'states', 'languages', 'stateFilter', 'languageFilter'));
     }
     // common functions for manager and agents
     public function add(Request $req)
@@ -113,7 +125,7 @@ class UserController extends Controller
         $user->email = $req->email;
         $user->password = Hash::make($req->password);
         $user->role = $req->role;
-        $user->language = $req->language;
+        $user->language = implode(',', $req->language);
         $user->zone = $req->zone??'';
         $user->state = $req->state??'';
         $user->lead_type = $req->lead_type??'';
@@ -157,7 +169,7 @@ class UserController extends Controller
         $currentManager->email = $req->email;
         $currentManager->state = $req->state??'';
         $currentManager->zone = $req->zone??'';
-        $currentManager->language = $req->language;
+        $currentManager->language = implode(',', $req->language);
         $currentManager->lead_type = $req->lead_type??'';
         $currentManager->agent_type = $req->agent_type;
         if ($req->password) {

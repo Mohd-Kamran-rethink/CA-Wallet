@@ -24,7 +24,7 @@
     <section class="content">
         <div class="card">
             <div class="card-body">
-                
+
                 <div class="mb-3 d-flex justify-content-between align-items-centers row">
                     <form class="filters d-flex flex-row   mt-2" action="{{ url('leads/list') }}" method="GET"
                         id="search-form">
@@ -35,7 +35,7 @@
                         <div class="col-4">
                             <select name="stateFilter" id="stateFilter" class="form-control">
                                 <option value="">--Filter By State--</option>
-                                @foreach ($states    as $item)
+                                @foreach ($states as $item)
                                     <option {{ isset($stateFilter) && $stateFilter == $item->name ? 'selected' : '' }}
                                         value="{{ $item->name }}">{{ $item->name }}</option>
                                 @endforeach
@@ -46,7 +46,8 @@
                                 <select name="languageFilter" id="languageFilter" class="form-control">
                                     <option value="">--Filter By Language--</option>
                                     @foreach ($languages as $item)
-                                        <option {{ isset($languageFilter) && $languageFilter == $item->name ? 'selected' : '' }}
+                                        <option
+                                            {{ isset($languageFilter) && $languageFilter == $item->name ? 'selected' : '' }}
                                             value="{{ $item->name }}">{{ $item->name }}</option>
                                     @endforeach
                                 </select>
@@ -72,7 +73,6 @@
                                             <th>Email</th>
                                             <th>Phone</th>
                                             <th>State</th>
-                                            <th>Zone</th>
                                             <th>Languages</th>
                                             <th>Lead Type</th>
                                             <th>Agent Type</th>
@@ -80,31 +80,37 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse ($agents as $item)
+                                        @forelse ($agentsWithLanguages  as $item)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item->name }}</td>
-                                                <td>{{ $item->email }}</td>
-                                                <td>{{ $item->phone }}</td>
-                                                <td>{{ $item->state }}</td>
-                                                <td>{{ $item->zone }}</td>
-                                                <td>{{ $item->language }}</td>
-                                                <td>{{ $item->lead_type }}</td>
-                                                <td>{{ $item->agent_type }}</td>
+                                                <td>{{ $item['name'] }}</td>
+                                                <td>{{ $item['email'] }}</td>
+                                                <td>{{ $item['phone'] }}</td>
+                                                <td>{{ $item['state'] }}</td>
                                                 <td>
-                                                    <a class="btn btn-dark" href="{{url('leads?agent_id='.$item->id)}}">View Leads</a>
-                                                    <a class="btn btn-warning" href="{{ url('agents/assign-numbers?id=' . $item->id) }}">Assign Numbers</a>
-                                                    <a href="{{ url('agents/edit/?id=' . $item->id) }}"
+                                                    @foreach ($item['languages'] as $language)
+                                                        {{ $language }},
+                                                    @endforeach
+                                                </td>
+                                                <td>{{ $item['lead_type'] }}</td>
+                                                <td>{{ $item['agent_type'] }}</td>
+                                                <td>
+                                                    <a class="btn btn-dark"
+                                                        href="{{ url('leads?agent_id=' . $item['id']) }}">View Leads</a>
+                                                    <a class="btn btn-warning"
+                                                        href="{{ url('agents/assign-numbers?id=' . $item['id']) }}">Assign
+                                                        Numbers</a>
+                                                    <a href="{{ url('agents/edit/?id=' . $item['id']) }}"
                                                         title="Edit this agent" class="btn btn-primary"><i
                                                             class="fa fa-pen"></i></a>
                                                     <button title="Delte this agent"
-                                                        onclick="manageModal({{ $item->id }})"
+                                                        onclick="manageModal({{ $item['id'] }})"
                                                         class="btn btn-danger"><i class="fa fa-trash"></i></button>
                                                 </td>
 
 
                                             </tr>
-                                            @empty
+                                        @empty
                                             <tr>
                                                 <td colspan="10" class="text-center">No data</td>
                                             </tr>

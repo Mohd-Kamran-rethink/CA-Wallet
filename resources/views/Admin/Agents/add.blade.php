@@ -63,11 +63,15 @@
                             <div class="col-xs-12 col-md-4">
                                 <div class="form-group">
                                     <label>Language <span style="color:red">*</span></label>
-                                    <select class="form-control" name="language" id="">
+                                    <select class="form-control" name="language[]" id="" multiple>
                                         <option value="0">--Choose--</option>
                                         @foreach ($languages as $item)
-                                            <option {{ isset($agent) && $item->name == $agent->language ? 'selected' : '' }}
-                                                value="{{ $item->name }}">{{ $item->name }}</option>
+                                            @php
+                                                $languageIds = isset($agent) ? explode(',', $agent->language) : [];
+                                                $isSelected = in_array($item->id, $languageIds);
+                                            @endphp
+                                            <option {{ $isSelected ? 'selected' : '' }}
+                                                value="{{ $item->id }}">{{ $item->name }}</option>
                                         @endforeach
                                     </select>
                                     @error('language')
@@ -151,8 +155,8 @@
                         <div class="col-xs-12 col-md-4">
                             <div class="form-group">
                                 <label>Password <span style="color:red">*</span></label>
-                                <input type="text" name="password" value="" id="password"
-                                    placeholder="Password" class="form-control" data-validation="required">
+                                <input type="text" name="password" value="" id="password" placeholder="Password"
+                                    class="form-control" data-validation="required">
                                 @error('password')
                                     <span class="text-danger">
                                         {{ $message }}
