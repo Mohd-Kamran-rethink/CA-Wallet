@@ -18,6 +18,7 @@ class Legder extends Migration
             $table->string('name');
             $table->string('ledger_group');
             $table->enum('status',['active','inactive']);
+            $table->string('amount');
             $table->timestamps();
         });
     }

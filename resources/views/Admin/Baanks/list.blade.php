@@ -60,7 +60,7 @@
                                 <thead>
                                     <tr>
                                         <th>S.No.</th>
-                                        <th>Account Number</th>
+                                        <th>Bank Details</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -68,7 +68,7 @@
                                     @forelse($banks as $item)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $item->account_number }}</td>
+                                            <td>{{$item->holder_name}}-{{$item->ifsc}}-[{{ $item->account_number }}]</td>
                                             <td>Active</td>
                                         </tr>
                                     @empty
