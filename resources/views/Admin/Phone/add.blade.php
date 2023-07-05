@@ -39,13 +39,13 @@
                             <div class="form-group">
                                 <label>Device Name<span style="color:red">*</span></label>
                                 <select type="platform"  name="device_name" class="form-control">
-                                    <option value="">Select</option>
-                                    <option value="galaxy_a04">Galaxy A04</option>
-                                    <option value="galaxy_a03_core">Galaxy A03 Core</option>
-                                    <option value="redmi_9a">Redmi 9A</option>
-                                    <option value="oppo_f1s">Oppo F1S</option>
-                                    <option value="galaxy_a03">Galaxy A03</option>
-                                    <option value="galaxy_s22">Galaxy S22</option>
+                                    <option  value="">Select</option>
+                                    <option {{isset($number)&&$number->device_name==""?'selected':'galaxy_a04'}} value="galaxy_a04">Galaxy A04</option>
+                                    <option {{isset($number)&&$number->device_name==""?'selected':'galaxy_a03_core'}} value="galaxy_a03_core">Galaxy A03 Core</option>
+                                    <option {{isset($number)&&$number->device_name==""?'selected':'redmi_9a'}} value="redmi_9a">Redmi 9A</option>
+                                    <option {{isset($number)&&$number->device_name==""?'selected':'oppo_f1s'}} value="oppo_f1s">Oppo F1S</option>
+                                    <option {{isset($number)&&$number->device_name==""?'selected':'galaxy_a03'}} value="galaxy_a03">Galaxy A03</option>
+                                    <option {{isset($number)&&$number->device_name==""?'selected':'galaxy_s22'}} value="galaxy_s22">Galaxy S22</option>
                                 </select>
                             </div>
                         </div>
@@ -56,8 +56,8 @@
                             <div class="form-group">
                                 <label>Device Code<span style="color:red">*</span></label>
                                 <input  type="phone"  name="device_code" 
-                                    class="form-control" data-validation="required" value="{{isset($number)?$number->number:old('number')}}">
-                                    @error('number')
+                                    class="form-control" data-validation="required" value="{{isset($number)?$number->device_code:old('device_code')}}">
+                                    @error('device_code')
                                     <span class="text-danger">
                                         {{$message}}
                                     </span>
@@ -74,10 +74,10 @@
                                 <label>Whatsapp/WATI<span style="color:red">*</span></label>
                                 <select type="platform"  name="platform" class="form-control">                                    
                                     <option value="">Select</option>
-                                    <option value="wa">Whatsapp</option>
-                                    <option value="wa_b">Whatsapp Business</option>
-                                    <option value="wa_c">Whatsapp Clone</option>
-                                    <option value="wati">WATI</option>
+                                    <option {{isset($number)&&$number->platform=="wa"?'selected':''}} value="wa">Whatsapp</option>
+                                    <option {{isset($number)&&$number->platform=="wa_b"?'selected':''}} value="wa_b">Whatsapp Business</option>
+                                    <option {{isset($number)&&$number->platform=="wa_c"?'selected':''}} value="wa_c">Whatsapp Clone</option>
+                                    <option {{isset($number)&&$number->platform=="wati"?'selected':''}} value="wati">WATI</option>
                                 </select>
                             </div>
                         </div>
