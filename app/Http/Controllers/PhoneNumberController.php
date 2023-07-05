@@ -94,6 +94,10 @@ class PhoneNumberController extends Controller
     public function edit(Request $req) {
         $number=PhoneNumber::find($req->hiddenId);
         $number->number=$req->number;
+        $number->status="active";
+        $number->platform = $req->platform;
+        $number->device_name = $req->device_name;
+        $number->device_code = $req->device_code;
         $result=$number->update();
 
         if ($result) {
