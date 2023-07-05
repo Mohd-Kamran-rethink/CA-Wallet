@@ -49,7 +49,7 @@ class LeadsController extends Controller
         $agent = null;
         $manager = null;
         // ignore ids of   Deposited,Not Interested,Demo id,Id created,Call back
-        $ignoredSourceIds = [1, 12, 6, 7, 8];
+        $ignoredSourceIds = [];
         if (session('user')->role == "agent") {
             $agent = User::find(session('user')->id);
         }
@@ -69,11 +69,6 @@ class LeadsController extends Controller
             ->join('sources', 'leads.source_id', '=', 'sources.id')
             ->leftjoin('users', 'leads.agent_id', '=', 'users.id')
             // if session has agesnt show all his assigned leads
-            ->when($agent, function ($query, $agent) {
-                $query->where(function ($query) use ($agent) {
-                    $query->where('leads.agent_id', '=', $agent->id);
-                });
-            })
             // filter by agent
             ->when($FilterAgent, function ($query, $FilterAgent) {
                 $query->where(function ($query) use ($FilterAgent) {
@@ -102,6 +97,7 @@ class LeadsController extends Controller
                 });
             })
             ->where('is_approved', '=', 'Yes')
+            
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
             ->orderByDesc('leads.date')
             ->paginate(45);
@@ -746,7 +742,7 @@ class LeadsController extends Controller
         $agent = null;
         $manager = null;
         // we are using statsus id 6 becuase this is will not delte only change this id is for status demoid
-        $status_id = 6;
+        $status_id = 18;
         $status = LeadStatusOption::find($status_id);
         if (session('user')->role == "agent") {
             $agent = User::find(session('user')->id);
@@ -782,7 +778,7 @@ class LeadsController extends Controller
                         ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
                 });
             })
-            ->whereDate('leads.followup_date', now()->toDateString())
+           // ->whereDate('leads.followup_date', now()->toDateString())
             ->where('leads.status_id', '=', $status_id)
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
             ->orderByDesc('leads.date')
@@ -839,7 +835,7 @@ class LeadsController extends Controller
                         ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
                 });
             })
-            ->whereDate('leads.followup_date', now()->toDateString())
+           // ->whereDate('leads.followup_date', now()->toDateString())
             ->where('leads.status_id', '=', $status_id)
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
             ->orderByDesc('leads.date')
@@ -896,11 +892,12 @@ class LeadsController extends Controller
                         ->orWhere('leads.number', 'like', '%' . $searchTerm . '%');
                 });
             })
-            ->whereDate('leads.followup_date', now()->toDateString())
+           // ->whereDate('leads.followup_date', now()->toDateString())
             ->where('leads.status_id', '=', $status_id)
             ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
             ->orderByDesc('leads.date')
             ->paginate(45);
+
         return view('Admin.Leads.followLeads', compact('status', 'statuses', 'leads', 'searchTerm', 'FilterAgent', 'leads_status_history', 'agents'));
     }
     // mannual add

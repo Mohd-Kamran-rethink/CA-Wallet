@@ -92,7 +92,7 @@ class SettingDataProvider extends ServiceProvider
             ->orderByDesc('leads.date')
             ->get()->count();
             // demo id
-            $Demostatus_id = 6;
+            $Demostatus_id = 18;
             $idCreated_id = 7;
             $CalBack_id = 8;
             $DemoIdleads = DB::table('leads')
@@ -104,7 +104,6 @@ class SettingDataProvider extends ServiceProvider
                         $query->where('leads.agent_id', '=', $agent->id);
                     });
                 })
-                ->whereDate('leads.followup_date', now()->toDateString())
                 ->where('leads.status_id', '=', $Demostatus_id)
                 ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
                 ->orderByDesc('leads.date')

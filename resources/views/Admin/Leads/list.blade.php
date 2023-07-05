@@ -474,7 +474,7 @@
 
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group agent-phone">
                         <label for="">Agent Phone<span id="agent-phone-danger" class="text-danger">*</span></label>
                         <select id="AgentPhone" type="number" name="AgentPhone" class="form-control">
                             <option value="0">--Choose--</option>
@@ -775,6 +775,9 @@
     function HandleMandatoryFields (selectElement)
     {
         var selectedOption = selectElement.options[selectElement.selectedIndex];
+        if(selectedOption.value == 12){
+            $('.agent-phone').hide()
+        }
         var itemId = selectedOption.value; // Get the value of the selected option (item ID)
         var itemName = selectedOption.text; // Get the text of the selected option (item name)
         var extraData = selectedOption.dataset.extra; // 

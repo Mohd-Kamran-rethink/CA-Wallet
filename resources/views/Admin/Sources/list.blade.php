@@ -64,12 +64,12 @@
                                                 <td>{{ $item->agentPhone?"Yes":"No" }}</td>
                                                 <td>{{ $item->statusID?"Yes":"No" }}</td>
                                                 <td>
-                                                    <a href="{{ url('sources/edit/?id=' . $item->id) }}"
+                                                    <!-- <a href="{{ url('sources/edit/?id=' . $item->id) }}"
                                                         title="Edit this source" class="btn btn-primary"><i
                                                             class="fa fa-pen"></i></a>
                                                     <button title="Delte this source"
                                                         onclick="manageModal({{ $item->id }})"
-                                                        class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                                                        class="btn btn-danger"><i class="fa fa-trash"></i></button> -->
                                                 </td>
 
 
