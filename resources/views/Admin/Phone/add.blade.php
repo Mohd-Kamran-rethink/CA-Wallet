@@ -40,12 +40,12 @@
                                 <label>Device Name<span style="color:red">*</span></label>
                                 <select type="platform"  name="device_name" class="form-control">
                                     <option  value="">Select</option>
-                                    <option {{isset($number)&&$number->device_name==""?'selected':'galaxy_a04'}} value="galaxy_a04">Galaxy A04</option>
-                                    <option {{isset($number)&&$number->device_name==""?'selected':'galaxy_a03_core'}} value="galaxy_a03_core">Galaxy A03 Core</option>
-                                    <option {{isset($number)&&$number->device_name==""?'selected':'redmi_9a'}} value="redmi_9a">Redmi 9A</option>
-                                    <option {{isset($number)&&$number->device_name==""?'selected':'oppo_f1s'}} value="oppo_f1s">Oppo F1S</option>
-                                    <option {{isset($number)&&$number->device_name==""?'selected':'galaxy_a03'}} value="galaxy_a03">Galaxy A03</option>
-                                    <option {{isset($number)&&$number->device_name==""?'selected':'galaxy_s22'}} value="galaxy_s22">Galaxy S22</option>
+                                    <option {{isset($number)&&$number->device_name=="galaxy_a04"?'selected':''}} value="galaxy_a04">Galaxy A04</option>
+                                    <option {{isset($number)&&$number->device_name=="galaxy_a03_core"?'selected':''}} value="galaxy_a03_core">Galaxy A03 Core</option>
+                                    <option {{isset($number)&&$number->device_name=="redmi_9a"?'selected':''}} value="redmi_9a">Redmi 9A</option>
+                                    <option {{isset($number)&&$number->device_name=="oppo_f1s"?'selected':''}} value="oppo_f1s">Oppo F1S</option>
+                                    <option {{isset($number)&&$number->device_name=="galaxy_a03"?'selected':''}} value="galaxy_a03">Galaxy A03</option>
+                                    <option {{isset($number)&&$number->device_name=="galaxy_s22"?'selected':''}} value="galaxy_s22">Galaxy S22</option>
                                 </select>
                             </div>
                         </div>
