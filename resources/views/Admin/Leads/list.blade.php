@@ -138,7 +138,7 @@
                             <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
                                 class="form-control float-right" placeholder="Search" id="searchInput">
                         </div>
-                        <div class="input-group col-3">
+                        <div class="input-group col-2">
                             <select name="status" id="status_id" class="form-control">
                                 <option value="">--Filter By Status--</option>
                                 @foreach ($statuses as $item)
@@ -147,17 +147,9 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="input-group col-3">
-                            <select name="source_id" id="source_id" class="form-control">
-                                <option value="">--Filter By Source--</option>
-                                @foreach ($sources as $item)
-                                    <option {{ isset($source) && $source == $item->id ? 'selected' : '' }}
-                                        value="{{ $item->id }}">{{ $item->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        
                         @if (session('user')->role == 'manager')
-                            <div class="input-group col-3">
+                            <div class="input-group col-2">
                                 <select name="agent_id" id="agent_id" class="form-control">
                                     <option value="">--Filter By Agent--</option>
                                     @foreach ($agents as $item)
@@ -167,7 +159,16 @@
                                 </select>
                             </div>
                         @endif
-                        <div class="input-group ">
+                        <div class="input-group col-3">
+                            <select name="source_id" id="source_id" class="form-control">
+                                <option value="">--Filter By Source--</option>
+                                @foreach ($sources as $item)
+                                    <option {{ isset($source) && $source == $item->id ? 'selected' : '' }}
+                                        value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-3 ">
                             <button class="btn btn-success" onclick="searchData()">Filter</button>
                         </div>
                     </form>
@@ -473,7 +474,7 @@
                     <input type="hidden" name="leadIds" class="lead_ids">
                     <div class="form-group">
                         <label for="">Source<span class="text-danger">*</span></label>
-                        <select  id="Mansource_id" type="number" name="Mansource_id" class="form-control">
+                        <select onchange="HandleMandatoryFields(this)" id="Mansource_id" type="number" name="Mansource_id" class="form-control">
                             <option value="0">--Choose--</option>
                             @foreach ($sources as $item)
                             @if($item->show_in_mannual_lead)
