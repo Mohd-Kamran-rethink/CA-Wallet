@@ -26,7 +26,7 @@
             <div class="card-body">
 
                 <div class="mb-3 d-flex justify-content-between align-items-centers row">
-                    <form class="filters d-flex flex-row   mt-2" action="{{ url('leads/list') }}" method="GET"
+                    <form class="filters d-flex flex-row col-8  mt-2" action="{{ url('leads/list') }}" method="GET"
                         id="search-form">
                         <div class="col-3 " style="width: 150px;">
                             <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
@@ -43,7 +43,7 @@
                         </div> --}}
                         @if (session('user')->role == 'manager')
                             <div class="col-4">
-                                <select name="languageFilter" id="languageFilter" class="form-control">
+                                <select  name="languageFilter" id="languageFilter" class="form-control">
                                     <option value="">--Filter By Language--</option>
                                     @foreach ($languages as $item)
                                         <option
