@@ -245,6 +245,9 @@ class UserController extends Controller
             $phoneAgent->number_id = $req->numbers;
             $phoneAgent->platform = $req->platform;
             $result = $phoneAgent->save();
+            $number = PhoneNumber::find($req->numbers);
+            $number->assign_to = $req->userId;
+            $number->save();
         }
         if ($result) {
             return redirect('/agents')->with(['msg-success' => 'Numbers assigned succesfully']);

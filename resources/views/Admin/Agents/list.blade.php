@@ -93,9 +93,9 @@
                                                 <td>
                                                     <a class="btn btn-dark"
                                                         href="{{ url('leads?agent_id=' . $item['id']) }}">View Leads</a>
-                                                    <a class="btn btn-warning"
+                                                    {{-- <a class="btn btn-warning"
                                                         href="{{ url('agents/assign-numbers?id=' . $item['id']) }}">Assign
-                                                        Numbers</a>
+                                                        Numbers</a> --}}
                                                     <a href="{{ url('agents/edit/?id=' . $item['id']) }}"
                                                         title="Edit this agent" class="btn btn-primary"><i
                                                             class="fa fa-pen"></i></a>

@@ -112,7 +112,7 @@
                                                     @endif
 
                                                 </td>
-                                                <td>{{ $item->PhoneAgent ?? 'Spare' }}</td>
+                                                <td>{{ $item->agentName ?? 'Spare' }}</td>
                                                 <td>{{ $item->device_name ?? '' }}</td>
                                                 <td>{{ $item->device_code }}</td>
                                                 <td style="text-transform: capitalize">
@@ -169,7 +169,7 @@
                             <label for="">Agent</label>
                             <select style="width: 100%" class="form-control searchOptions" name="agent" id="status">
                                 <option value="0">--Choose--</option>
-                                <option value="">SPARE</option>
+                                <option value="0">SPARE</option>
                                 @foreach ($agents as $item)
                                     <option value="{{ $item->id }}">{{ $item->name }}</option>
                                 @endforeach

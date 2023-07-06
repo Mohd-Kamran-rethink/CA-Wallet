@@ -48,9 +48,7 @@
                                     <thead>
                                         <tr>
                                             <th>S.No.</th>
-                                            <th>Wati Agent</th>
-                                            <th>WhatsApp Agent</th>
-                                            <th>Status</th>
+                                            <th>Agent</th>
                                             <th>Date</th>
                                         </tr>
                                     </thead>
@@ -58,9 +56,7 @@
                                         @forelse ($history as $item)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item->platform=='wati'?$item->useranme:'' }}</td>
-                                                <td>{{ $item->platform=='whatsapp'?$item->useranme:'' }}</td>
-                                                <td style="text-transform: capitalize">{{ $item->status }}</td>
+                                                <td>{{ $item->useranme }}</td>
                                                 <td >{{ $item->created_at }}</td>
                                             </tr>
                                                 
