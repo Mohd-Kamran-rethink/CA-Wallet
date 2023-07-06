@@ -139,7 +139,7 @@
                                 class="form-control float-right" placeholder="Search" id="searchInput">
                         </div>
                         <div class="input-group col-2">
-                            <select name="status" id="status_id" class="form-control">
+                            <select name="status" id="status_id" class="form-control searchOptions">
                                 <option value="">--Filter By Status--</option>
                                 @foreach ($statuses as $item)
                                     <option {{ isset($Filterstatus) && $Filterstatus == $item->id ? 'selected' : '' }}
@@ -150,7 +150,7 @@
                         
                         @if (session('user')->role == 'manager')
                             <div class="input-group col-2">
-                                <select name="agent_id" id="agent_id" class="form-control">
+                                <select name="agent_id" id="agent_id" class="form-control searchOptions">
                                     <option value="">--Filter By Agent--</option>
                                     @foreach ($agents as $item)
                                         <option {{ isset($FilterAgent) && $FilterAgent == $item->id ? 'selected' : '' }}
@@ -160,7 +160,7 @@
                             </div>
                         @endif
                         <div class="input-group col-3">
-                            <select name="source_id" id="source_id" class="form-control">
+                            <select name="source_id" id="source_id" class="form-control searchOptions">
                                 <option value="">--Filter By Source--</option>
                                 @foreach ($sources as $item)
                                     <option {{ isset($source) && $source == $item->id ? 'selected' : '' }}
