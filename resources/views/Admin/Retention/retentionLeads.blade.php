@@ -58,9 +58,6 @@
                                             <th>Date</th>
                                             <th>Name</th>
                                             <th>Number</th>
-                                            <th>Language</th>
-                                            <th>State</th>
-                                            <th>Agent</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -77,9 +74,6 @@
                                                 <td>{{ $item->date }}</td>
                                                 <td>{{ $item->name }}</td>
                                                 <td>{{ $item->number }}</td>
-                                                <td>{{ $item->language }}</td>
-                                                <td>{{ $item->state }}</td>
-                                                <td> {{ $item->agent_name }}</td>
                                                 <td> {{ $item->current_status ?? 'Open' }}</td>
                                                 <td>
                                                     <button
