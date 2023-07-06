@@ -113,7 +113,7 @@ class LeadsController extends Controller
             ->orderByDesc('leads.date')
             ->paginate(45);
 
-        return view('Admin.Leads.list', compact('phoneNumber', 'sources', 'languages', 'leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
+        return view('Admin.Leads.list', compact('source','phoneNumber', 'sources', 'languages', 'leads', 'searchTerm', 'Filterstatus', 'FilterAgent', 'statuses', 'leads_status_history', 'agents'));
     }
     public function duplicateLeads(Request $req)
     {
