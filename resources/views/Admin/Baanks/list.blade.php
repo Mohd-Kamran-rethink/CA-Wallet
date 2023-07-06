@@ -61,6 +61,7 @@
                                     <tr>
                                         <th>S.No.</th>
                                         <th>Bank Details</th>
+                                        <th>Type(Deposit/Withdraw)</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
@@ -69,7 +70,8 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{$item->holder_name}}-{{$item->ifsc}}-[{{ $item->account_number }}]</td>
-                                            <td>Active</td>
+                                            <td style="text-transform: capitalize">{{$item->type}}</td>
+                                            <td>{{$item->is_active=='Yes'?'Active':'Inactive'}}</td>
                                         </tr>
                                     @empty
                                         <tr>

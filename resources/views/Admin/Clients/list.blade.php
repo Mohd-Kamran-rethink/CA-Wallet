@@ -46,7 +46,7 @@
                         @if(session('user')->role=='agent')
                         <div class="col-2">
                             <label for="" style="visibility: hidden;">filter</label>
-                            <button {{isset($requestNumber)?"disabled":''}} onclick="RequestNumberModal()" type="button" title="Request Number"
+                            <button style="width: 100%" {{isset($requestNumber)?"disabled":''}} onclick="RequestNumberModal()" type="button" title="Request Number"
                                 class="btn btn-secondary">Request
                                 Numbers</button>
                         </div>
