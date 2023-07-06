@@ -509,7 +509,7 @@
                         <input id="client_name" type="text" name="client_name" class="form-control">
                     </div>
                     <div class="form-group" style="display: none" id="id-created">
-                        <label for="">Client ID<span class="text-danger">*</span></label>
+                        <label for="">Client ID</label>
                         <input id="client_id" type="text" name="client_id" class="form-control">
                     </div>
 
