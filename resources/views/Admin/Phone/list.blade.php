@@ -116,7 +116,7 @@
                                                 <td>{{ $item->device_name ?? '' }}</td>
                                                 <td>{{ $item->device_code }}</td>
                                                 <td style="text-transform: capitalize">
-                                                    {{ $item->status == 'active' && $item->PhoneAgent ? 'Assigned' : $item->status }}
+                                                    {{ $item->status == 'active' && $item->agentName ? 'Assigned' : $item->status }}
                                                 </td>
                                                 <td>
 
