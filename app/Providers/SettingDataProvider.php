@@ -41,7 +41,7 @@ class SettingDataProvider extends ServiceProvider
             if ($user) {
                 $userData = User::find($user->id);
             }
-            $ignoredSourceIds = [1, 12, 6, 7, 8];
+            $ignoredSourceIds = [];
             // total sidebar couts
             $agentsCount=User::where('role','=','agent')->get()->count();
             $managersCount=User::where('role','=','manager')->get()->count();
@@ -66,8 +66,6 @@ class SettingDataProvider extends ServiceProvider
                 });
             })
             ->where('is_approved', '=', 'Yes')
-            ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
-            ->orderByDesc('leads.date')
             ->get()->count();
             
             // duplicate leads
