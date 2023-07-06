@@ -154,10 +154,8 @@
             const url = new URL(window.location.href);
 
             const searchValue = $('#searchInput').val().trim();
-            const stateFilter = $('#stateFilter').val().trim();
             const languageFilter = $('#languageFilter').val().trim();
             url.searchParams.set('search', searchValue);
-            url.searchParams.set('stateFilter', stateFilter);
             url.searchParams.set('languageFilter', languageFilter);
             $('#search-form').attr('action', url.toString()).submit();
         }
