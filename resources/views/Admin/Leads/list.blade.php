@@ -132,13 +132,13 @@
         <div class="card">
             <div class="card-body">
                 <div class="mb-3 d-flex justify-content-between align-items-centers row">
-                    <form class="filters d-flex flex-row  col-lg-7 mt-2" action="{{ url('leads/list') }}" method="GET"
+                    <form class="filters d-flex flex-row  col-lg-8 mt-2" action="{{ url('leads/list') }}" method="GET"
                         id="search-form">
                         <div class="input-group input-group-md col-3 " style="width: 150px;">
                             <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
                                 class="form-control float-right" placeholder="Search" id="searchInput">
                         </div>
-                        <div class="input-group col-2">
+                        <div class="input-group col-3">
                             <select name="status" id="status_id" class="form-control searchOptions">
                                 <option value="">--Filter By Status--</option>
                                 @foreach ($statuses as $item)
@@ -149,7 +149,7 @@
                         </div>
                         
                         @if (session('user')->role == 'manager')
-                            <div class="input-group col-2">
+                            <div class="input-group col-3">
                                 <select name="agent_id" id="agent_id" class="form-control searchOptions">
                                     <option value="">--Filter By Agent--</option>
                                     @foreach ($agents as $item)
@@ -172,7 +172,7 @@
                             <button class="btn btn-success" onclick="searchData()">Filter</button>
                         </div>
                     </form>
-                    <div class="col-md-12 col-lg-5 d-flex justify-content-end mt-2">
+                    <div class="col-md-12 col-lg-3 d-flex justify-content-end mt-2">
                         @if (session('user')->role === 'agent')
                             <button onclick="addLeadsModal()" title="Add Lead" class="btn btn-primary mx-2">Add
                                 Lead</button>
