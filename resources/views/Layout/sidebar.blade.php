@@ -282,6 +282,15 @@
                             </p>
                         </a>
                     </li>
+                    <li class="nav-item ">
+                        <a href="{{ url('/check-utr') }}"
+                            class="nav-link {{ Request::is('check-utr') ? 'active' : '' }}">
+                            <i class="nav-icon fa fa-search"></i>
+                            <p>
+                                Check UTR
+                            </p>
+                        </a>
+                    </li>
                 </ul>
             @endif
 

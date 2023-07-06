@@ -32,37 +32,33 @@ class ClientController extends Controller
             $endDate = Carbon::createFromFormat('Y-m-d H:i:s', $endDate . ' 23:59:59');
         }
         $currentUser = session('user');
-        $requestNumber=NumberRequest::where('agent_id',$currentUser->id)->first();
-        if($currentUser->role=="agent")
-        {
-        $clients = Client::select('clients.id', 'clients.number')
-            // ->lefjoin('transactions', 'clients.id', '=', 'transactions.client_id')
-            // ->groupBy('clients.id', 'clients.number')
-            // ->where('transactions.type', '=', 'Deposit')
-            // ->where('transactions.status', '=', 'Approve')
-            ->where('agent_id','=',$currentUser->id)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->Where('clients.number', '=', $search);
-                });
-            })
-            // ->selectRaw('SUM(transactions.amount) as total_amount')
-            ->paginate();
-        }
-        elseif($currentUser->role=="manager")
-        {
-            $clients=Client::select('clients.id', 'clients.number')->whereBetween('created_at', [$startDate, $endDate])
-            ->when($search, function ($query, $search) {
-                $query->where(function ($query) use ($search) {
-                    $query->Where('clients.number', '=', $search);
-                });
-            })->paginate();
-
+        $requestNumber = NumberRequest::where('agent_id', $currentUser->id)->first();
+        if ($currentUser->role == "agent") {
+            $clients = Client::select('clients.id', 'clients.number')
+                // ->lefjoin('transactions', 'clients.id', '=', 'transactions.client_id')
+                // ->groupBy('clients.id', 'clients.number')
+                // ->where('transactions.type', '=', 'Deposit')
+                // ->where('transactions.status', '=', 'Approve')
+                ->where('agent_id', '=', $currentUser->id)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->when($search, function ($query, $search) {
+                    $query->where(function ($query) use ($search) {
+                        $query->Where('clients.number', '=', $search);
+                    });
+                })
+                // ->selectRaw('SUM(transactions.amount) as total_amount')
+                ->paginate();
+        } elseif ($currentUser->role == "manager") {
+            $clients = Client::select('clients.id', 'clients.number')->whereBetween('created_at', [$startDate, $endDate])
+                ->when($search, function ($query, $search) {
+                    $query->where(function ($query) use ($search) {
+                        $query->Where('clients.number', '=', $search);
+                    });
+                })->paginate();
         }
         $startDate = $startDate->toDateString();
         $endDate = $endDate->toDateString();
-        return view('Admin.Clients.list', compact('requestNumber','search', 'clients', 'startDate', 'endDate'));
+        return view('Admin.Clients.list', compact('requestNumber', 'search', 'clients', 'startDate', 'endDate'));
     }
     public function addView(Request $req)
     {
@@ -161,38 +157,35 @@ class ClientController extends Controller
             return redirect()->back()->with(['msg-error' => 'Sorry you dont have data for this client']);
         }
     }
-   
+
     public function AcceptrequestNumber(Request $req)
     {
-        $msg='';
-        $request=NumberRequest::where('agent_id','=',$req->agent_id)->first();
-        $request->approved=$req->status;
+        $msg = '';
+        $request = NumberRequest::where('agent_id', '=', $req->agent_id)->first();
+        $request->approved = $req->status;
         $request->update();
-        if($req->status=="Yes")
-        {
-            $msg="Request has been approved successfully";
+        if ($req->status == "Yes") {
+            $msg = "Request has been approved successfully";
+        } else {
+            $msg = "Request has been reject";
         }
-        else
-        {
-            $msg="Request has been reject";
-        }
-        
-        return redirect('/agents/number/requests')->with(['msg-success'=>$msg]);
+
+        return redirect('/agents/number/requests')->with(['msg-success' => $msg]);
     }
     public function numberRequest(Request $req)
     {
-        $request=new NumberRequest();
-        $request->agent_id=session('user')->id;
+        $request = new NumberRequest();
+        $request->agent_id = session('user')->id;
         $request->save();
-        return redirect('/clients')->with(['msg-success'=>"Request has been sent"]);
+        return redirect('/clients')->with(['msg-success' => "Request has been sent"]);
     }
-    public function transactionHistoy(Request $req) {
-        $agentId=session('user')->id;
+    public function transactionHistoy(Request $req)
+    {
+        $agentId = session('user')->id;
         $id = $req->query('id');
-        $client=Client::find($id);
-        if($client->agent_id!=$agentId)
-        {
-            return redirect()->back()->with(['msg-error'=>'Invalid id use only your clients id']);    
+        $client = Client::find($id);
+        if ($client->agent_id != $agentId) {
+            return redirect()->back()->with(['msg-error' => 'Invalid id use only your clients id']);
         }
         $startDate = $req->query('from_date') ?? null;
         $endDate = $req->query('to_date') ?? null;
@@ -206,15 +199,35 @@ class ClientController extends Controller
         }
 
         $activites = Transaction::where('client_id', '=', $id)
-                ->when($type !== 'null', function ($query) use ($type) {
-                    $query->where('type', $type);
-                })
+            ->when($type !== 'null', function ($query) use ($type) {
+                $query->where('type', $type);
+            })
             ->whereDate('created_at', '>=', date('Y-m-d', strtotime($startDate)))
             ->whereDate('created_at', '<=', date('Y-m-d', strtotime($endDate)))
             ->get();
         $startDate = $startDate->toDateString();
         $endDate = $endDate->toDateString();
-        return view('Admin.Clients.history',compact('activites', 'id', 'startDate', 'endDate'));
-        
+        return view('Admin.Clients.history', compact('activites', 'id', 'startDate', 'endDate'));
+    }
+
+    function checkUtr(Request $req)
+    {
+        $tranasction = null;
+        $status = null;
+        $warn = null;
+        $utr = $req->utr;
+
+        $tranasction = Transaction::where('utr_no', '=', $utr)->where('type', '=', 'Deposit')->first();
+        if ($utr) {
+
+            if ($tranasction) {
+                $status = "Deposit has been done";
+                $warn = 'success';
+            } else {
+                $warn = 'danger';
+                $status = "Couldn't find UTR";
+            }
+        }
+        return view('Admin.Clients.checkUtr', compact('utr', 'status', 'warn'));
     }
 }

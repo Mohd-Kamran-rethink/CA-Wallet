@@ -155,4 +155,6 @@ Route::middleware('ValidateManager')->prefix('/phone-numbers')->group(function (
     Route::get('history', [PhoneNumberController::class, 'history'])->name('history');
 });
 
-   
+// check utr if client deposited or not
+Route::get('/check-utr', [ClientController::class, 'checkUtr'])->name('checkUtr');
+Route::post('/check-utr', [ClientController::class, 'checkUtr'])->name('checkUtr');
