@@ -97,7 +97,7 @@
                                                 <td>{{ $item->PhoneAgent??'Spare' }}</td>
                                                 <td>{{ $devices[$item->device_name]??'' }}</td>
                                                 <td>{{ $item->device_code }}</td>
-                                                <td style="text-transform: capitalize">{{$item->PhoneAgent?'Assigned': $item->status }}</td>
+                                                <td style="text-transform: capitalize">{{$item->status=='active'&&$item->PhoneAgent?'Assigned': $item->status }}</td>
                                                 <td>
                                                     
                                                     <a href="{{ url('phone-numbers/edit?id='.$item->id) }}"

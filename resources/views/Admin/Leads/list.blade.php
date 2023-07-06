@@ -493,9 +493,9 @@
                                 @endif
                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
                             @endforeach
-
                         </select>
                     </div>
+
                     <div class="form-group">
                         <label for="">Phone<span class="text-danger">*</span></label>
                         <input id="lead_number" type="number" name="lead_number" class="form-control">
