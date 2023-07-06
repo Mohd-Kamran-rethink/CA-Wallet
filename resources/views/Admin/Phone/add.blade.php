@@ -53,6 +53,8 @@
                                         value="galaxy_a03">Galaxy A03</option>
                                     <option {{ isset($number) && $number->device_name == 'galaxy_s22' ? 'selected' : '' }}
                                         value="galaxy_s22">Galaxy S22</option>
+                                    <option {{ isset($number) && $number->device_name == 'nokia' ? 'selected' : '' }}
+                                        value="galaxy_s22">Nokia</option>
                                 </select>
                             </div>
                         </div>
