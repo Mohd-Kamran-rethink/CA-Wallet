@@ -924,6 +924,11 @@ class LeadsController extends Controller
         {
             $rules['man_status'] = 'required|not_in:0';
         }
+        $dateAllowIds = [8, 18,7];
+        if(in_array($req->man_status, $dateAllowIds))
+        {
+            $rules['follow_up_date'] = 'required';
+        }
         $req->validate($rules);
         $phoneNumber=null;
         $status=null;
@@ -961,6 +966,7 @@ class LeadsController extends Controller
                 $lead->status_id = $statusID;
                 $lead->current_status = $statusname;
                 $lead->name = $req->client_name ?? '';
+                $lead->followup_date = $req->follow_up_date ?? '';
                 $lead->is_approved = 'Yes';
                 $result = $lead->save();
                 if ($result && $statusID!=null) {
@@ -968,6 +974,7 @@ class LeadsController extends Controller
                     $leadHistory->status_id = $statusID;
                     $leadHistory->agent_id = session('user')->id;
                     $leadHistory->lead_id = $lead->id??'';
+                    $leadHistory->followup_date = $req->follow_up_date;
                     $leadHistory->save();
                 }
                 return ['msg-success' => 'Lead added successfully '];

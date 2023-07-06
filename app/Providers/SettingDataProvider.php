@@ -118,7 +118,7 @@ class SettingDataProvider extends ServiceProvider
                         $query->where('leads.agent_id', '=', $agent->id);
                     });
                 })
-                ->whereDate('leads.followup_date', now()->toDateString())
+                
                 ->where('leads.status_id', '=', $idCreated_id)
                 ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
                 ->orderByDesc('leads.date')
@@ -132,7 +132,7 @@ class SettingDataProvider extends ServiceProvider
                         $query->where('leads.agent_id', '=', $agent->id);
                     });
                 })
-                ->whereDate('leads.followup_date', now()->toDateString())
+               
                 ->where('leads.status_id', '=', $CalBack_id)
                 ->select('leads.*', 'sources.name as source_name', 'users.name as agent_name')
                 ->orderByDesc('leads.date')

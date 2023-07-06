@@ -58,9 +58,9 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->name }}</td>
                                                 <td>
-                                                    <a href="{{ url('statuses/edit/?id=' . $item->id) }}"
+                                                    {{-- <a href="{{ url('statuses/edit/?id=' . $item->id) }}"
                                                         title="Edit this status" class="btn btn-primary"><i
-                                                            class="fa fa-pen"></i></a>
+                                                            class="fa fa-pen"></i></a> --}}
                                                     <button title="Delte this status"
                                                         onclick="manageModal({{ $item->id }})"
                                                         class="btn btn-danger"><i class="fa fa-trash"></i></button>

@@ -500,6 +500,10 @@
                         <label for="">Phone<span class="text-danger">*</span></label>
                         <input id="lead_number" type="number" name="lead_number" class="form-control">
                     </div>
+                    <div class="form-group" id="follow-up-form" style="display: none">
+                        <label for="">Date<span class="text-danger follow-up-date-label">*</span></label>
+                        <input id="follow_up_date" type="date" name="follow_up_date" class="form-control">
+                    </div>
                     <div class="form-group">
                         <label for="">Name</label>
                         <input id="client_name" type="text" name="client_name" class="form-control">
@@ -727,9 +731,10 @@
         let AgentPhone = $('#AgentPhone').val()
         let man_status = $('#man_status').val()
         let client_name = $('#client_name').val()
+        let follow_up_date = $('#follow_up_date').val()
         $.ajax({
             url: BASE_URL +
-                "/leads/add?lead_number=" + number+'&Mansource_id='+Mansource_id+'&AgentPhone='+AgentPhone+'&man_status='+man_status+'&client_name='+client_name,
+                "/leads/add?lead_number=" + number+'&Mansource_id='+Mansource_id+'&AgentPhone='+AgentPhone+'&man_status='+man_status+'&client_name='+client_name+'&follow_up_date='+follow_up_date,
             success: function(data) {
                 if (data.hasOwnProperty('msg-success')) {
                     // Show success message
@@ -771,6 +776,15 @@
         {
             $('#id-created').hide()
         }
+        if(value==7 || value==18 || value==8)
+        {
+            $('#follow-up-form').show();
+        }
+        else
+        {
+            $('#follow-up-form').hide();
+        }
+            
     }
     function HandleMandatoryFields (selectElement)
     {
