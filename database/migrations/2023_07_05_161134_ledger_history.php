@@ -13,9 +13,10 @@ class LedgerHistory extends Migration
      */
     public function up()
     {
-        Schema::create('lagder_history', function (Blueprint $table) {
+        Schema::create('ladger_histories', function (Blueprint $table) {
             $table->id();
             $table->string('user_id')->nullable();
+            $table->string('type')->nullable();
             $table->string('opening_balance')->nullable();
             $table->string('closing_balance')->nullable();
             $table->string('amount')->nullable();

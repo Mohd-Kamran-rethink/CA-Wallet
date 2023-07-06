@@ -81,6 +81,11 @@ class LeadsController extends Controller
                     $query->Where('leads.current_status', '=', $currentStatus->name);
                 });
             })
+            ->when($agent, function ($query, $agent) {
+                $query->where(function ($query) use ($agent) {
+                    $query->where('leads.agent_id', '=', $agent->id);
+                });
+            })
             // filter by general terms
             ->when($searchTerm, function ($query, $searchTerm) {
                 $query->where(function ($query) use ($searchTerm) {
