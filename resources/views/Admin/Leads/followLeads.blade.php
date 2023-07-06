@@ -86,9 +86,9 @@
                                             <th>Date</th>
                                             <th>Name</th>
                                             <th>Number</th>
-                                            <th>Language</th>
-                                            <th>State</th>
+                                            @if(session('user')->role!='agent')
                                             <th>Agent</th>
+                                            @endif
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -101,9 +101,9 @@
                                                 <td>{{ $item->date }}</td>
                                                 <td>{{ $item->name }}</td>
                                                 <td>{{ $item->number }}</td>
-                                                <td>{{ $item->language }}</td>
-                                                <td>{{ $item->state }}</td>
+                                                @if(session('user')->role!='agent')
                                                 <td> {{ $item->agent_name }}</td>
+                                                @endif
                                                 <td> {{ $item->current_status ?? '--' }}</td>
                                                 <td>
                                                     <button onclick="openLeadModal({{ $item->id}},'{{$item->idName}}')"
