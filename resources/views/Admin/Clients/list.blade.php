@@ -63,6 +63,7 @@
                                     <tr>
                                         <th>S.No.</th>
                                         <th>Phone</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -72,6 +73,7 @@
                                             <td>
                                                 {{ !isset($requestNumber) || $requestNumber->approved == 'No' ? (session('user')->role == "manager" ? $item->number : str_repeat('*', strlen($item->number) - 3) . substr($item->number, -3)) : $item->number }}
                                             </td>
+                                            <td><a href="{{url('clients/history?id='.$item->id)}}" class="btn btn-warning">Client History</a></td>
                                         </tr>
                                     @empty
                                         <tr>

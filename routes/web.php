@@ -118,8 +118,10 @@ Route::middleware('ValidateAgent')->prefix('/clients')->group(function () {
     Route::post('/edit',[ClientController::class,'edit'])->name('edit');
     Route::post('/delete',[ClientController::class,'delete'])->name('delete');
     Route::post('/redeposit',[ClientController::class,'redeposit'])->name('redeposit');
-    Route::get('/deposit/history/{id}',[ClientController::class,'depositHistory'])->name('depositHistory');
+    // Route::get('/deposit/history/{id}',[ClientController::class,'depositHistory'])->name('depositHistory');
     Route::post('numberRequests',[ClientController::class,'numberRequest'])->name('numberRequest');
+    Route::get('/history',[ClientController::class,'transactionHistoy'])->name('transactionHistoy');
+
 });
 Route::post('clients/request',[ClientController::class,'AcceptrequestNumber'])->name('AcceptrequestNumber');
 

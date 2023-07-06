@@ -6,10 +6,13 @@ use App\Client;
 use App\Deposit;
 use App\DepositHistory;
 use App\NumberRequest;
+use App\Transaction;
+use App\TransactionHistory;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\Return_;
+use Transactions;
 
 class ClientController extends Controller
 {
@@ -182,5 +185,36 @@ class ClientController extends Controller
         $request->agent_id=session('user')->id;
         $request->save();
         return redirect('/clients')->with(['msg-success'=>"Request has been sent"]);
+    }
+    public function transactionHistoy(Request $req) {
+        $agentId=session('user')->id;
+        $id = $req->query('id');
+        $client=Client::find($id);
+        if($client->agent_id!=$agentId)
+        {
+            return redirect()->back()->with(['msg-error'=>'Invalid id use only your clients id']);    
+        }
+        $startDate = $req->query('from_date') ?? null;
+        $endDate = $req->query('to_date') ?? null;
+        $type = $req->query('type') ?? 'null';
+        if (!$startDate) {
+            $startDate = Carbon::now()->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
+        } else {
+            $startDate = Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
+            $endDate = Carbon::createFromFormat('Y-m-d', $endDate)->endOfDay();
+        }
+
+        $activites = Transaction::where('client_id', '=', $id)
+                ->when($type !== 'null', function ($query) use ($type) {
+                    $query->where('type', $type);
+                })
+            ->whereDate('created_at', '>=', date('Y-m-d', strtotime($startDate)))
+            ->whereDate('created_at', '<=', date('Y-m-d', strtotime($endDate)))
+            ->get();
+        $startDate = $startDate->toDateString();
+        $endDate = $endDate->toDateString();
+        return view('Admin.Clients.history',compact('activites', 'id', 'startDate', 'endDate'));
+        
     }
 }
