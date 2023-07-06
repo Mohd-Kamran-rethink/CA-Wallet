@@ -473,7 +473,7 @@
                     <input type="hidden" name="leadIds" class="lead_ids">
                     <div class="form-group">
                         <label for="">Source<span class="text-danger">*</span></label>
-                        <select onchange="HandleMandatoryFields(this)" id="Mansource_id" type="number" name="Mansource_id" class="form-control">
+                        <select  id="Mansource_id" type="number" name="Mansource_id" class="form-control">
                             <option value="0">--Choose--</option>
                             @foreach ($sources as $item)
                             @if($item->show_in_mannual_lead)
