@@ -32,7 +32,7 @@
                             <input type="text" value="{{ isset($searchTerm) ? $searchTerm : '' }}" name="table_search"
                                 class="form-control float-right" placeholder="Search" id="searchInput">
                         </div>
-                        <div class="col-4">
+                        {{-- <div class="col-4">
                             <select name="stateFilter" id="stateFilter" class="form-control">
                                 <option value="">--Filter By State--</option>
                                 @foreach ($states as $item)
@@ -40,7 +40,7 @@
                                         value="{{ $item->name }}">{{ $item->name }}</option>
                                 @endforeach
                             </select>
-                        </div>
+                        </div> --}}
                         @if (session('user')->role == 'manager')
                             <div class="col-4">
                                 <select name="languageFilter" id="languageFilter" class="form-control">
