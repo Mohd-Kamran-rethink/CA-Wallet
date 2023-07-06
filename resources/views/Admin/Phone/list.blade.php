@@ -147,7 +147,7 @@
                         <input type="hidden" name="id" id="reasignID">
                             <div class="form-group mx-3">
                                 <label for="">Agent</label>
-                                <select class="form-control searchOptions" name="agent" id="status">
+                                <select style="width: 100%" class="form-control searchOptions" name="agent" id="status">
                                     <option value="0">--Choose--</option>
                                     <option value="">SPARE</option>
                                     @foreach ($agents as $item)
