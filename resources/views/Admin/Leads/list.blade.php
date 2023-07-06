@@ -147,6 +147,15 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="input-group col-3">
+                            <select name="source_id" id="source_id" class="form-control">
+                                <option value="">--Filter By Source--</option>
+                                @foreach ($sources as $item)
+                                    <option {{ isset($source) && $source == $item->id ? 'selected' : '' }}
+                                        value="{{ $item->id }}">{{ $item->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         @if (session('user')->role == 'manager')
                             <div class="input-group col-3">
                                 <select name="agent_id" id="agent_id" class="form-control">
@@ -195,9 +204,9 @@
                                             <th>Date</th>
                                             <th>Name</th>
                                             <th>Number</th>
-                                            <th>Language</th>
-                                            <th>State</th>
+                                            @if(session('user')->role!='agent')
                                             <th>Agent</th>
+                                            @endif
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -212,11 +221,11 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $item->source_name }}</td>
                                                 <td>{{ $item->date }}</td>
-                                                <td>{{ $item->name }}</td>
+                                                <td>{{ $item->name!=''||$item->name?$item->name:'--' }}</td>
                                                 <td>{{ $item->number }}</td>
-                                                <td>{{ $item->language }}</td>
-                                                <td>{{ $item->state }}</td>
+                                                @if(session('user')->role!='agent')
                                                 <td> {{ $item->agent_name }}</td>
+                                                @endif
                                                 <td> {{ $item->current_status ?? 'Open' }}</td>
                                                 <td>
                                                     <button
@@ -546,9 +555,11 @@
         const searchValue = $('#searchInput').val().trim();
         const status_id = $('#status_id').val();
         const filter_agent = $('#agent_id').val();
+        const source_id = $('#source_id').val();
         url.searchParams.set('search', searchValue);
         url.searchParams.set('status', status_id ?? '');
         url.searchParams.set('agent', filter_agent ?? '');
+        url.searchParams.set('source_id', filter_agent ?? '');
         $('#search-form').attr('action', url.toString()).submit();
     }
     const openLeadModal = (leadId, idName) => {
@@ -789,14 +800,13 @@
     function HandleMandatoryFields (selectElement)
     {
         var selectedOption = selectElement.options[selectElement.selectedIndex];
-        if(selectedOption.value == 12){
+        if(selectedOption.value == 4){
             $('.agent-phone').hide()
         }
         var itemId = selectedOption.value; // Get the value of the selected option (item ID)
         var itemName = selectedOption.text; // Get the text of the selected option (item name)
         var extraData = selectedOption.dataset.extra; // 
         var jsonData = JSON.parse(extraData);
-        console.log(jsonData)
         if(jsonData.agentPhone)
         {
             $('#agent-phone-danger').show()

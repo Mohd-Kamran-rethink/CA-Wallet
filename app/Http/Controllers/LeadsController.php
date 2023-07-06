@@ -61,6 +61,7 @@ class LeadsController extends Controller
         $searchTerm = $req->query('table_search');
         $Filterstatus = $req->query('status');
         $FilterAgent = $req->query('agent_id');
+        $source = $req->query('source_id');
 
         // get details of the status from status id 
         $currentStatus = LeadStatusOption::find($Filterstatus);
@@ -79,6 +80,11 @@ class LeadsController extends Controller
             ->when($currentStatus, function ($query, $currentStatus) {
                 $query->where(function ($query) use ($currentStatus) {
                     $query->Where('leads.current_status', '=', $currentStatus->name);
+                });
+            })
+            ->when($source, function ($query, $source) {
+                $query->where(function ($query) use ($source) {
+                    $query->Where('leads.source_id', '=', $source);
                 });
             })
             ->when($agent, function ($query, $agent) {
