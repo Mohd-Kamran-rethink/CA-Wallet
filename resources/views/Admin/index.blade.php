@@ -89,7 +89,9 @@
     <script src="{{ asset('AdminTheme/mainjs/MainJSfile.js') }}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+    <script>
+        $('.searchOptions').select2();
+    </script>
 </body>
 
 </html>
