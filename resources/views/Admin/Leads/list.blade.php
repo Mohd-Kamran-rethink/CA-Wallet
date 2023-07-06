@@ -474,7 +474,7 @@
                     <input type="hidden" name="leadIds" class="lead_ids">
                     <div class="form-group">
                         <label for="">Source<span class="text-danger">*</span></label>
-                        <select onchange="HandleMandatoryFields(this)" id="Mansource_id" type="number" name="Mansource_id" class="form-control">
+                        <select onchange="HandleMandatoryFields(this)" id="Mansource_id" type="number" name="Mansource_id" class="form-control searchOptions">
                             <option value="0">--Choose--</option>
                             @foreach ($sources as $item)
                             @if($item->show_in_mannual_lead)
@@ -495,7 +495,7 @@
                     </div>
                     <div class="form-group">
                         <label for="">Status<span class="text-danger" id="status-danger-label">*</span></label>
-                        <select id="man_status" onchange="handleMannualStatusChange(this.value)" type="number" name="man_status" class="form-control">
+                        <select id="man_status" onchange="handleMannualStatusChange(this.value)" type="number" name="man_status" class="form-control searchOptions">
                             <option value="0">--Choose--</option>
                             @foreach ($statuses as $item)
                             @if ($item->name == 'Deposited')
