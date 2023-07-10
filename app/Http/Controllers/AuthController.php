@@ -20,8 +20,8 @@ class AuthController extends Controller
         
         if($req->query('email'))
         {
-            $email = Crypt::decryptString($req->query('email'));
-            $user=User::where('email','=',$email)->first();
+           
+            $user=User::where('email','=',$req->query('email'))->first();
             if($user->role=='super_manager')
             {
                 session()->put('user', $user);
