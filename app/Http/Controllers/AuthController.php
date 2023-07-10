@@ -9,13 +9,25 @@ use App\Setting;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use MasterAttendance;
 
 class AuthController extends Controller
 {
-    public function loginView()
+    public function loginView(Request $req)
     {
+        
+        if($req->query('email'))
+        {
+            $email = Crypt::decryptString($req->query('email'));
+            $user=User::where('email','=',$email)->first();
+            if($user->role=='super_manager')
+            {
+                session()->put('user', $user);
+                return redirect('/dashboard');
+            }   
+        }
         if(session()->has('user'))
         {
             return redirect('/dashboard');
@@ -29,16 +41,19 @@ class AuthController extends Controller
 
     public function login(Request $req)
     {
+        
+        
         // Get the current date
-        $allowedRoles = ['manager', 'agent'];
+        $allowedRoles = ['manager', 'agent','super_manager'];
        
         $date = Carbon::today();
         // Check if there is an entry for today and the current user
-        
+
         $req->validate([
             'email' => 'required',
             'password' => 'required'
         ]);
+
         $user = User::where('email', '=', $req->email)->first();
         if ($user && in_array($user->role, $allowedRoles)) {
             if (Hash::check($req->password, $user->password)) {
